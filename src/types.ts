@@ -62,20 +62,32 @@ export interface ThongBao {
   thoiGianTao: Date;
 }
 
+export interface KetQuaPhanLoai {
+  moTa: string;
+  soTien: number;
+  maDanhMuc: string;
+  mucDoTinCay: number;
+}
+
+export interface Insight {
+  type: 'budget_warning' | 'anomaly_detected' | 'trend_positive' | 'trend_negative' | 'general_summary';
+  data: any;
+}
+
 // AI Module Interfaces
 export interface AIPhanLoai {
   moHinhML: string;
   mucDoTinCay: number;
-  phanLoaiGiaoDich: (moTa: string) => string;
+  xuLyDuLieuTho: (rawInput: string) => KetQuaPhanLoai | null;
 }
 
 export interface AIBoNaoPhanTich {
   phanTichChiTieu: (giaoDichs: GiaoDich[]) => any;
   timBatThuong: (giaoDichs: GiaoDich[]) => KiemVuong[];
-  tinhXuHuong: (giaoDichs: GiaoDich[]) => any;
+  taoInsights: (giaoDichs: GiaoDich[], nganSachs: NganSach[]) => Insight[];
 }
 
 export interface AIBoNaoHoiThoai {
-  xuLyTinNhan: (tinNhan: string) => TraLoiAI;
-  taoLoiKhuyen: (kiemVuongs: KiemVuong[]) => string;
+  dienGiaiInsight: (insight: Insight) => TraLoiAI;
+  xuLyTinNhan: (tinNhan: string, currentInsights: Insight[]) => TraLoiAI;
 }

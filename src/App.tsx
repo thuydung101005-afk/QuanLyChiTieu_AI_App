@@ -51,16 +51,16 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<'home' | 'history' | 'ai' | 'profile'>('home');
   const [transactions, setTransactions] = useState<GiaoDich[]>(MOCK_TRANSACTIONS);
   const [aiMessages, setAiMessages] = useState<{ text: string; isAi: boolean; suggestions?: string[] }[]>([
-    { text: "Chào bạn! Tôi là Bộ não AI tài chính. Hôm nay tôi có thể giúp gì cho bạn?", isAi: true }
+    { text: "Chào bạn! Tôi là Người phát ngôn của Bộ não AI. Tôi đã nhận được các bản phân tích mới nhất. Bạn muốn biết về tổng quan chi tiêu, hay kiểm tra các cảnh báo ngân sách?", isAi: true, suggestions: ["Xem tổng quan", "Kiểm tra ngân sách"] }
   ]);
   const [inputMessage, setInputMessage] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
-  const [newDesc, setNewDesc] = useState('');
-  const [newAmount, setNewAmount] = useState('');
+  const [rawInput, setRawInput] = useState('');
 
   // AI Analysis
   const analysisData = useMemo(() => aiBoNaoPhanTich.phanTichChiTieu(transactions), [transactions]);
   const anomalies = useMemo(() => aiBoNaoPhanTich.timBatThuong(transactions), [transactions]);
+  const insights = useMemo(() => aiBoNaoPhanTich.taoInsights(transactions, MOCK_BUDGETS), [transactions]);
   const totalSpent = useMemo(() => transactions.reduce((acc, t) => acc + t.soTien, 0), [transactions]);
   const totalBudget = useMemo(() => MOCK_BUDGETS.reduce((acc, b) => acc + b.soTienGioiHan, 0), [MOCK_BUDGETS]);
 
@@ -73,7 +73,7 @@ export default function App() {
 
     // Simulate AI thinking
     setTimeout(() => {
-      const response = aiBoNaoHoiThoai.xuLyTinNhan(text);
+      const response = aiBoNaoHoiThoai.xuLyTinNhan(text, insights);
       setAiMessages(prev => [...prev, { 
         text: response.noiDung, 
         isAi: true, 
@@ -83,32 +83,37 @@ export default function App() {
   };
 
   const handleAddTransaction = () => {
-    if (!newDesc || !newAmount) return;
+    if (!rawInput) return;
     
-    const amount = parseFloat(newAmount);
-    const category = aiPhanLoai.phanLoaiGiaoDich(newDesc);
+    // Tầng 1: Phân loại (Perception Layer)
+    const parsedData = aiPhanLoai.xuLyDuLieuTho(rawInput);
+    
+    if (!parsedData) {
+      alert("Không thể nhận diện số tiền. Vui lòng nhập lại (VD: ăn phở 50k)");
+      return;
+    }
     
     const newTx: GiaoDich = {
       maGiaoDich: Date.now(),
-      soTien: amount,
+      soTien: parsedData.soTien,
       ngayThucHien: new Date(),
-      moTa: newDesc,
+      moTa: parsedData.moTa,
       ghiChu: '',
       daXacNhan: true,
-      maDanhMuc: category,
+      maDanhMuc: parsedData.maDanhMuc,
     };
 
     setTransactions(prev => [newTx, ...prev]);
-    setNewDesc('');
-    setNewAmount('');
+    setRawInput('');
     setShowAddModal(false);
 
     // AI Feedback
     setTimeout(() => {
       setActiveTab('ai');
       setAiMessages(prev => [...prev, { 
-        text: `Tôi đã tự động phân loại giao dịch "${newDesc}" vào mục "${MOCK_CATEGORIES.find(c => c.maDanhMuc === category)?.tenDanhMuc}". Bạn có muốn xem lại không?`, 
-        isAi: true 
+        text: `Tôi đã ghi nhận giao dịch "${parsedData.moTa}" (${parsedData.soTien.toLocaleString()}đ) vào mục "${MOCK_CATEGORIES.find(c => c.maDanhMuc === parsedData.maDanhMuc)?.tenDanhMuc}".`, 
+        isAi: true,
+        suggestions: ["Xem tổng quan", "Kiểm tra ngân sách"]
       }]);
     }, 500);
   };
@@ -428,24 +433,19 @@ export default function App() {
                 
                 <div className="space-y-4">
                   <div>
-                    <label className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 block">Mô tả (AI sẽ phân loại)</label>
+                    <label className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 block">Nhập tự nhiên (AI sẽ tự hiểu)</label>
                     <input 
                       type="text" 
-                      value={newDesc}
-                      onChange={(e) => setNewDesc(e.target.value)}
-                      placeholder="Ví dụ: Ăn bún chả"
-                      className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-4 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 block">Số tiền (VNĐ)</label>
-                    <input 
-                      type="number" 
-                      value={newAmount}
-                      onChange={(e) => setNewAmount(e.target.value)}
-                      placeholder="0"
+                      value={rawInput}
+                      onChange={(e) => setRawInput(e.target.value)}
+                      placeholder="Ví dụ: Ăn bún chả 50k"
                       className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-4 text-lg font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+                      autoFocus
+                      onKeyPress={(e) => e.key === 'Enter' && handleAddTransaction()}
                     />
+                    <p className="text-xs text-slate-400 mt-2 flex items-center gap-1">
+                      <BrainCircuit size={12} /> Não 1 (AI Phân Loại) sẽ xử lý dữ liệu này
+                    </p>
                   </div>
                   <button 
                     onClick={handleAddTransaction}
