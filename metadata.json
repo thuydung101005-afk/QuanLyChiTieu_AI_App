@@ -1,0 +1,5 @@
+{
+  "name": "FinBrain AI",
+  "description": "Ứng dụng quản lý tài chính cá nhân với kiến trúc AI Bộ não Ba tầng (Phân loại, Phân tích, Hội thoại).",
+  "requestFramePermissions": []
+}
