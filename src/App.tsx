@@ -13,7 +13,9 @@ import {
   Gamepad2,
   MoreHorizontal,
   BrainCircuit,
-  Sparkles
+  Sparkles,
+  ChevronDown,
+  Calendar
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
@@ -45,11 +47,41 @@ const CATEGORY_ICONS: Record<string, any> = {
   KHAC: MoreHorizontal,
 };
 
+// Helper to group transactions by date
+const groupTransactionsByDate = (transactions: GiaoDich[]) => {
+  const groups: Record<string, { date: Date; transactions: GiaoDich[]; total: number }> = {};
+  
+  transactions.forEach(tx => {
+    const date = new Date(tx.ngayThucHien);
+    const dateString = date.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    
+    if (!groups[dateString]) {
+      groups[dateString] = { date, transactions: [], total: 0 };
+    }
+    groups[dateString].transactions.push(tx);
+    groups[dateString].total += tx.soTien;
+  });
+
+  return Object.values(groups).sort((a, b) => b.date.getTime() - a.date.getTime());
+};
+
+const formatRelativeDate = (date: Date) => {
+  const today = new Date();
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+
+  if (date.toDateString() === today.toDateString()) return 'Hôm nay';
+  if (date.toDateString() === yesterday.toDateString()) return 'Hôm qua';
+  
+  const days = ['Chủ nhật', 'Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7'];
+  return `${days[date.getDay()]}, ${date.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' })}`;
+};
+
 export default function App() {
   const [activeTab, setActiveTab] = useState<'home' | 'history' | 'ai' | 'profile'>('home');
   const [transactions, setTransactions] = useState<GiaoDich[]>(MOCK_TRANSACTIONS);
   const [aiMessages, setAiMessages] = useState<{ text: string; isAi: boolean; suggestions?: string[] }[]>([
-    { text: "Chào bạn! Tôi là Người phát ngôn của Bộ não AI. Tôi đã nhận được các bản phân tích mới nhất. Bạn muốn biết về tổng quan chi tiêu, hay kiểm tra các cảnh báo ngân sách?", isAi: true, suggestions: ["Xem tổng quan", "Kiểm tra ngân sách"] }
+    { text: "Chào bạn! Tôi là Trợ lý AI. Tôi đã phân tích các giao dịch gần đây của bạn. Bạn muốn xem báo cáo chi tiêu hay kiểm tra ngân sách?", isAi: true, suggestions: ["Báo cáo chi tiêu", "Kiểm tra ngân sách"] }
   ]);
   const [inputMessage, setInputMessage] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
@@ -61,7 +93,6 @@ export default function App() {
 
   const chatEndRef = useRef<HTMLDivElement>(null);
 
-  // Auto scroll chat to bottom
   useEffect(() => {
     if (activeTab === 'ai') {
       chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -74,6 +105,9 @@ export default function App() {
   const insights = useMemo(() => aiBoNaoPhanTich.taoInsights(transactions, MOCK_BUDGETS), [transactions]);
   const totalSpent = useMemo(() => transactions.reduce((acc, t) => acc + t.soTien, 0), [transactions]);
   const totalBudget = useMemo(() => MOCK_BUDGETS.reduce((acc, b) => acc + b.soTienGioiHan, 0), [MOCK_BUDGETS]);
+  const balance = 15000000 - totalSpent; // Mock initial balance
+
+  const groupedTransactions = useMemo(() => groupTransactionsByDate(transactions), [transactions]);
 
   const handleSendMessage = (msg?: string) => {
     const text = msg || inputMessage;
@@ -83,7 +117,6 @@ export default function App() {
     setInputMessage('');
     setIsThinking(true);
 
-    // Simulate AI thinking (Não 2 + Não 3)
     setTimeout(() => {
       const response = aiBoNaoHoiThoai.xuLyTinNhan(text, insights);
       setIsThinking(false);
@@ -100,7 +133,6 @@ export default function App() {
     
     setIsAnalyzing(true);
 
-    // Simulate async processing by Não 1 (1.5s delay)
     setTimeout(() => {
       const parsedData = aiPhanLoai.xuLyDuLieuTho(rawInput);
       
@@ -125,16 +157,15 @@ export default function App() {
       setRawInput('');
       setShowAddModal(false);
 
-      // Navigate to AI tab and show success message from Não 3
       setActiveTab('ai');
       setIsThinking(true);
       
       setTimeout(() => {
         setIsThinking(false);
         setAiMessages(prev => [...prev, { 
-          text: `Tôi đã ghi nhận giao dịch "${parsedData.moTa}" (${parsedData.soTien.toLocaleString()}đ) vào mục "${MOCK_CATEGORIES.find(c => c.maDanhMuc === parsedData.maDanhMuc)?.tenDanhMuc}".`, 
+          text: `Đã ghi nhận: "${parsedData.moTa}" (${parsedData.soTien.toLocaleString()}đ) vào mục "${MOCK_CATEGORIES.find(c => c.maDanhMuc === parsedData.maDanhMuc)?.tenDanhMuc}".`, 
           isAi: true,
-          suggestions: ["Xem tổng quan", "Kiểm tra ngân sách"]
+          suggestions: ["Xem báo cáo", "Số dư hiện tại"]
         }]);
       }, 1000);
 
@@ -142,33 +173,52 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 flex justify-center items-start p-0 md:p-8 font-sans">
+    <div className="min-h-screen bg-zinc-100 flex justify-center items-start p-0 md:p-8 font-sans">
       {/* Mobile Frame Simulation */}
-      <div className="w-full max-w-[400px] h-[100vh] md:h-[800px] bg-[#F9FAFB] shadow-2xl md:rounded-[40px] overflow-hidden flex flex-col border-[8px] border-slate-900 relative">
+      <div className="w-full max-w-[400px] h-[100vh] md:h-[800px] bg-zinc-50 shadow-2xl md:rounded-[40px] overflow-hidden flex flex-col border-[8px] border-zinc-900 relative">
         
         {/* Status Bar Simulation */}
-        <div className="h-12 flex justify-between items-center px-8 pt-4 shrink-0">
-          <span className="text-xs font-semibold text-slate-800">12:14</span>
+        <div className={cn(
+          "h-12 flex justify-between items-center px-6 pt-4 shrink-0 transition-colors duration-300",
+          activeTab === 'ai' ? "bg-zinc-950 text-white" : "bg-zinc-950 text-white"
+        )}>
+          <span className="text-xs font-semibold">12:14</span>
           <div className="flex gap-1.5">
-            <div className="w-4 h-2.5 bg-slate-800 rounded-sm" />
-            <div className="w-4 h-2.5 bg-slate-800 rounded-sm" />
-            <div className="w-6 h-2.5 bg-slate-800 rounded-sm" />
+            <div className="w-4 h-2.5 bg-white rounded-sm" />
+            <div className="w-4 h-2.5 bg-white rounded-sm" />
+            <div className="w-6 h-2.5 bg-white rounded-sm" />
           </div>
         </div>
 
-        {/* Header */}
-        <header className="px-6 py-2 flex justify-between items-center shrink-0">
-          <div>
-            <p className="text-slate-500 text-xs font-medium">Chào buổi sáng,</p>
-            <h1 className="text-xl font-semibold text-slate-800">{MOCK_USER.ten}</h1>
-          </div>
-          <div className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-600">
-            <User size={20} />
-          </div>
-        </header>
+        {/* Dynamic Header */}
+        <AnimatePresence mode="wait">
+          {activeTab !== 'ai' && (
+            <motion.header 
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className="bg-zinc-950 px-6 pb-8 pt-2 shrink-0 text-white rounded-b-[32px] shadow-sm z-10 relative"
+            >
+              <div className="flex justify-between items-center mb-6">
+                <div className="flex items-center gap-2 bg-white/10 hover:bg-white/20 transition-colors px-4 py-2 rounded-full cursor-pointer">
+                  <Wallet size={16} className="text-emerald-400" />
+                  <span className="text-sm font-medium">Tiền mặt</span>
+                  <ChevronDown size={16} className="text-zinc-400" />
+                </div>
+                <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center border border-white/5">
+                  <User size={18} />
+                </div>
+              </div>
+              <div className="text-center">
+                <p className="text-zinc-400 text-sm font-medium mb-1">Số dư hiện tại</p>
+                <h1 className="text-4xl font-bold tracking-tight">{balance.toLocaleString()} <span className="text-2xl text-zinc-500 font-normal">đ</span></h1>
+              </div>
+            </motion.header>
+          )}
+        </AnimatePresence>
 
         {/* Main Content Area */}
-        <main className="flex-1 overflow-y-auto px-6 pb-28 pt-4">
+        <main className="flex-1 overflow-y-auto pb-28">
           <AnimatePresence mode="wait">
             {activeTab === 'home' && (
               <motion.div 
@@ -176,39 +226,20 @@ export default function App() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
-                className="space-y-6"
+                className="space-y-6 pt-6"
               >
-                {/* Budget Card - Minimalist */}
-                <div className="bg-white rounded-[24px] p-6 border border-slate-100 shadow-sm">
-                  <p className="text-slate-500 text-sm font-medium">Tổng chi tiêu tháng này</p>
-                  <h2 className="text-3xl font-semibold text-slate-800 mt-1">{totalSpent.toLocaleString()}đ</h2>
-                  <div className="mt-5 space-y-2">
-                    <div className="flex justify-between text-xs font-medium text-slate-500">
-                      <span>Hạn mức: {totalBudget.toLocaleString()}đ</span>
-                      <span>{Math.round((totalSpent / totalBudget) * 100)}%</span>
-                    </div>
-                    <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-                      <motion.div 
-                        initial={{ width: 0 }}
-                        animate={{ width: `${Math.min((totalSpent / totalBudget) * 100, 100)}%` }}
-                        className="h-full bg-indigo-500 rounded-full"
-                      />
-                    </div>
-                  </div>
-                </div>
-
                 {/* AI Insights Section */}
                 {anomalies.length > 0 && (
-                  <div className="bg-orange-50 border border-orange-100 rounded-[20px] p-4 flex gap-3">
-                    <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 shrink-0">
-                      <AlertCircle size={20} />
+                  <div className="mx-5 bg-orange-50 border border-orange-100 rounded-[24px] p-4 flex gap-4 shadow-sm">
+                    <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 shrink-0">
+                      <AlertCircle size={24} />
                     </div>
                     <div>
-                      <h3 className="text-sm font-semibold text-orange-900">Phát hiện bất thường</h3>
+                      <h3 className="text-sm font-semibold text-orange-900">Cảnh báo chi tiêu</h3>
                       <p className="text-xs text-orange-700 mt-1 leading-relaxed">{anomalies[0].moTa}</p>
                       <button 
                         onClick={() => setActiveTab('ai')}
-                        className="text-xs font-semibold text-orange-600 mt-2 flex items-center gap-1"
+                        className="text-xs font-semibold text-orange-600 mt-2 flex items-center gap-1 hover:text-orange-800 transition-colors"
                       >
                         Hỏi AI giải pháp <ChevronRight size={14} />
                       </button>
@@ -216,65 +247,63 @@ export default function App() {
                   </div>
                 )}
 
-                {/* Quick Chart */}
-                <div className="bg-white rounded-[24px] p-5 border border-slate-100 shadow-sm">
-                  <h3 className="text-sm font-semibold text-slate-800 mb-4">Phân tích hạng mục</h3>
-                  <div className="h-40 w-full">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={analysisData}>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                        <XAxis 
-                          dataKey="name" 
-                          axisLine={false} 
-                          tickLine={false} 
-                          tick={{ fontSize: 10, fill: '#64748b', fontWeight: 500 }}
-                          tickFormatter={(val) => MOCK_CATEGORIES.find(c => c.maDanhMuc === val)?.tenDanhMuc || val}
-                        />
-                        <YAxis hide />
-                        <Tooltip 
-                          cursor={{ fill: '#f8fafc' }}
-                          contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                          formatter={(value: number) => [value.toLocaleString() + 'đ', 'Số tiền']}
-                        />
-                        <Bar dataKey="value" radius={[6, 6, 0, 0]} barSize={32}>
-                          {analysisData.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={MOCK_CATEGORIES.find(c => c.maDanhMuc === entry.name)?.mauSac || '#8884d8'} />
-                          ))}
-                        </Bar>
-                      </BarChart>
-                    </ResponsiveContainer>
+                {/* Monthly Overview */}
+                <div className="mx-5 bg-white rounded-[24px] p-6 border border-zinc-100 shadow-sm flex justify-between items-center">
+                  <div>
+                    <p className="text-xs text-zinc-500 font-medium mb-1">Tháng này đã chi</p>
+                    <p className="text-xl font-bold text-zinc-800">{totalSpent.toLocaleString()} đ</p>
+                  </div>
+                  <div className="h-12 w-[1px] bg-zinc-100" />
+                  <div className="text-right">
+                    <p className="text-xs text-zinc-500 font-medium mb-1">Ngân sách còn lại</p>
+                    <p className="text-xl font-bold text-emerald-500">{(totalBudget - totalSpent).toLocaleString()} đ</p>
                   </div>
                 </div>
 
-                {/* Recent Transactions */}
-                <div>
-                  <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-sm font-semibold text-slate-800">Giao dịch gần đây</h3>
-                    <button onClick={() => setActiveTab('history')} className="text-xs font-semibold text-indigo-500">Tất cả</button>
+                {/* Transactions Grouped by Date */}
+                <div className="space-y-4 px-5">
+                  <div className="flex justify-between items-center mb-2">
+                    <h3 className="text-sm font-semibold text-zinc-800">Giao dịch gần đây</h3>
+                    <button onClick={() => setActiveTab('history')} className="text-xs font-semibold text-zinc-500 hover:text-zinc-800 transition-colors">Xem tất cả</button>
                   </div>
-                  <div className="space-y-3">
-                    {transactions.slice(0, 3).map((tx) => {
-                      const category = MOCK_CATEGORIES.find(c => c.maDanhMuc === tx.maDanhMuc);
-                      const Icon = CATEGORY_ICONS[tx.maDanhMuc] || MoreHorizontal;
-                      return (
-                        <div key={tx.maGiaoDich} className="flex items-center justify-between p-4 bg-white border border-slate-100 rounded-[20px] shadow-sm">
-                          <div className="flex items-center gap-4">
-                            <div 
-                              className="w-10 h-10 rounded-full flex items-center justify-center text-white"
-                              style={{ backgroundColor: category?.mauSac }}
-                            >
-                              <Icon size={18} />
-                            </div>
-                            <div>
-                              <p className="text-sm font-semibold text-slate-800">{tx.moTa}</p>
-                              <p className="text-xs text-slate-500 mt-0.5">{category?.tenDanhMuc}</p>
-                            </div>
+                  
+                  {groupedTransactions.slice(0, 3).map((group, idx) => (
+                    <div key={idx} className="bg-white rounded-[24px] border border-zinc-100 shadow-sm overflow-hidden">
+                      <div className="bg-zinc-50/80 px-5 py-3 border-b border-zinc-100 flex justify-between items-center">
+                        <div className="flex items-center gap-3">
+                          <span className="text-2xl font-bold text-zinc-800 tracking-tight">{group.date.getDate()}</span>
+                          <div>
+                            <p className="text-xs font-semibold text-zinc-600">{formatRelativeDate(group.date).split(',')[0]}</p>
+                            <p className="text-[10px] text-zinc-400 font-medium">Tháng {group.date.getMonth() + 1} {group.date.getFullYear()}</p>
                           </div>
-                          <p className="text-sm font-semibold text-slate-800">-{tx.soTien.toLocaleString()}đ</p>
                         </div>
-                      );
-                    })}
-                  </div>
+                        <span className="text-sm font-bold text-zinc-800">-{group.total.toLocaleString()} đ</span>
+                      </div>
+                      <div className="divide-y divide-zinc-50">
+                        {group.transactions.map((tx) => {
+                          const category = MOCK_CATEGORIES.find(c => c.maDanhMuc === tx.maDanhMuc);
+                          const Icon = CATEGORY_ICONS[tx.maDanhMuc] || MoreHorizontal;
+                          return (
+                            <div key={tx.maGiaoDich} className="flex items-center justify-between p-5 bg-white hover:bg-zinc-50 transition-colors">
+                              <div className="flex items-center gap-4">
+                                <div 
+                                  className="w-12 h-12 rounded-full flex items-center justify-center text-white shadow-sm"
+                                  style={{ backgroundColor: category?.mauSac }}
+                                >
+                                  <Icon size={20} />
+                                </div>
+                                <div>
+                                  <p className="text-sm font-semibold text-zinc-800">{tx.moTa}</p>
+                                  <p className="text-xs text-zinc-500 mt-1 font-medium">{category?.tenDanhMuc}</p>
+                                </div>
+                              </div>
+                              <p className="text-sm font-semibold text-zinc-800">-{tx.soTien.toLocaleString()}</p>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </motion.div>
             )}
@@ -285,41 +314,41 @@ export default function App() {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
-                className="flex flex-col h-full absolute inset-0 bg-[#F9FAFB]"
+                className="flex flex-col h-full absolute inset-0 bg-zinc-950 z-20"
               >
-                {/* Chat Header */}
-                <div className="h-16 bg-white/80 backdrop-blur-md border-b border-slate-100 flex items-center px-6 gap-3 shrink-0 z-10 pt-2">
-                  <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600">
-                    <BrainCircuit size={20} />
+                {/* Chat Header - Dark Theme */}
+                <div className="h-24 bg-zinc-950 text-white flex items-end pb-4 px-6 gap-4 shrink-0 border-b border-white/10">
+                  <div className="w-12 h-12 rounded-full bg-violet-500/20 flex items-center justify-center border border-violet-500/30">
+                    <BrainCircuit size={24} className="text-violet-400" />
                   </div>
-                  <div>
-                    <h2 className="text-sm font-semibold text-slate-800">Trợ lý AI (Não 3)</h2>
-                    <p className="text-[10px] text-slate-500 flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full" /> Trực tuyến
+                  <div className="mb-1">
+                    <h2 className="text-base font-semibold tracking-tight">Trợ lý AI (Não 3)</h2>
+                    <p className="text-xs text-violet-300/70 flex items-center gap-1.5 mt-0.5">
+                      <span className="w-1.5 h-1.5 bg-violet-400 rounded-full animate-pulse" /> Trực tuyến
                     </p>
                   </div>
                 </div>
 
                 {/* Chat Messages */}
-                <div className="flex-1 overflow-y-auto p-4 space-y-4 pb-24">
+                <div className="flex-1 overflow-y-auto p-5 space-y-6 pb-24">
                   {aiMessages.map((msg, idx) => (
                     <div key={idx} className={cn("flex flex-col", msg.isAi ? "items-start" : "items-end")}>
                       <div className={cn(
-                        "max-w-[80%] p-3.5 rounded-[20px] text-[14px] leading-relaxed shadow-sm",
+                        "max-w-[85%] p-4 rounded-[24px] text-[15px] leading-relaxed shadow-sm",
                         msg.isAi 
-                          ? "bg-white border border-slate-100 text-slate-800 rounded-tl-sm" 
-                          : "bg-indigo-500 text-white rounded-tr-sm"
+                          ? "bg-zinc-900 border border-white/5 text-zinc-200 rounded-tl-sm" 
+                          : "bg-violet-600 text-white rounded-tr-sm"
                       )}>
                         {msg.text}
                       </div>
                       {msg.isAi && msg.suggestions && msg.suggestions.length > 0 && (
-                        <div className="flex flex-wrap gap-2 mt-2 ml-1">
+                        <div className="flex flex-wrap gap-2 mt-3 ml-1">
                           {msg.suggestions.map((s, sIdx) => (
                             <button 
                               key={sIdx}
                               onClick={() => handleSendMessage(s)}
                               disabled={isThinking}
-                              className="text-[11px] font-medium px-3 py-1.5 bg-white text-indigo-600 rounded-full hover:bg-indigo-50 transition-colors border border-indigo-100 shadow-sm disabled:opacity-50"
+                              className="text-xs font-medium px-4 py-2 bg-zinc-900 text-violet-300 rounded-full hover:bg-zinc-800 transition-colors border border-white/5 disabled:opacity-50"
                             >
                               {s}
                             </button>
@@ -331,19 +360,19 @@ export default function App() {
                   
                   {isThinking && (
                     <div className="flex flex-col items-start">
-                      <div className="bg-white border border-slate-100 p-4 rounded-[20px] rounded-tl-sm shadow-sm flex items-center gap-1.5">
-                        <motion.div animate={{ y: [0, -4, 0] }} transition={{ repeat: Infinity, duration: 0.6, delay: 0 }} className="w-1.5 h-1.5 bg-slate-400 rounded-full" />
-                        <motion.div animate={{ y: [0, -4, 0] }} transition={{ repeat: Infinity, duration: 0.6, delay: 0.2 }} className="w-1.5 h-1.5 bg-slate-400 rounded-full" />
-                        <motion.div animate={{ y: [0, -4, 0] }} transition={{ repeat: Infinity, duration: 0.6, delay: 0.4 }} className="w-1.5 h-1.5 bg-slate-400 rounded-full" />
+                      <div className="bg-zinc-900 border border-white/5 p-5 rounded-[24px] rounded-tl-sm shadow-sm flex items-center gap-2">
+                        <motion.div animate={{ y: [0, -4, 0] }} transition={{ repeat: Infinity, duration: 0.6, delay: 0 }} className="w-2 h-2 bg-violet-400/50 rounded-full" />
+                        <motion.div animate={{ y: [0, -4, 0] }} transition={{ repeat: Infinity, duration: 0.6, delay: 0.2 }} className="w-2 h-2 bg-violet-400/50 rounded-full" />
+                        <motion.div animate={{ y: [0, -4, 0] }} transition={{ repeat: Infinity, duration: 0.6, delay: 0.4 }} className="w-2 h-2 bg-violet-400/50 rounded-full" />
                       </div>
-                      <span className="text-[10px] text-slate-400 mt-1 ml-2">Não 3 đang phân tích...</span>
+                      <span className="text-xs text-zinc-500 mt-2 ml-2 font-medium">Não 3 đang phân tích...</span>
                     </div>
                   )}
                   <div ref={chatEndRef} />
                 </div>
 
                 {/* Chat Input */}
-                <div className="absolute bottom-0 left-0 right-0 p-4 bg-white/80 backdrop-blur-md border-t border-slate-100">
+                <div className="absolute bottom-0 left-0 right-0 p-5 bg-zinc-950 border-t border-white/10">
                   <div className="relative flex items-center">
                     <input 
                       type="text" 
@@ -352,14 +381,14 @@ export default function App() {
                       onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
                       placeholder="Nhắn tin cho AI..."
                       disabled={isThinking}
-                      className="w-full bg-slate-100 border-none rounded-full pl-5 pr-12 py-3.5 text-sm text-slate-800 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 disabled:opacity-50"
+                      className="w-full bg-zinc-900 border border-white/5 rounded-full pl-6 pr-14 py-4 text-sm text-zinc-200 placeholder:text-zinc-500 focus:outline-none focus:ring-1 focus:ring-violet-500/50 disabled:opacity-50"
                     />
                     <button 
                       onClick={() => handleSendMessage()}
                       disabled={isThinking || !inputMessage.trim()}
-                      className="absolute right-1.5 w-9 h-9 rounded-full bg-indigo-500 text-white flex items-center justify-center disabled:opacity-50 disabled:bg-slate-300 transition-colors"
+                      className="absolute right-2 w-10 h-10 rounded-full bg-violet-600 text-white flex items-center justify-center disabled:opacity-50 disabled:bg-zinc-800 transition-colors"
                     >
-                      <Send size={16} className="ml-0.5" />
+                      <Send size={18} className="ml-0.5" />
                     </button>
                   </div>
                 </div>
@@ -372,75 +401,98 @@ export default function App() {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 20 }}
-                className="space-y-6"
+                className="space-y-6 pt-6 px-5"
               >
-                <h2 className="text-xl font-semibold text-slate-800">Lịch sử giao dịch</h2>
-                <div className="space-y-3">
-                  {transactions.map((tx) => {
-                    const category = MOCK_CATEGORIES.find(c => c.maDanhMuc === tx.maDanhMuc);
-                    const Icon = CATEGORY_ICONS[tx.maDanhMuc] || MoreHorizontal;
-                    return (
-                      <div key={tx.maGiaoDich} className="flex items-center justify-between p-4 bg-white border border-slate-100 rounded-[20px] shadow-sm">
-                        <div className="flex items-center gap-4">
-                          <div 
-                            className="w-12 h-12 rounded-full flex items-center justify-center text-white"
-                            style={{ backgroundColor: category?.mauSac }}
-                          >
-                            <Icon size={20} />
-                          </div>
-                          <div>
-                            <p className="text-sm font-semibold text-slate-800">{tx.moTa}</p>
-                            <p className="text-xs text-slate-500 mt-0.5">{new Date(tx.ngayThucHien).toLocaleDateString('vi-VN')}</p>
-                          </div>
-                        </div>
-                        <p className="text-sm font-semibold text-slate-800">-{tx.soTien.toLocaleString()}đ</p>
-                      </div>
-                    );
-                  })}
+                <div className="flex justify-between items-center mb-2">
+                  <h2 className="text-xl font-bold text-zinc-800 tracking-tight">Lịch sử giao dịch</h2>
+                  <div className="flex items-center gap-1.5 text-sm text-zinc-600 font-medium bg-white border border-zinc-200 px-4 py-2 rounded-full shadow-sm">
+                    <Calendar size={16} />
+                    <span>Tháng này</span>
+                  </div>
                 </div>
+                
+                {groupedTransactions.map((group, idx) => (
+                  <div key={idx} className="bg-white rounded-[24px] border border-zinc-100 shadow-sm overflow-hidden">
+                    <div className="bg-zinc-50/80 px-5 py-3 border-b border-zinc-100 flex justify-between items-center">
+                      <div className="flex items-center gap-3">
+                        <span className="text-2xl font-bold text-zinc-800 tracking-tight">{group.date.getDate()}</span>
+                        <div>
+                          <p className="text-xs font-semibold text-zinc-600">{formatRelativeDate(group.date).split(',')[0]}</p>
+                          <p className="text-[10px] text-zinc-400 font-medium">Tháng {group.date.getMonth() + 1} {group.date.getFullYear()}</p>
+                        </div>
+                      </div>
+                      <span className="text-sm font-bold text-zinc-800">-{group.total.toLocaleString()} đ</span>
+                    </div>
+                    <div className="divide-y divide-zinc-50">
+                      {group.transactions.map((tx) => {
+                        const category = MOCK_CATEGORIES.find(c => c.maDanhMuc === tx.maDanhMuc);
+                        const Icon = CATEGORY_ICONS[tx.maDanhMuc] || MoreHorizontal;
+                        return (
+                          <div key={tx.maGiaoDich} className="flex items-center justify-between p-5 bg-white hover:bg-zinc-50 transition-colors">
+                            <div className="flex items-center gap-4">
+                              <div 
+                                className="w-12 h-12 rounded-full flex items-center justify-center text-white shadow-sm"
+                                style={{ backgroundColor: category?.mauSac }}
+                              >
+                                <Icon size={20} />
+                              </div>
+                              <div>
+                                <p className="text-sm font-semibold text-zinc-800">{tx.moTa}</p>
+                                <p className="text-xs text-zinc-500 mt-1 font-medium">{category?.tenDanhMuc}</p>
+                              </div>
+                            </div>
+                            <p className="text-sm font-semibold text-zinc-800">-{tx.soTien.toLocaleString()}</p>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
               </motion.div>
             )}
           </AnimatePresence>
         </main>
 
-        {/* Floating Action Button */}
-        <button 
-          onClick={() => setShowAddModal(true)}
-          className="absolute bottom-24 left-1/2 -translate-x-1/2 w-14 h-14 rounded-full bg-indigo-600 text-white flex items-center justify-center shadow-xl shadow-indigo-200 z-30 hover:scale-105 transition-transform active:scale-95"
-        >
-          <Plus size={28} />
-        </button>
-
         {/* Bottom Navigation */}
-        <nav className="h-[88px] bg-white border-t border-slate-100 flex items-start justify-around px-2 pt-4 absolute bottom-0 left-0 right-0 z-20 pb-safe">
+        <nav className="h-[90px] bg-white border-t border-zinc-100 flex items-start justify-around px-2 pt-4 absolute bottom-0 left-0 right-0 z-30 pb-safe shadow-[0_-10px_40px_rgba(0,0,0,0.03)] rounded-t-[32px]">
           <button 
             onClick={() => setActiveTab('home')}
-            className={cn("flex flex-col items-center gap-1.5 w-16", activeTab === 'home' ? "text-indigo-600" : "text-slate-400")}
+            className={cn("flex flex-col items-center gap-1.5 w-16 transition-colors", activeTab === 'home' ? "text-zinc-900" : "text-zinc-400")}
           >
             <Wallet size={24} strokeWidth={activeTab === 'home' ? 2.5 : 2} />
-            <span className="text-[10px] font-semibold">Ví</span>
+            <span className="text-[10px] font-semibold">Sổ giao dịch</span>
           </button>
           <button 
             onClick={() => setActiveTab('history')}
-            className={cn("flex flex-col items-center gap-1.5 w-16", activeTab === 'history' ? "text-indigo-600" : "text-slate-400")}
+            className={cn("flex flex-col items-center gap-1.5 w-16 transition-colors", activeTab === 'history' ? "text-zinc-900" : "text-zinc-400")}
           >
             <History size={24} strokeWidth={activeTab === 'history' ? 2.5 : 2} />
             <span className="text-[10px] font-semibold">Lịch sử</span>
           </button>
-          <div className="w-16" /> {/* Space for FAB */}
+          
+          {/* Central FAB */}
+          <div className="relative w-16 flex justify-center">
+            <button 
+              onClick={() => setShowAddModal(true)}
+              className="absolute -top-10 w-16 h-16 rounded-full bg-zinc-900 text-white flex items-center justify-center shadow-xl shadow-zinc-900/20 hover:scale-105 transition-transform active:scale-95 border-[6px] border-zinc-50"
+            >
+              <Plus size={28} />
+            </button>
+          </div>
+
           <button 
             onClick={() => setActiveTab('ai')}
-            className={cn("flex flex-col items-center gap-1.5 w-16", activeTab === 'ai' ? "text-indigo-600" : "text-slate-400")}
+            className={cn("flex flex-col items-center gap-1.5 w-16 transition-colors", activeTab === 'ai' ? "text-violet-600" : "text-zinc-400")}
           >
             <BrainCircuit size={24} strokeWidth={activeTab === 'ai' ? 2.5 : 2} />
-            <span className="text-[10px] font-semibold">Trợ lý AI</span>
+            <span className="text-[10px] font-semibold">AI Brain</span>
           </button>
           <button 
             onClick={() => setActiveTab('profile')}
-            className={cn("flex flex-col items-center gap-1.5 w-16", activeTab === 'profile' ? "text-indigo-600" : "text-slate-400")}
+            className={cn("flex flex-col items-center gap-1.5 w-16 transition-colors", activeTab === 'profile' ? "text-zinc-900" : "text-zinc-400")}
           >
             <User size={24} strokeWidth={activeTab === 'profile' ? 2.5 : 2} />
-            <span className="text-[10px] font-semibold">Tôi</span>
+            <span className="text-[10px] font-semibold">Tài khoản</span>
           </button>
         </nav>
 
@@ -451,7 +503,7 @@ export default function App() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-end justify-center"
+              className="absolute inset-0 bg-zinc-950/60 backdrop-blur-md z-50 flex items-end justify-center"
               onClick={() => !isAnalyzing && setShowAddModal(false)}
             >
               <motion.div 
@@ -459,14 +511,19 @@ export default function App() {
                 animate={{ y: 0 }}
                 exit={{ y: '100%' }}
                 transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                className="w-full bg-white rounded-t-[32px] p-6 pb-12 shadow-2xl"
+                className="w-full bg-white rounded-t-[40px] p-8 pb-12 shadow-2xl"
                 onClick={e => e.stopPropagation()}
               >
-                <div className="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-6" />
+                <div className="w-12 h-1.5 bg-zinc-200 rounded-full mx-auto mb-8" />
                 
-                <div className="flex items-center gap-2 mb-4">
-                  <Sparkles size={20} className="text-indigo-500" />
-                  <h2 className="text-lg font-semibold text-slate-800">Thanh Ma Thuật</h2>
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-10 h-10 rounded-full bg-zinc-100 flex items-center justify-center">
+                    <Sparkles size={20} className="text-zinc-900" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold text-zinc-900 tracking-tight">Thêm nhanh với AI</h2>
+                    <p className="text-xs text-zinc-500 font-medium mt-0.5">Não 1 sẽ tự động phân loại</p>
+                  </div>
                 </div>
                 
                 <div className="relative">
@@ -475,7 +532,7 @@ export default function App() {
                     value={rawInput}
                     onChange={(e) => setRawInput(e.target.value)}
                     placeholder="Gõ bất cứ gì, ví dụ: ăn trưa 70k"
-                    className="w-full bg-slate-50 border border-slate-200 rounded-[20px] pl-5 pr-14 py-4 text-base text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+                    className="w-full bg-zinc-50 border border-zinc-200 rounded-[24px] pl-6 pr-16 py-5 text-base text-zinc-800 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-900/10 focus:border-zinc-900 transition-all font-medium"
                     autoFocus
                     disabled={isAnalyzing}
                     onKeyPress={(e) => e.key === 'Enter' && handleAddTransaction()}
@@ -483,9 +540,9 @@ export default function App() {
                   <button 
                     onClick={handleAddTransaction}
                     disabled={isAnalyzing || !rawInput.trim()}
-                    className="absolute right-2 top-2 bottom-2 aspect-square bg-indigo-500 text-white rounded-2xl flex items-center justify-center disabled:opacity-50 disabled:bg-slate-300 transition-colors"
+                    className="absolute right-2.5 top-2.5 bottom-2.5 aspect-square bg-zinc-900 text-white rounded-[18px] flex items-center justify-center disabled:opacity-50 disabled:bg-zinc-300 transition-colors"
                   >
-                    <Send size={18} />
+                    <Send size={20} className="ml-0.5" />
                   </button>
                 </div>
 
@@ -493,17 +550,17 @@ export default function App() {
                   {isAnalyzing && (
                     <motion.div 
                       initial={{ opacity: 0, height: 0, marginTop: 0 }}
-                      animate={{ opacity: 1, height: 'auto', marginTop: 16 }}
+                      animate={{ opacity: 1, height: 'auto', marginTop: 24 }}
                       exit={{ opacity: 0, height: 0, marginTop: 0 }}
-                      className="flex flex-col items-center justify-center gap-2 text-indigo-500 overflow-hidden"
+                      className="flex flex-col items-center justify-center gap-3 text-zinc-600 overflow-hidden"
                     >
                       <div className="flex items-center gap-2">
-                        <BrainCircuit size={16} className="animate-pulse" />
-                        <span className="text-sm font-medium">Não 1 đang phân tích và cấu trúc hóa...</span>
+                        <BrainCircuit size={18} className="animate-pulse" />
+                        <span className="text-sm font-semibold">Đang phân tích và cấu trúc hóa...</span>
                       </div>
-                      <div className="w-48 h-1 bg-indigo-100 rounded-full overflow-hidden mt-2">
+                      <div className="w-48 h-1.5 bg-zinc-100 rounded-full overflow-hidden mt-1">
                         <motion.div 
-                          className="h-full bg-indigo-500 rounded-full"
+                          className="h-full bg-zinc-900 rounded-full"
                           initial={{ width: "0%" }}
                           animate={{ width: "100%" }}
                           transition={{ duration: 1.5, ease: "easeInOut" }}
