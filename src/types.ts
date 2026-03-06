@@ -1,93 +1,35 @@
-export interface NguoiDung {
-  maNguoiDung: number;
-  ten: string;
-  email: string;
-  matKhau: string;
-  ngayTao: Date;
+export interface Jar {
+    id: string;
+    name: string;
+    allocation_percent: number;
+    balance: number;
+    color: string;
+    icon: string;
 }
 
-export interface DanhMucChiTieu {
-  maDanhMuc: string;
-  tenDanhMuc: string;
-  moTaChiTiet: string;
-  mauSac: string;
-  bieuTuong: string;
+export interface Transaction {
+    id: string;
+    amount: number;
+    description: string;
+    category_id: string;
+    date: string;
+    jar_id: string;
+    type: 'income' | 'expense';
 }
 
-export interface GiaoDich {
-  maGiaoDich: number;
-  soTien: number;
-  ngayThucHien: Date;
-  moTa: string;
-  ghiChu: string;
-  daXacNhan: boolean;
-  maDanhMuc: string;
+export interface ChatMessage {
+    text: string;
+    isAi: boolean;
+    suggestions?: string[];
 }
 
-export interface NganSach {
-  maNganSach: number;
-  tenNganSach: string;
-  soTienGioiHan: number;
-  soTienDaXai: number;
-  ngayBatDau: Date;
-  ngayKetThuc: Date;
+export interface PendingTx {
+    extracted_amount: number;
+    extracted_name: string;
+    predicted_jar_id: string;
+    confidence_score: number;
 }
 
-export interface KiemVuong {
-  tieuDe: string;
-  moTa: string;
-  mucDoNghiemTrong: number; // 1-5
-  deXuatHanhDong: string[];
-}
-
-export interface TraLoiAI {
-  noiDung: string;
-  deXuatHanhDong: string[];
-  cauHoiTiepTheo: string[];
-  mucDoTinCay: number;
-}
-
-export interface BaoCao {
-  maBaoCao: number;
-  tieuDe: string;
-  noiDung: string;
-  loaiBaoCao: 'THANG' | 'NAM' | 'DAC_BIET';
-}
-
-export interface ThongBao {
-  maThongBao: number;
-  tieuDe: string;
-  noiDung: string;
-  trangThai: 'MOI' | 'DA_DOC';
-  thoiGianTao: Date;
-}
-
-export interface KetQuaPhanLoai {
-  moTa: string;
-  soTien: number;
-  maDanhMuc: string;
-  mucDoTinCay: number;
-}
-
-export interface Insight {
-  type: 'budget_warning' | 'anomaly_detected' | 'trend_positive' | 'trend_negative' | 'general_summary';
-  data: any;
-}
-
-// AI Module Interfaces
-export interface AIPhanLoai {
-  moHinhML: string;
-  mucDoTinCay: number;
-  xuLyDuLieuTho: (rawInput: string) => KetQuaPhanLoai | null;
-}
-
-export interface AIBoNaoPhanTich {
-  phanTichChiTieu: (giaoDichs: GiaoDich[]) => any;
-  timBatThuong: (giaoDichs: GiaoDich[]) => KiemVuong[];
-  taoInsights: (giaoDichs: GiaoDich[], nganSachs: NganSach[]) => Insight[];
-}
-
-export interface AIBoNaoHoiThoai {
-  dienGiaiInsight: (insight: Insight) => TraLoiAI;
-  xuLyTinNhan: (tinNhan: string, currentInsights: Insight[]) => TraLoiAI;
-}
+export type ActiveTab = 'home' | 'history' | 'ai' | 'profile';
+export type AuthMode = 'login' | 'signup';
+export type TxType = 'expense' | 'income';
