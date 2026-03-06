@@ -1,0 +1,1194 @@
+__label__Sinh_hoạt Đi siêu thị Co.opmart cuối tuần
+__label__Sinh_hoạt Mua chai nước lau sàn Sunlight 45k
+__label__Sinh_hoạt Thanh toán tiền điện tháng này
+__label__Sinh_hoạt Mua bịch gạo 5kg
+__label__Sinh_hoạt Nước rửa chén hết 28.000
+__label__Sinh_hoạt Đóng tiền mạng FPT
+__label__Sinh_hoạt Mua đồ lặt vặt ở Circle K
+__label__Sinh_hoạt Giấy vệ sinh
+__label__Sinh_hoạt Kem đánh răng Colgate
+__label__Sinh_hoạt Hóa đơn tiền nước 157.000đ
+__label__Sinh_hoạt Sửa vòi nước bị rò
+__label__Sinh_hoạt Mua túi rác loại lớn
+__label__Sinh_hoạt Xà bông cục Lifebuoy
+__label__Sinh_hoạt Mua 2 cái bóng đèn Philips
+__label__Sinh_hoạt Tiền gas tháng 6
+__label__Sinh_hoạt Nạp thẻ điện thoại Viettel 50k
+__label__Sinh_hoạt Dầu gội đầu Clear men
+__label__Sinh_hoạt Sữa tắm cho cả nhà
+__label__Sinh_hoạt Mua ít đồ ở tạp hóa gần nhà 115 ngàn
+__label__Sinh_hoạt Phí quản lý chung cư
+__label__Sinh_hoạt Đóng tiền rác
+__label__Sinh_hoạt Mua pin tiểu cho điều khiển
+__label__Sinh_hoạt Đi Lotte Mart mua đồ dùng cá nhân
+__label__Sinh_hoạt Nước giặt Omo Matic 210k
+__label__Sinh_hoạt Nước xả vải Comfort
+__label__Sinh_hoạt Bàn chải đánh răng mới
+__label__Sinh_hoạt Sữa rửa mặt
+__label__Sinh_hoạt Đồ ăn cho cún cưng
+__label__Sinh_hoạt Cát vệ sinh cho mèo
+__label__Sinh_hoạt Mua cái chảo chống dính mới
+__label__Sinh_hoạt Hộp nhựa đựng thực phẩm
+__label__Sinh_hoạt Băng keo cá nhân Urgo
+__label__Sinh_hoạt Khẩu trang y tế một hộp
+__label__Sinh_hoạt Nước muối sinh lý
+__label__Sinh_hoạt Thuốc nhỏ mắt
+__label__Sinh_hoạt Đóng tiền net VNPT 180000
+__label__Sinh_hoạt Mua cây lau nhà
+__label__Sinh_hoạt Đồ cọ rửa toilet
+__label__Sinh_hoạt Thuê người dọn dẹp nhà cửa theo giờ
+__label__Sinh_hoạt Thanh toán hóa đơn siêu thị AEON Mall 1.250.000
+__label__Sinh_hoạt Tiền nước uống đóng bình
+__label__Sinh_hoạt Mua nến thơm
+__label__Sinh_hoạt Sáp thơm phòng
+__label__Sinh_hoạt Dao cạo râu Gillette
+__label__Sinh_hoạt Đi siêu thị Big C mua đồ ăn và đồ dùng
+__label__Sinh_hoạt Nước tẩy bồn cầu Vim
+__label__Sinh_hoạt Trả tiền đi chợ sáng nay
+__label__Sinh_hoạt Mua đồ dùng trong nhà tắm
+__label__Sinh_hoạt Khăn mặt mới
+__label__Sinh_hoạt Mua cái thảm chùi chân
+__label__Sinh_hoạt Sửa lại cái quạt máy
+__label__Sinh_hoạt Tiền điện tháng 5 cao quá
+__label__Sinh_hoạt Mua móc treo quần áo
+__label__Sinh_hoạt Dầu ăn Tường An chai 1 lít
+__label__Sinh_hoạt Gia vị: muối, đường, bột ngọt
+__label__Sinh_hoạt Nước mắm Nam Ngư
+__label__Sinh_hoạt Mua bông tẩy trang
+__label__Sinh_hoạt Hóa đơn Winmart+ 320.000
+__label__Sinh_hoạt Nước lau kính
+__label__Sinh_hoạt Bột thông cống
+__label__Sinh_hoạt Tiền giặt ủi ngoài tiệm
+__label__Sinh_hoạt Mua ổ cắm điện mới
+__label__Sinh_hoạt Sửa xe máy hết hai trăm nghìn
+__label__Sinh_hoạt Đổ xăng xe 70k
+__label__Sinh_hoạt Gửi xe ở hầm chung cư
+__label__Sinh_hoạt Mua đồ cho mèo cưng ở PetCity
+__label__Sinh_hoạt Hạt cho Miu
+__label__Sinh_hoạt Tiền internet tháng này
+__label__Sinh_hoạt Trả tiền nước cho chủ nhà
+__label__Sinh_hoạt Mua cái bóng đèn cho phòng ngủ
+__label__Sinh_hoạt Sửa máy giặt
+__label__Sinh_hoạt Tiền điện nước ktx
+__label__Sinh_hoạt Mua chổi quét nhà
+__label__Sinh_hoạt Đồ hốt rác
+__label__Sinh_hoạt Bịch tăm bông
+__label__Sinh_hoạt Mua cái ly uống nước mới
+__label__Sinh_hoạt Kem chống nắng
+__label__Sinh_hoạt Thanh toán tiền hàng tạp hóa bằng momo
+__label__Sinh_hoạt Mua dầu gió
+__label__Sinh_hoạt Đóng tiền truyền hình cáp SCTV
+__label__Sinh_hoạt Đi chợ mua đồ ăn cho cả tuần
+__label__Sinh_hoạt Sữa chua Vinamilk một lốc
+__label__Sinh_hoạt Sữa đặc Ông Thọ
+__label__Sinh_hoạt Mua thêm hộp trà Lipton
+__label__Sinh_hoạt Cước điện thoại trả sau Mobifone
+__label__Sinh_hoạt Mua sim 4G
+__label__Sinh_hoạt Đổi bình gas mới 480k
+__label__Sinh_hoạt Dọn dẹp vệ sinh máy lạnh
+__label__Sinh_hoạt Mua hộp đựng giày
+__label__Sinh_hoạt Trả tiền người giúp việc
+__label__Sinh_hoạt Mua khăn giấy ăn
+__label__Sinh_hoạt Đi siêu thị Go!
+__label__Sinh_hoạt Hóa đơn tiện ích tháng này
+__label__Sinh_hoạt Mua đồ linh tinh cho nhà bếp
+__label__Sinh_hoạt Sửa khóa cửa
+__label__Sinh_hoạt Mua bật lửa
+__label__Sinh_hoạt Đồ dùng học tập cho con: bút, vở
+__label__Sinh_hoạt Mua thức ăn cho cá cảnh
+__label__Giải_trí vé xem phim BHD Star 2 người
+__label__Giải_trí CGV cuối tuần + bắp nước 350k
+__label__Giải_trí Nạp game Liên Quân 100.000
+__label__Giải_trí chơi net cả chiều ở cyber game
+__label__Giải_trí Hát karaoke với công ty hết 1tr2
+__label__Giải_trí Đóng tiền Netflix tháng này
+__label__Giải_trí mua truyện tranh Conan
+__label__Giải_trí vé vào cổng thảo cầm viên hai trăm nghìn
+__label__Giải_trí chơi board game cuối tuần với nhóm bạn
+__label__Giải_trí đi đu đưa cf acoustic tối qua
+__label__Giải_trí Lotte Cinema suất tối muộn 90k
+__label__Giải_trí Mua game trên Steam sale 500000
+__label__Giải_trí tiền giờ net đêm qua
+__label__Giải_trí đánh bida 3 ván 120k
+__label__Giải_trí Gia hạn Spotify Premium 59k
+__label__Giải_trí vé workshop làm nến thơm
+__label__Giải_trí mua sách ở Fahasa 255.000đ
+__label__Giải_trí chơi bowling ở Aeon Mall
+__label__Giải_trí phí tham quan bảo tàng mỹ thuật
+__label__Giải_trí mua vé số chiều nay 20k
+__label__Giải_trí tiền đi chơi đầm sen cả nhà chủ nhật
+__label__Giải_trí hẹn hò xem phim
+__label__Giải_trí concert Hà Anh Tuấn
+__label__Giải_trí xem kịch ở sân khấu Idecaf
+__label__Giải_trí mua vé liveshow của band nhạc indie
+__label__Giải_trí đi hội chợ sách giảm giá
+__label__Giải_trí vé xem múa rối nước
+__label__Giải_trí thuê sân cầu lông 2 tiếng 150.000
+__label__Giải_trí đăng ký Youtube Premium gia đình
+__label__Giải_trí mua vé xem đá banh v-league
+__label__Giải_trí tiền đi bar tối t7 với mấy đứa bạn
+__label__Giải_trí thuê phim trên FPT Play
+__label__Giải_trí mua đồ chơi lego cho bé
+__label__Giải_trí trả tiền vé xem phim Mai online
+__label__Giải_trí chơi game bắn súng thực tế ảo
+__label__Giải_trí đi quẩy cuối tuần hết năm trăm
+__label__Giải_trí mua 2 vé vào Dinh Độc Lập
+__label__Giải_trí nạp thẻ garena 50k
+__label__Giải_trí đi cafe sách cả buổi chiều
+__label__Giải_trí đăng ký khoá học nhảy online
+__label__Giải_trí tiền vé fim và bắp rang bơ
+__label__Giải_trí mua bài uno chơi với nhóm
+__label__Giải_trí nhậu với ae đồng nghiệp 400k
+__label__Giải_trí chơi bi-a lỗ
+__label__Giải_trí vé vào khu vui chơi Tiniworld
+__label__Giải_trí thuê truyện ở gần nhà
+__label__Giải_trí đi xem triển lãm tranh
+__label__Giải_trí mua tài khoản VieON xem phim bộ
+__label__Giải_trí gửi xe ở phố đi bộ nguyễn huệ
+__label__Giải_trí mua sách nói trên Fonos
+__label__Sinh_hoạt Đóng tiền điện tháng này
+__label__Sinh_hoạt Tiền nước 150k
+__label__Sinh_hoạt Thanh toán hoá đơn internet FPT
+__label__Sinh_hoạt Mua đồ ở siêu thị Co.opmart 540.000
+__label__Sinh_hoạt Nước giặt Omo và nước xả Comfort
+__label__Sinh_hoạt Đổi bình gas mới
+__label__Sinh_hoạt Tiền thuê nhà tháng 7
+__label__Sinh_hoạt Phí quản lý chung cư The Sun
+__label__Sinh_hoạt Mua giấy vệ sinh và khăn giấy
+__label__Sinh_hoạt Nước lau sàn Sunlight 45k
+__label__Sinh_hoạt Tiền gửi xe máy tháng này 120.000
+__label__Sinh_hoạt Gọi thợ sửa ống nước
+__label__Sinh_hoạt Mua nước rửa chén hết ba mươi nghìn
+__label__Sinh_hoạt Cắt tóc 30Shine
+__label__Sinh_hoạt Nạp tiền điện thoại Viettel 50k
+__label__Sinh_hoạt Giặt ủi chăn mền
+__label__Sinh_hoạt Mua túi đựng rác cuộn lớn
+__label__Sinh_hoạt Tiền chị giúp việc theo giờ
+__label__Sinh_hoạt Sửa điều hoà bị chảy nước 300k
+__label__Sinh_hoạt Đóng tiền rác
+__label__Sinh_hoạt mua kem đánh răng và bàn chải mới
+__label__Sinh_hoạt Thanh toán cước truyền hình cáp SCTV
+__label__Sinh_hoạt Đi Lotte Mart mua đồ linh tinh
+__label__Sinh_hoạt Nước giặt Ariel 215000
+__label__Sinh_hoạt Rửa xe máy 25k
+__label__Sinh_hoạt Mua thẻ cào mobifone một trăm nghìn
+__label__Sinh_hoạt Hết xà phòng tắm rồi
+__label__Sinh_hoạt Thay bóng đèn nhà tắm bị cháy
+__label__Sinh_hoạt Tiền mạng VNPT
+__label__Sinh_hoạt đóng tiền nhà trọ
+__label__Sinh_hoạt Mua đồ ở Circle K
+__label__Sinh_hoạt Phí dịch vụ chung cư tháng này 1tr2
+__label__Sinh_hoạt Sửa lại cái vòi nước
+__label__Sinh_hoạt Mua pin tiểu cho remote TV
+__label__Sinh_hoạt Đóng tiền điện thoại trả sau
+__label__Sinh_hoạt Mua chai xịt muỗi Raid
+__label__Sinh_hoạt Giặt sấy ở tiệm gần nhà 85k
+__label__Sinh_hoạt Mua đồ lặt vặt ở tạp hoá bà Năm
+__label__Sinh_hoạt Thanh toán hoá đơn nước qua app
+__label__Sinh_hoạt Tiền điện tháng 5 cao quá
+__label__Sinh_hoạt Mua móc treo quần áo mới
+__label__Sinh_hoạt Hóa đơn wifi tháng 6
+__label__Sinh_hoạt Mua thêm cái chổi quét nhà
+__label__Sinh_hoạt tiền nhà tháng này ck rồi nhé
+__label__Sinh_hoạt Bảo trì máy lạnh định kỳ
+__label__Sinh_hoạt Mua đồ dùng cá nhân ở Guardian
+__label__Sinh_hoạt Nạp 20k điện thoại cho mẹ
+__label__Sinh_hoạt thay lõi lọc nước
+__label__Sinh_hoạt Phí ship hàng Tiki
+__label__Sinh_hoạt Đóng tiền net
+__label__Sinh_hoạt Cước điện thoại tháng này 320.500
+__label__Sinh_hoạt Sửa bếp từ bị lỗi
+__label__Sinh_hoạt Mua thảm chùi chân
+__label__Sinh_hoạt Tiền giặt đồ 60k
+__label__Sinh_hoạt Mua sáp thơm phòng
+__label__Sinh_hoạt Đồ dùng trong nhà tắm
+__label__Sinh_hoạt Mua xô nước và ca múc nước mới
+__label__Sinh_hoạt Dọn dẹp vệ sinh nhà cửa
+__label__Sinh_hoạt Tiền điện chung
+__label__Sinh_hoạt Đi siêu thị Big C mua đồ dùng hết 780k
+__label__Sinh_hoạt Thay cái thớt mới
+__label__Sinh_hoạt Sửa quạt máy bị hư
+__label__Sinh_hoạt Mua bột thông cống
+__label__Sinh_hoạt Tiền vc hàng online
+__label__Sinh_hoạt Nạp data 4G xài tạm
+__label__Sinh_hoạt don dep nhà cửa cuối tuần
+__label__Sinh_hoạt Mua bàn ủi mới
+__label__Sinh_hoạt Chi phí sinh hoạt lặt vặt
+__label__Sinh_hoạt Đóng tiền nước sạch
+__label__Sinh_hoạt Thay pin cho cân điện tử
+__label__Sinh_hoạt Sửa khoá cửa phòng ngủ
+__label__Sinh_hoạt Mua bộ dao kéo cho bếp
+__label__Sinh_hoạt Đồ dùng vệ sinh cá nhân
+__label__Sinh_hoạt Tiền mạng tháng này đóng trễ
+__label__Sinh_hoạt Mua dầu gội và sữa tắm
+__label__Sinh_hoạt Nước xả vải Downy
+__label__Sinh_hoạt Tiền gas 480k
+__label__Sinh_hoạt Mua đồ ở Winmart+
+__label__Sinh_hoạt Thanh toán tiền điện EVN
+__label__Sinh_hoạt Mua mấy cái hộp nhựa đựng đồ
+__label__Sinh_hoạt Sửa máy giặt kêu to
+__label__Sinh_hoạt Tiền gửi xe hơi ở hầm chung cư
+__label__Sinh_hoạt Đóng tiền truyền hình K+
+__label__Sinh_hoạt Cắt tóc nam 80k
+__label__Sinh_hoạt Thay rèm cửa sổ
+__label__Sinh_hoạt Mua bình xịt côn trùng Jumbo
+__label__Sinh_hoạt Chi phí sửa nhà lặt vặt
+__label__Sinh_hoạt Đóng tiền điện nước chung với phòng trọ
+__label__Sinh_hoạt Mua giấy ăn
+__label__Sinh_hoạt Thuê người dọn dẹp nhà
+__label__Sinh_hoạt Tiền sinh hoạt chung
+__label__Sinh_hoạt Mua thêm ổ cắm điện
+__label__Sinh_hoạt Rửa xe ô tô 100k
+__label__Sinh_hoạt Nap card điện thoại
+__label__Sinh_hoạt Mua sạc dự phòng mới
+__label__Sinh_hoạt Tiền mạng FPT tháng 8
+__label__Sinh_hoạt Mua đồ dùng nhà bếp linh tinh
+__label__Sinh_hoạt Thay vòi sen bị hỏng
+__label__Giao_dịch_khác Nộp phạt giao thông
+__label__Giao_dịch_khác Rút tiền mặt ATM Agribank
+__label__Giao_dịch_khác Mừng cưới bạn thân 2 triệu
+__label__Giao_dịch_khác Gửi tiền về cho bố mẹ
+__label__Giao_dịch_khác Tiền tip cho bạn nhân viên phục vụ
+__label__Giao_dịch_khác Phí dịch vụ ngân hàng VCB
+__label__Giao_dịch_khác Ủng hộ quỹ vaccine Covid
+__label__Giao_dịch_khác Đóng tiền họ tháng 10
+__label__Giao_dịch_khác Cho Hùng vay 500k
+__label__Giao_dịch_khác Mua vé số Vietlott
+__label__Giao_dịch_khác Phí gửi xe tháng ở chung cư
+__label__Giao_dịch_khác Tiền công đức chùa Vĩnh Nghiêm
+__label__Giao_dịch_khác Trả nợ thẻ tín dụng Shinhan
+__label__Giao_dịch_khác Mua quà sinh nhật sếp
+__label__Giao_dịch_khác Phạt đi làm muộn 50.000
+__label__Giao_dịch_khác Đóng quỹ lớp cho con
+__label__Giao_dịch_khác Mất tiền không rõ lý do
+__label__Giao_dịch_khác Thua bài với mấy đứa bạn
+__label__Giao_dịch_khác Tiền giặt là
+__label__Giao_dịch_khác Trả tiền thằng Tuấn hôm trước
+__label__Giao_dịch_khác Mua thẻ cào điện thoại 100k
+__label__Giao_dịch_khác Phí chuyển khoản liên ngân hàng
+__label__Giao_dịch_khác Thuê người dọn nhà theo giờ
+__label__Giao_dịch_khác Tiền boa cho anh tài xế taxi
+__label__Giao_dịch_khác Đổi tiền lẻ đi chùa
+__label__Giao_dịch_khác Đánh rơi ví mất khoảng 300k
+__label__Giao_dịch_khác Quà 8/3 cho các chị em trong phòng
+__label__Giao_dịch_khác Đóng tiền quỹ công ty đi du lịch
+__label__Giao_dịch_khác Phí làm lại giấy tờ xe
+__label__Giao_dịch_khác Nhặt được 20k
+__label__Giao_dịch_khác Mua vàng nhẫn
+__label__Giao_dịch_khác Tiền môi giới thuê nhà
+__label__Giao_dịch_khác Chi phí linh tinh ko nhớ
+__label__Giao_dịch_khác Rút 1.000.000 tiền mặt
+__label__Giao_dịch_khác Phong bì đám hỏi em họ
+__label__Giao_dịch_khác Tiền mừng thọ bà ngoại
+__label__Giao_dịch_khác Quyên góp cho trẻ em vùng cao
+__label__Giao_dịch_khác Phí duy trì tài khoản Techcombank
+__label__Giao_dịch_khác Lì xì cho mấy đứa cháu
+__label__Giao_dịch_khác Trả tiền mượn chị Lan
+__label__Giao_dịch_khác Đóng tiền điện nước hộ bạn cùng phòng
+__label__Giao_dịch_khác Mua pin đồng hồ
+__label__Giao_dịch_khác Phạt hợp đồng
+__label__Giao_dịch_khác Sửa khóa cửa nhà
+__label__Giao_dịch_khác Gửi tiết kiệm online
+__label__Giao_dịch_khác Tiền mừng đầy tháng con đồng nghiệp
+__label__Giao_dịch_khác Mua đồ cúng rằm
+__label__Giao_dịch_khác Đóng tiền mạng chung
+__label__Giao_dịch_khác chi khac
+__label__Giao_dịch_khác -200.000
+__label__Giao_dịch_khác Cho vay nóng
+__label__Giao_dịch_khác Đòi được nợ 300.000
+__label__Giao_dịch_khác Phí SMS banking BIDV
+__label__Giao_dịch_khác Tiền photo tài liệu
+__label__Giao_dịch_khác Mua quà tân gia nhà anh chị
+__label__Giao_dịch_khác Nạp tiền vào ví MoMo
+__label__Giao_dịch_khác Phí gửi xe ở Lotte Mart
+__label__Giao_dịch_khác Tiền đi lễ đầu năm
+__label__Giao_dịch_khác Đóng tiền học thêm cho con bé út
+__label__Giao_dịch_khác Mua vé xem phim BHD Star cho cả nhà
+__label__Giao_dịch_khác Rút tiền khẩn cấp
+__label__Giao_dịch_khác ck cho mẹ
+__label__Giao_dịch_khác Ủng hộ xây dựng nhà tình thương
+__label__Giao_dịch_khác Trả tiền vé máy bay đặt hộ
+__label__Giao_dịch_khác Tiền phạt nộp sách thư viện muộn
+__label__Giao_dịch_khác Góp tiền liên hoan phòng ban
+__label__Giao_dịch_khác Chuyển khoản nhầm
+__label__Giao_dịch_khác Được hoàn tiền giao dịch lỗi
+__label__Giao_dịch_khác Tiền bồi thường làm hỏng đồ
+__label__Giao_dịch_khác Mua bảo hiểm nhân thọ
+__label__Giao_dịch_khác Đầu tư chứng khoán
+__label__Giao_dịch_khác Phí thường niên thẻ tín dụng
+__label__Giao_dịch_khác Rút tiền mặt ở cây ATM khác ngân hàng
+__label__Giao_dịch_khác Mừng đám cưới 500k
+__label__Giao_dịch_khác Cho em gái tiền tiêu vặt
+__label__Giao_dịch_khác Nạp 50k vào điện thoại
+__label__Giao_dịch_khác Trả nợ vay tiêu dùng
+__label__Giao_dịch_khác Tiền ship hàng không nằm trong đơn hàng
+__label__Giao_dịch_khác Tạm ứng tiền cho dự án
+__label__Giao_dịch_khác Phí công chứng hợp đồng
+__label__Giao_dịch_khác Mua ngoại tệ đi du lịch
+__label__Giao_dịch_khác Gửi xe qua đêm
+__label__Giao_dịch_khác Tiền từ thiện
+__label__Giao_dịch_khác Mua sổ xố kiến thiết
+__label__Giao_dịch_khác Chơi hụi
+__label__Giao_dịch_khác Thắng đề được 1tr
+__label__Giao_dịch_khác Tiền rửa xe máy
+__label__Giao_dịch_khác Mừng khai trương cửa hàng bạn
+__label__Giao_dịch_khác Phí rút tiền mặt thẻ tín dụng
+__label__Giao_dịch_khác Đóng tiền quỹ phụ huynh
+__label__Giao_dịch_khác Mua hoa quả đi thăm người ốm
+__label__Giao_dịch_khác Tiền photo cmnd
+__label__Giao_dịch_khác Phí dịch vụ chung cư The Sun Avenue
+__label__Giao_dịch_khác Góp tiền mua quà sinh nhật chung
+__label__Giao_dịch_khác Mất 20k tiền gửi xe
+__label__Giao_dịch_khác Cho đi nhờ xe được cho 50 nghìn
+__label__Giao_dịch_khác Tiền tip shipper
+__label__Giao_dịch_khác Trả tiền cá độ bóng đá
+__label__Giao_dịch_khác Bán đồ cũ được 150k
+__label__Giao_dịch_khác Chuyển tiền cho con gái
+__label__Giao_dịch_khác Đóng tiền bảo hiểm xe máy
+__label__Giao_dịch_khác Phí sao kê ngân hàng
+__label__Giao_dịch_khác Đi taxi không có tiền lẻ, boa luôn
+__label__Giao_dịch_khác Mua đồ cúng ông Táo
+__label__Giao_dịch_khác Đóng tiền viếng đám ma
+__label__Giao_dịch_khác Chi phí không xác định
+__label__Giao_dịch_khác Rút tiền
+__label__Giao_dịch_khác Tiền mừng thôi nôi
+__label__Giao_dịch_khác Phí làm visa
+__label__Giao_dịch_khác Đóng học phí cho em
+__label__Giao_dịch_khác Gửi xe ở Circle K
+__label__Giao_dịch_khác Tiền photo sách
+__label__Giao_dịch_khác Mua thẻ game Garena
+__label__Giao_dịch_khác Nộp phạt vi phạm giao thông nguội
+__label__Giao_dịch_khác Bỏ heo tiết kiệm
+__label__Giao_dịch_khác ck trả nợ
+__label__Giao_dịch_khác Tiền làm từ thiện
+__label__Giao_dịch_khác Đóng tiền họ 1.000.000
+__label__Giao_dịch_khác Quên ví, bạn trả tiền hộ
+__label__Giao_dịch_khác Chi khác trong ngày
+__label__Giao_dịch_khác Phí dịch vụ VinaPhone
+__label__Giao_dịch_khác Gửi tiền mừng cưới bạn online
+__label__Giao_dịch_khác Mua quà 20/10
+__label__Giao_dịch_khác Tiền sửa đồng hồ đeo tay
+__label__Giao_dịch_khác Được cho tiền
+__label__Giao_dịch_khác Phí cấp lại thẻ ATM
+__label__Giao_dịch_khác Đóng tiền tour du lịch
+__label__Giao_dịch_khác Tất toán sổ tiết kiệm
+__label__Giao_dịch_khác Tiền cà phê cảm ơn
+__label__Giao_dịch_khác Góp tiền ăn hỏi
+__label__Giao_dịch_khác Nộp tiền phạt do hủy vé
+__label__Giao_dịch_khác Mua vé xem ca nhạc
+__label__Giao_dịch_khác Trả tiền mặt cho khoản quẹt thẻ hộ
+__label__Giao_dịch_khác Tiền bói toán đầu năm
+__label__Giao_dịch_khác Rút tiền mặt 500.000
+__label__Giao_dịch_khác Phí chuyển phát nhanh
+__label__Giao_dịch_khác Chi tiêu cá nhân khác
+__label__Giao_dịch_khác Mua đồ chơi cho cháu
+__label__Giao_dịch_khác Gửi xe bệnh viện
+__label__Giao_dịch_khác Tiền mừng nhà mới
+__label__Sinh_hoạt Mua ly trà sữa trân châu hoàng kim size L 55k
+__label__Sinh_hoạt ck tiền mượn tháng trước 2 củ
+__label__Sinh_hoạt đổi bình nước lọc 15k
+__label__Sinh_hoạt Đổ xăng xe máy 60k
+__label__Sinh_hoạt Tiền điện tháng này 550.000
+__label__Sinh_hoạt Mua bó rau muống với ít thịt ba chỉ ở chợ 85k
+__label__Sinh_hoạt Thanh toán hóa đơn internet 250 cành
+__label__Sinh_hoạt Chuyển khoản tiền nhà tháng này 5tr
+__label__Sinh_hoạt Mua bánh mì ăn sáng 15 ngàn
+__label__Sinh_hoạt Nạp card điện thoại 100k
+__label__Sinh_hoạt Đi siêu thị mua đồ dùng cá nhân
+__label__Sinh_hoạt Chi tiền ăn trưa văn phòng 35k
+__label__Sinh_hoạt Mua gói thuốc lá cho bố 30k
+__label__Sinh_hoạt Tiền nước sạch hàng tháng 80.000
+__label__Sinh_hoạt Mua ít trái cây về ăn tráng miệng
+__label__Sinh_hoạt Chốt đơn hộp cơm trưa ship tận nơi 45k
+__label__Sinh_hoạt Mua chai dầu ăn với gói mì chính 70k
+__label__Sinh_hoạt Lì xì tiền chợ cho mẹ 500k
+__label__Sinh_hoạt Mua vé xe buýt đi làm 7k
+__label__Sinh_hoạt Thanh toán tiền gas 320 cành
+__label__Sinh_hoạt Mua kem đánh răng và bàn chải 50k
+__label__Sinh_hoạt Tiền gửi xe máy 10k
+__label__Sinh_hoạt Rổ giá cả buổi chiều được mớ cá mớ rau
+__label__Sinh_hoạt Đặt đồ ăn đêm 80 ngàn
+__label__Sinh_hoạt Mua vài gói bim bim ăn vặt
+__label__Sinh_hoạt Chuyển tiền ăn tối cho bạn 120k
+__label__Sinh_hoạt Mua sữa tươi và trứng gà 65k
+__label__Sinh_hoạt Tiền điện thoại trả sau 200 cành
+__label__Sinh_hoạt Mua chai nước suối 10k
+__label__Sinh_hoạt Thanh toán tiền rác tháng 20k
+__label__Sinh_hoạt Mua mấy cân gạo ở tiệm tạp hóa 150k
+__label__Sinh_hoạt Đổ đầy bình xăng 80.000
+__label__Sinh_hoạt Mua xà bông giặt đồ 90k
+__label__Sinh_hoạt Tiền gửi xe ô tô 20k
+__label__Sinh_hoạt Đi chợ mua đồ ăn cho cả tuần 500 cành
+__label__Sinh_hoạt Mua gói cà phê hòa tan 35k
+__label__Sinh_hoạt Chuyển khoản tiền ăn tối cho vợ 300k
+__label__Sinh_hoạt Mua chiếc bánh ngọt nhỏ 25k
+__label__Sinh_hoạt Thanh toán tiền nước sinh hoạt 120k
+__label__Sinh_hoạt Mua vài gói gia vị nấu ăn 40k
+__label__Sinh_hoạt Tiền thuê nhà tháng này 4 củ rưỡi
+__label__Sinh_hoạt Mua chai nước mắm 30k
+__label__Sinh_hoạt Nạp tiền vào thẻ xe buýt 100k
+__label__Sinh_hoạt Ăn sáng phở bò 40k
+__label__Sinh_hoạt Mua ít bia về nhậu 150 cành
+__label__Sinh_hoạt Chuyển khoản tiền ăn sáng cho con 50k
+__label__Sinh_hoạt Mua chai tương ớt 20k
+__label__Sinh_hoạt Đổ xăng xe 70k
+__label__Sinh_hoạt Thanh toán tiền điện 600.000
+__label__Sinh_hoạt Mua ít đồ khô ở chợ 100k
+__label__Sinh_hoạt Tiền điện thoại tháng này hết 150 cành
+__label__Sinh_hoạt Mua gói snack khoai tây 15k
+__label__Sinh_hoạt Chuyển khoản tiền ăn uống với bạn bè 250k
+__label__Sinh_hoạt Mua ít đồ ăn vặt cho buổi tối
+__label__Sinh_hoạt Thanh toán hóa đơn truyền hình cáp 80k
+__label__Sinh_hoạt Mua bình ga mới 350k
+__label__Sinh_hoạt Tiền gửi xe đạp 5k
+__label__Sinh_hoạt Đi chợ mua sắm đồ ăn cho cả nhà
+__label__Sinh_hoạt Mua đôi dép lê đi trong nhà 60k
+__label__Sinh_hoạt Nạp data 4G 90k
+__label__Sinh_hoạt Ăn trưa bún đậu mắm tôm 35k
+__label__Sinh_hoạt Mua ít hoa quả tươi 70 cành
+__label__Sinh_hoạt Chuyển khoản tiền điện cho mẹ 700k
+__label__Sinh_hoạt Mua vài hộp sữa chua 40k
+__label__Sinh_hoạt Thanh toán tiền nước 90.000
+__label__Sinh_hoạt Mua cuộn giấy vệ sinh 25k
+__label__Sinh_hoạt Tiền đổ xăng hôm qua 50k
+__label__Sinh_hoạt Mua đồ ăn sẵn ở siêu thị
+__label__Sinh_hoạt Đặt đồ uống online 45k
+__label__Sinh_hoạt Mua chai nước ngọt 15k
+__label__Sinh_hoạt Chuyển khoản tiền ăn tối với đồng nghiệp 200 cành
+__label__Sinh_hoạt Mua gói bột giặt 120k
+__label__Sinh_hoạt Tiền gửi xe máy 10k
+__label__Sinh_hoạt Đi chợ mua đồ về nấu cơm
+__label__Sinh_hoạt Mua kem chống nắng 80k
+__label__Sinh_hoạt Nạp tiền vào tài khoản giao thông công cộng 50k
+__label__Sinh_hoạt Ăn tối cơm tấm 45k
+__label__Sinh_hoạt Mua vài lạng thịt bò 150k
+__label__Sinh_hoạt Chuyển khoản tiền ăn sáng cho em 30k
+__label__Sinh_hoạt Mua hộp bánh quy 55k
+__label__Sinh_hoạt Thanh toán tiền điện tháng trước 450.000
+__label__Sinh_hoạt Mua gói hạt nêm 30k
+__label__Sinh_hoạt Tiền xăng xe hôm nay 65k
+__label__Sinh_hoạt Mua ít đồ dùng lặt vặt cho nhà bếp
+__label__Sinh_hoạt Đặt trà sữa về nhà 60k
+__label__Sinh_hoạt Mua chai bia giải khát 25k
+__label__Sinh_hoạt Chuyển khoản tiền ăn trưa cho bạn 80k
+__label__Sinh_hoạt Mua gói dầu gội 70k
+__label__Sinh_hoạt Tiền giữ xe đạp 5k
+__label__Sinh_hoạt Đi chợ mua cá và thịt
+__label__Sinh_hoạt Mua chai sữa tắm 90k
+__label__Sinh_hoạt Nạp 3G/4G 50 cành
+__label__Sinh_hoạt Ăn sáng mì gói 12k
+__label__Sinh_hoạt Mua ít rau củ quả tươi ngon 110k
+__label__Sinh_hoạt Chuyển khoản tiền ăn vặt cho con 20k
+__label__Sinh_hoạt Mua túi đường 25k
+__label__Sinh_hoạt Thanh toán tiền nước 75.000
+__label__Sinh_hoạt Mua gói muối 10k
+__label__Sinh_hoạt Tiền xăng xe máy 55k
+__label__Sinh_hoạt Mua đồ ăn nhẹ ở cửa hàng tiện lợi
+__label__Sinh_hoạt Đặt pizza ăn tối 200 cành
+__label__Giải_trí Mua vé xem phim CGV suất tối 120k
+__label__Giải_trí Nạp 50k vào game Liên Quân
+__label__Giải_trí Đi cafe cùng hội bạn cuối tuần 80k
+__label__Giải_trí Đăng ký gói Spotify Premium 59k/tháng
+__label__Giải_trí Tiền thuê xe máy đi phượt Đà Lạt 150 cành
+__label__Giải_trí Mua trà sữa Phúc Long 65k
+__label__Giải_trí Chuyển khoản tiền nhậu hôm qua 300k
+__label__Giải_trí Vé vào cổng khu vui chơi Suối Tiên 150 dứa
+__label__Giải_trí Chi tiền mua truyện tranh mới 90.000
+__label__Giải_trí Đặt vé máy bay khứ hồi đi Phú Quốc 2 củ 5
+__label__Giải_trí Tiền karaoke cùng đồng nghiệp 450k
+__label__Giải_trí Mua vé concert Sơn Tùng 1tr2
+__label__Giải_trí Chi phí đi spa thư giãn 500 cành
+__label__Giải_trí Nạp thẻ game Genshin Impact 200k
+__label__Giải_trí Mua ly cà phê take away 45k
+__label__Giải_trí Tiền ăn vặt rạp chiếu phim 70.000
+__label__Giải_trí Chi cho buổi tụ tập bạn bè ở quán bar 800 dứa
+__label__Giải_trí Mua vé xem kịch Sân khấu kịch Hồng Vân 250k
+__label__Giải_trí Tiền thuê PS5 chơi game 120k/giờ
+__label__Giải_trí Đặt phòng homestay Vũng Tàu 1 đêm 700 cành
+__label__Giải_trí Mua vé đi xem xiếc 180k
+__label__Giải_trí Tiền mua đồ ăn vặt coi phim tại nhà
+__label__Giải_trí Chi cho buổi đi bida vs bạn 150k
+__label__Giải_trí Mua vé tham quan Lăng Cô 100 dứa
+__label__Giải_trí Tiền xăng xe đi chơi cuối tuần 80k
+__label__Giải_trí Đặt bàn ăn buffet hải sản 600k/người
+__label__Giải_trí Mua vé xem ca nhạc phòng trà 350k
+__label__Giải_trí Nạp tiền vào tài khoản Netflix 100.000
+__label__Giải_trí Chi tiền mua album K-pop mới 650k
+__label__Giải_trí Tiền đi massage body thư giãn 400 cành
+__label__Giải_trí Mua vé số điện toán
+__label__Giải_trí ck tiền ăn lẩu hôm bữa 250 dứa
+__label__Giải_trí Đăng ký khóa học nhảy hiện đại 1tr5
+__label__Giải_trí Chi cho buổi đi câu cá giải trí 300k
+__label__Giải_trí Tiền mua dụng cụ vẽ tranh mới 200.000
+__label__Giải_trí Mua vé tham gia workshop làm nến thơm 450k
+__label__Giải_trí Tiền tip cho phục vụ ở quán bar 50k
+__label__Giải_trí Thuê phim trên FPT Play 30k
+__label__Giải_trí Mua kem ốc quế ở phố đi bộ 25k
+__label__Giải_trí Chi phí đi hồ bơi vs mấy đứa bạn 50 dứa
+__label__Giải_trí Tiền mua đồ chơi cho bản thân 180.000
+__label__Giải_trí Đặt vé tour du lịch Cần Giờ 700 cành
+__label__Giải_trí Mua ốp điện thoại mới để chụp ảnh đẹp hơn 120k
+__label__Giải_trí Tiền ăn kem dạo phố 35k
+__label__Giải_trí Chi phí đi xem chèo ở Hà Nội 150k
+__label__Giải_trí Tiền mua đồ decor nhà cửa theo sở thích 400 dứa
+__label__Giải_trí Đăng ký gói Youtube Premium 79k/tháng
+__label__Giải_trí Mua vé vào công viên nước 160k
+__label__Giải_trí Tiền mua vé tàu đi Quy Nhơn 600.000
+__label__Giải_trí Chi cho buổi đi chơi bowling 250k
+__label__Giải_trí Mua đồ ăn nhanh khi đi chơi 90k
+__label__Giải_trí Tiền mừng sinh nhật bạn thân 500 cành
+__label__Giải_trí Đặt vé xem nhạc kịch 800k
+__label__Giải_trí Nạp tiền game thủ mobile 100k
+__label__Giải_trí Mua vé tham quan Hội An 120 dứa
+__label__Giải_trí Tiền chụp ảnh kỷ niệm tại studio 1tr
+__label__Giải_trí Chi cho buổi đi xem đá bóng tại sân vận động 150k
+__label__Giải_trí Mua sắm quần áo đi chơi 750.000
+__label__Giải_trí Tiền mua sách self-help giải trí 130k
+__label__Giải_trí Đặt vé đi tàu hỏa ngắm cảnh 200 cành
+__label__Giải_trí Tiền đi khu vui chơi giải trí trong nhà 300k
+__label__Giải_trí Chi phí nhậu nhẹt lai rai cuối tuần 600k
+__label__Giải_trí Mua vé xem triển lãm nghệ thuật 100 dứa
+__label__Giải_trí Tiền mua phụ kiện điện thoại cute 80k
+__label__Giải_trí Đặt vé đi thuyền trên sông Sài Gòn 150k
+__label__Giải_trí Chi cho buổi đi làm nail và gội đầu thư giãn 350k
+__label__Giải_trí Mua vé xem phim 3D 140k
+__label__Giải_trí Tiền mua đồ ăn vặt kiểu Hàn Quốc 60.000
+__label__Giải_trí Đăng ký gói gym chỉ để thư giãn 500 cành
+__label__Giải_trí Chi phí đi hóng mát bờ hồ 40k tiền gửi xe
+__label__Giải_trí Mua vé tham gia lễ hội âm nhạc 900k
+__label__Giải_trí Tiền mua đồ lưu niệm khi đi du lịch 250 dứa
+__label__Giải_trí Đặt vé xem hòa nhạc giao hưởng 700k
+__label__Giải_trí Chi cho buổi đi chơi golf mini 200k
+__label__Giải_trí Mua vé đi xem triển lãm hoa 80k
+__label__Giải_trí Tiền nạp thẻ điện thoại để chơi game 50.000
+__label__Giải_trí Đặt phòng khách sạn đi nghỉ dưỡng 2tr
+__label__Giải_trí Chi phí đi bắn cung giải trí 180k
+__label__Giải_trí Mua vé máy bay đi chơi lễ 3 củ
+__label__Giải_trí Tiền uống bia hơi vs anh em 300 cành
+__label__Giải_trí Đăng ký khóa học làm bánh để giải trí 800k
+__label__Giải_trí Chi cho buổi đi xem cải lương 120 dứa
+__label__Giải_trí Mua vé xem múa rối nước 90k
+__label__Giải_trí Tiền mua đồ ăn vặt khi đi dạo phố 70k
+__label__Giải_trí Đặt vé đi xe bus ngắm cảnh thành phố 100k
+__label__Giải_trí Chi phí đi leo núi nhân tạo 250k
+__label__Giải_trí Mua vé đi xem đua ngựa 300k
+__label__Giải_trí Tiền mua đồ chơi xếp hình Lego 400.000
+__label__Giải_trí Đặt phòng resort nghỉ dưỡng 3tr5
+__label__Giải_trí Chi phí đi lượn lờ trung tâm thương mại
+__label__Giải_trí Mua vé xem phim suất khuya 100k
+__label__Giải_trí Tiền mua đồ ăn nhẹ khi đi picnic 150 cành
+__label__Giải_trí Đăng ký gói học guitar để giải trí 600k
+__label__Giải_trí Chi cho buổi đi xem hát quan họ 110 dứa
+__label__Giải_trí Mua vé tham quan bảo tàng 70k
+__label__Giải_trí Tiền mua đồ chơi trẻ em cho cháu 280.000
+__label__Giải_trí Đặt vé đi cáp treo lên núi Bà Đen 350k
+__label__Giải_trí Chi phí đi pub cùng bạn bè 700k
+__label__Giải_trí Mua vé xem phim bom tấn mới ra rạp 130k
+__label__Giải_trí Tiền mua đồ ăn vặt cổng trường 50k
+__label__Giải_trí Đăng ký khóa học bơi lội thư giãn 900k
+__label__Giải_trí Chi cho buổi đi dạo biển và ăn hải sản 1tr2
+__label__Giải_trí Mua vé tham gia sự kiện văn hóa 200k
+__label__Giải_trí Tiền mua quà lưu niệm cho chuyến đi chơi 450 dứa
+__label__Giải_trí Đặt vé xem liveshow ca nhạc 1tr8
+__label__Giải_trí Chi phí đi xem đua thuyền 150k
+__label__Giải_trí Mua vé đi thủy cung 250k
+__label__Giáo_dục Đóng học phí đại học kỳ này 12 củ.
+__label__Giáo_dục Mua bộ sách giáo khoa mới cho bé lớp 5 hết 350k.
+__label__Giáo_dục Chuyển khoản tiền học thêm tiếng Anh 1tr5.
+__label__Giáo_dục Mua cặp sách mới cho con đi học 280 cành.
+__label__Giáo_dục Thanh toán khóa học online lập trình Python 2 củ rưỡi.
+__label__Giáo_dục Đóng quỹ lớp cho con gái 100k.
+__label__Giáo_dục Mua hộp bút chì màu 55k.
+__label__Giáo_dục Tiền gia sư Toán tháng 9 là 800 dứa.
+__label__Giáo_dục Photo tài liệu học tập 30k.
+__label__Giáo_dục Mua 10 quyển vở ô ly 70.000.
+__label__Giáo_dục Đăng ký thi IELTS học thuật 4tr6.
+__label__Giáo_dục Chuyển tiền học đàn guitar cho thằng cu 1tr.
+__label__Giáo_dục Mua đèn bàn học chống cận 450k.
+__label__Giáo_dục Đóng tiền tham gia trại hè tiếng Anh 5 củ.
+__label__Giáo_dục Mua sách tham khảo môn Văn 120 cành.
+__label__Giáo_dục Chi phí đi dã ngoại của trường 200k.
+__label__Giáo_dục Mua máy tính Casio fx-580VN X 650k.
+__label__Giáo_dục Đóng tiền điện nước ở KTX sinh viên 300k.
+__label__Giáo_dục Mua giáo trình Kế toán cho học kỳ tới 180k.
+__label__Giáo_dục Thanh toán học phí trung tâm ngoại ngữ 3.000.000.
+__label__Giáo_dục Mua bút bi và tẩy 25k.
+__label__Giáo_dục Tiền học bơi hè cho bé 1tr2.
+__label__Giáo_dục Đóng tiền bảo hiểm y tế SV 500 cành.
+__label__Giáo_dục Mua bộ màu vẽ acrylic 250k.
+__label__Giáo_dục Chuyển khoản tiền đóng góp quỹ khuyến học 500k.
+__label__Giáo_dục Mua vé tham quan bảo tàng lịch sử 80k.
+__label__Giáo_dục Đăng ký khóa học Photoshop cơ bản 1tr8.
+__label__Giáo_dục Mua sách "Đắc nhân tâm" bản mới 150k.
+__label__Giáo_dục Tiền học phí mầm non tháng này 2 củ 8.
+__label__Giáo_dục Mua balo đi học cho thằng cu út 300 cành.
+__label__Giáo_dục Đóng tiền học thêm ôn thi đại học 2tr5.
+__label__Giáo_dục Mua giấy A4 để in tài liệu 70k.
+__label__Giáo_dục Thanh toán phí thi chứng chỉ tin học quốc tế 950k.
+__label__Giáo_dục Chuyển tiền cho cô gia sư dạy Lý 1tr.
+__label__Giáo_dục Mua bảng đen mini cho bé học 120k.
+__label__Giáo_dục Đăng ký gói tài liệu ôn thi TOEIC 300k.
+__label__Giáo_dục Tiền học võ cho con 600k/tháng.
+__label__Giáo_dục Mua sách truyện khoa học cho trẻ em 200 cành.
+__label__Giáo_dục Đóng tiền học phí lớp 11 kỳ 1 1tr2.
+__label__Giáo_dục Mua laptop mới phục vụ học tập 15 củ.
+__label__Giáo_dục Phí làm thẻ thư viện 50k.
+__label__Giáo_dục Chuyển khoản tiền học phí cho trung tâm Anh ngữ 3tr.
+__label__Giáo_dục Mua bản đồ thế giới treo tường 85k.
+__label__Giáo_dục Đăng ký workshop kỹ năng mềm 500k.
+__label__Giáo_dục Mua bộ dụng cụ vẽ kỹ thuật 350k.
+__label__Giáo_dục Tiền học thêm Văn cô Hoa 700k.
+__label__Giáo_dục Đóng tiền quỹ đội 50k.
+__label__Giáo_dục Mua máy in cá nhân để in tài liệu học tập 2tr5.
+__label__Giáo_dục Phí đăng ký dự thi Olympic Tin học 150k.
+__label__Giáo_dục Chuyển tiền học phí cho con ở trường quốc tế 25 củ.
+__label__Giáo_dục Mua sách "Tư duy nhanh và chậm" 190k.
+__label__Giáo_dục Đóng tiền học đàn piano 1tr8/tháng.
+__label__Giáo_dục Mua cặp tài liệu 60k.
+__label__Giáo_dục Tiền thuê phòng trọ gần trường ĐH 2tr.
+__label__Giáo_dục Mua máy tính bảng để học online 7 củ.
+__label__Giáo_dục Đóng tiền học phí cho con chuẩn bị vào lớp 1 4tr.
+__label__Giáo_dục Mua sách hướng dẫn tự học tiếng Nhật 250k.
+__label__Giáo_dục Chuyển khoản tiền học kỹ năng sống 1tr.
+__label__Giáo_dục Mua từ điển tiếng Anh Việt 320k.
+__label__Giáo_dục Phí tham gia cuộc thi hùng biện tiếng Anh 100k.
+__label__Giáo_dục Đóng tiền học phí cho trung tâm luyện thi THPT 3 củ 2.
+__label__Giáo_dục Mua bảng viết bút lông 150k.
+__label__Giáo_dục Tiền học phí cho bé đi mẫu giáo 2tr5.
+__label__Giáo_dục Mua sách "Cha giàu cha nghèo" 130k.
+__label__Giáo_dục Đăng ký khóa học nhiếp ảnh cơ bản 2tr.
+__label__Giáo_dục Chuyển khoản tiền mua giáo trình học tiếng Hàn 400k.
+__label__Giáo_dục Mua bút dạ quang và gôm 35k.
+__label__Giáo_dục Phí thi chứng chỉ ngoại ngữ VSTEP 1tr.
+__label__Giáo_dục Đóng tiền học phí cho học kỳ phụ hè 1tr5.
+__label__Giáo_dục Mua đồng phục thể dục trường 180k.
+__label__Giáo_dục Tiền gia sư kèm cặp môn Hóa 900k.
+__label__Giáo_dục Mua sách "Lược sử loài người" 280k.
+__label__Giáo_dục Đăng ký khóa học thiết kế đồ họa 4 củ.
+__label__Giáo_dục Chuyển khoản tiền học phí cho con đi du học 300 củ.
+__label__Giáo_dục Mua tập học sinh 10 cuốn 65k.
+__label__Giáo_dục Phí tham gia hội thảo chuyên đề 200k.
+__label__Giáo_dục Đóng tiền học phí cho lớp tiền tiểu học 3tr.
+__label__Giáo_dục Mua bộ màu nước và cọ vẽ 180k.
+__label__Giáo_dục Tiền học thêm tiếng Trung cấp tốc 1tr8.
+__label__Giáo_dục Mua sách "Marketing căn bản" 220k.
+__label__Giáo_dục Đăng ký khóa học IELTS online 2tr8.
+__label__Giáo_dục Chuyển khoản tiền học phí cho con ở trường quốc tế 20tr.
+__label__Giáo_dục Mua dụng cụ thí nghiệm khoa học cho bé 150k.
+__label__Giáo_dục Phí dự thi học sinh giỏi cấp tỉnh 100k.
+__label__Giáo_dục Đóng tiền học phí bổ túc văn hóa 800k.
+__label__Giáo_dục Mua sách "Dạy con làm giàu" bộ 10 tập 950k.
+__label__Giáo_dục Tiền học kỹ năng giao tiếp 1tr2.
+__label__Giáo_dục Mua bản đồ hành chính Việt Nam 45k.
+__label__Giáo_dục Đăng ký khóa học tiếng Đức A1 3tr5.
+__label__Giáo_dục Chuyển khoản tiền học phí cho con ở trường tư thục 10 củ.
+__label__Giáo_dục Mua bộ bút lông bảng 50k.
+__label__Giáo_dục Phí tham gia câu lạc bộ đọc sách 100k.
+__label__Giáo_dục Đóng tiền học phí cho lớp luyện thi chuyên 2tr7.
+__label__Giáo_dục Mua sách "Code dạo ký sự" 160k.
+__label__Giáo_dục Tiền học thêm bồi dưỡng đội tuyển HSG 1tr.
+__label__Giáo_dục Mua bộ xếp hình giáo dục 280k.
+__label__Giáo_dục Đăng ký khóa học kỹ năng thuyết trình 1tr5.
+__label__Giáo_dục Chuyển khoản tiền học phí cho con ở trường liên cấp 18tr.
+__label__Giáo_dục Mua giáo trình TOEIC mới nhất 350k.
+__label__Giáo_dục Đóng tiền học phí cho con đi học hè 2tr.
+__label__Sức_khỏe Khám tổng quát ở bệnh viện Hồng Ngọc
+__label__Sức_khỏe Mua thuốc cảm cúm cho con 85k
+__label__Sức_khỏe Tiền thuốc bổ gan cho ba 350 cành
+__label__Sức_khỏe Đóng tiền bảo hiểm y tế tự nguyện
+__label__Sức_khỏe Đi nha sĩ cạo vôi răng 250k
+__label__Sức_khỏe Mua khẩu trang y tế loại kháng khuẩn 1 hộp 60k
+__label__Sức_khỏe Chích ngừa cúm mùa 1 mũi 500.000
+__label__Sức_khỏe Chi phí vật lý trị liệu cho lưng 1 buổi 300k
+__label__Sức_khỏe Mua thực phẩm chức năng bổ não 1tr2
+__label__Sức_khỏe Khám mắt định kỳ tại phòng khám tư 200 cành
+__label__Sức_khỏe ck tiền thuốc hạ sốt cho bé 75k
+__label__Sức_khỏe Mua dụng cụ đo huyết áp điện tử
+__label__Sức_khỏe Tiền xét nghiệm máu tổng quát 400k
+__label__Sức_khỏe Đăng ký gói tập gym 3 tháng để cải thiện sức khỏe 2tr
+__label__Sức_khỏe Mua vitamin tổng hợp cho cả nhà 600.000
+__label__Sức_khỏe Đi khám tai mũi họng cho ông xã
+__label__Sức_khỏe Thuốc nhỏ mắt chống khô mắt 90k
+__label__Sức_khỏe Tiền siêu âm thai định kỳ 300.000 đồng
+__label__Sức_khỏe Mua dầu nóng xoa bóp cho bà 120 cành
+__label__Sức_khỏe Đóng phí tham gia lớp yoga trị liệu 1tr5
+__label__Sức_khỏe Mua thuốc dạ dày cho mẹ 280k
+__label__Sức_khỏe Chi phí phẫu thuật cắt amidan cho con 8 củ
+__label__Sức_khỏe Mua nước súc miệng diệt khuẩn 65k
+__label__Sức_khỏe Đi khám da liễu trị mụn 350.000
+__label__Sức_khỏe Tiền thuốc bổ sung sắt cho vợ bầu 450k
+__label__Sức_khỏe Mua máy xông mũi họng tại nhà 700 cành
+__label__Sức_khỏe Chi trả viện phí cho đợt nằm viện vừa rồi 12tr
+__label__Sức_khỏe Đặt lịch massage trị liệu đau vai gáy 1 buổi 450k
+__label__Sức_khỏe Thuốc chống say xe 25k
+__label__Sức_khỏe Mua kem đánh răng đặc trị ê buốt 110k
+__label__Sức_khỏe Tiền thuốc kháng sinh theo đơn bác sĩ 170.000
+__label__Sức_khỏe Khám sức khỏe định kỳ cho công ty (phần cá nhân) 500k
+__label__Sức_khỏe Mua men vi sinh hỗ trợ tiêu hóa 210 cành
+__label__Sức_khỏe Chích ngừa uốn ván 150k
+__label__Sức_khỏe Tiền thuốc bổ khớp cho ông nội 850k
+__label__Sức_khỏe Khám phụ khoa
+__label__Sức_khỏe Mua nhiệt kế điện tử 180.000
+__label__Sức_khỏe Đóng tiền khám tiền mê trước phẫu thuật 600k
+__label__Sức_khỏe Mua bông băng y tế sơ cứu 50 cành
+__label__Sức_khỏe Chi phí chụp X-quang phổi 200k
+__label__Sức_khỏe Mua dung dịch vệ sinh phụ nữ chuyên dụng 95k
+__label__Sức_khỏe Tiền thuốc nam sắc uống chữa mất ngủ 1tr
+__label__Sức_khỏe Đăng ký khóa học bơi để rèn luyện sức khỏe 1tr8
+__label__Sức_khỏe Khám tổng quát tiền hôn nhân 1tr2
+__label__Sức_khỏe Mua thuốc ho cho bé 70k
+__label__Sức_khỏe Tiền làm răng sứ thẩm mỹ 8 củ/răng
+__label__Sức_khỏe Mua sữa Ensure cho người lớn tuổi 650.000
+__label__Sức_khỏe Chi phí truyền nước biển khi bị ốm 400 cành
+__label__Sức_khỏe Tiền thuốc tiêm phòng dại 3 mũi 1tr5
+__label__Sức_khỏe Mua thực phẩm chức năng tăng cường sinh lý nam 2 củ
+__label__Sức_khỏe Khám dinh dưỡng cho con 250k
+__label__Sức_khỏe Mua thuốc tránh thai hàng ngày 80k
+__label__Sức_khỏe Tiền khám và tư vấn tâm lý 700.000
+__label__Sức_khỏe Mua gạc y tế vô trùng 30k
+__label__Sức_khỏe Đăng ký gói spa thải độc cơ thể 3tr
+__label__Sức_khỏe Tiền thuốc trị nấm chân 120k
+__label__Sức_khỏe Khám sức khỏe lái xe 350 cành
+__label__Sức_khỏe Mua thuốc nhỏ mũi cho bé 55k
+__label__Sức_khỏe Chi phí nội soi dạ dày 1tr2
+__label__Sức_khỏe Mua đai lưng hỗ trợ tập gym 400.000
+__label__Sức_khỏe Tiền thuốc bổ sung canxi 320k
+__label__Sức_khỏe Khám chuyên khoa hô hấp 280k
+__label__Sức_khỏe Mua gel rửa tay khô diệt khuẩn 45k
+__label__Sức_khỏe Chi phí truyền đạm bổ sung 500k
+__label__Sức_khỏe Tiền khám và tư vấn tiêm chủng 100k
+__label__Sức_khỏe Mua bình giữ nhiệt y tế 150 cành
+__label__Sức_khỏe Mua thuốc trị đau nửa đầu 190k
+__label__Sức_khỏe Tiền thuốc mỡ bôi ngoài da 60k
+__label__Sức_khỏe Khám sức khỏe xin việc
+__label__Sức_khỏe Mua bông ngoáy tai y tế 25k
+__label__Sức_khỏe Chi phí chụp MRI cột sống 2tr5
+__label__Sức_khỏe Tiền thuốc dị ứng 110.000
+__label__Sức_khỏe Đăng ký gói tập yoga bầu 1tr6
+__label__Sức_khỏe Mua máy đo đường huyết cá nhân 800 cành
+__label__Sức_khỏe Khám và tư vấn kế hoạch hóa gia đình 300k
+__label__Sức_khỏe Tiền thuốc bổ mắt cho người già 550k
+__label__Sức_khỏe Mua nước muối sinh lý rửa mũi 18k
+__label__Sức_khỏe Chi phí cấy que tránh thai 2tr8
+__label__Sức_khỏe Tiền khám bệnh ở trạm y tế phường 50k
+__label__Sức_khỏe Mua vớ y khoa phòng giãn tĩnh mạch 300k
+__label__Sức_khỏe Tiền thuốc điều trị tiểu đường hàng tháng 1tr3
+__label__Sức_khỏe Khám định kỳ cho người cao tuổi 400k
+__label__Sức_khỏe Mua kẹo ngậm ho thảo dược 40k
+__label__Sức_khỏe Chi phí tiêm vắc xin HPV 1 mũi 1tr8
+__label__Sức_khỏe Tiền thuốc giãn cơ bắp 90k
+__label__Sức_khỏe Mua thuốc giảm đau hạ sốt 35k
+__label__Sức_khỏe Khám và tư vấn bệnh xã hội 500 cành
+__label__Sức_khỏe Tiền thuốc lợi sữa cho mẹ bỉm 280k
+__label__Sức_khỏe Mua bộ sơ cứu cá nhân mang đi du lịch 200k
+__label__Sức_khỏe Chi phí điều trị tủy răng 1tr5
+__label__Sức_khỏe Tiền khám tổng quát cho bé ở Nhi đồng 600.000
+__label__Sức_khỏe Mua thuốc trị ghẻ lở 70k
+__label__Sức_khỏe Đăng ký gói liệu trình châm cứu trị liệu 2tr2
+__label__Sức_khỏe Chi phí đo điện tim 150k
+__label__Sức_khỏe Tiền thuốc bổ thận tráng dương 900 cành
+__label__Sức_khỏe Mua cao dán giảm đau 25k
+__label__Sức_khỏe Khám và điều trị viêm xoang 800k
+__label__Sức_khỏe Tiền thuốc điều trị Gout 1tr1
+__label__Sức_khỏe Mua máy massage cầm tay trị liệu 650k
+__label__Sức_khỏe Đóng phí cấp lại thẻ bảo hiểm y tế
+__label__Mua_sắm Mua ly trà sữa trân châu hoàng kim size L 55k
+__label__Mua_sắm Chốt đơn cái áo khoác trên live 350 cành
+__label__Mua_sắm Đi chợ mua rau với thịt
+__label__Mua_sắm Sắm bộ chén đĩa mới cho nhà
+__label__Mua_sắm Mua gói mì tôm Hảo Hảo 5k
+__label__Mua_sắm Rinh về cái điện thoại mới 15 củ
+__label__Mua_sắm Tiền mua sách giáo khoa cho con
+__label__Mua_sắm Hốt mấy món đồ lặt vặt ở siêu thị mini
+__label__Mua_sắm Lụm đôi giày thể thao đang sale
+__label__Mua_sắm Chuyển khoản mua quà sinh nhật cho nhỏ bạn
+__label__Mua_sắm Đổ xăng xe máy 50k
+__label__Mua_sắm Mua thẻ điện thoại Viettel 100k
+__label__Mua_sắm Order đồ ăn vặt ship tới nhà
+__label__Mua_sắm Sắm sửa vài món đồ trang trí nhà cửa
+__label__Mua_sắm Mua bao gạo 20kg giá 300 cành
+__label__Mua_sắm Đi siêu thị mua sữa, trứng, bánh mì
+__label__Mua_sắm Chốt đơn mỹ phẩm trên Shopee 1tr5
+__label__Mua_sắm Mua con chuột máy tính mới 180k
+__label__Mua_sắm Tiền mua thuốc tây ở tiệm thuốc
+__label__Mua_sắm Sắm cái váy đi tiệc 700k
+__label__Mua_sắm Mua cái quần short jean 250 cành
+__label__Mua_sắm Lấy thêm mấy cái áo phông sale off 50%
+__label__Mua_sắm Đặt mua chai nước hoa mini 320k
+__label__Mua_sắm Mua thêm cây son môi màu đỏ 450.000
+__label__Mua_sắm Tiền mua bia và đồ nhắm cho tối nay
+__label__Mua_sắm Rinh con ipad mới về cho thằng cu 9 củ
+__label__Mua_sắm Mua mấy cuốn truyện tranh cũ 60k
+__label__Mua_sắm Tậu bộ dao dĩa xịn sò
+__label__Mua_sắm Đóng tiền mua chung căn hộ (phần đồ đạc) 20tr
+__label__Mua_sắm Mua cái loa bluetooth mini 450 cành
+__label__Mua_sắm Chốt đơn mấy cái ốp lưng điện thoại 120k
+__label__Mua_sắm Mua bình nước suối lớn 20k
+__label__Mua_sắm Thanh toán tiền mua đồ dùng học tập cho mấy đứa nhỏ
+__label__Mua_sắm Sắm bộ chăn ga gối đệm mới 2tr
+__label__Mua_sắm Mua vé xem phim online 150k
+__label__Mua_sắm Đi chợ Gò Vấp mua hải sản
+__label__Mua_sắm Mua bình gas mini 35k
+__label__Mua_sắm Lấy thêm mấy gói bánh quy ăn vặt
+__label__Mua_sắm Chuyển khoản cho shop quần áo 650k
+__label__Mua_sắm Mua cái đồng hồ đeo tay 1 củ rưỡi
+__label__Mua_sắm Rinh về cái máy hút bụi cầm tay 700k
+__label__Mua_sắm Mua mấy chậu cây cảnh nhỏ 90k
+__label__Mua_sắm Tiền mua vật liệu sửa chữa nhà
+__label__Mua_sắm Sắm thêm vài bộ đồ tập gym 550 cành
+__label__Mua_sắm Mua cục sạc dự phòng 300k
+__label__Mua_sắm Chốt đơn bộ chén bát sứ Bát Tràng 1 triệu 8
+__label__Mua_sắm Mua bình nước nóng lạnh 2tr5
+__label__Mua_sắm Lấy thêm mấy chai nước ngọt và bim bim 80k
+__label__Mua_sắm Mua bộ cọ trang điểm xịn 600 cành
+__label__Mua_sắm Tiền mua vé máy bay khứ hồi 3tr5
+__label__Mua_sắm Sắm đôi dép đi trong nhà 80k
+__label__Mua_sắm Mua mấy lọ gia vị mới
+__label__Mua_sắm Rinh cái vali kéo đi du lịch 1 củ
+__label__Mua_sắm Mua gói đăng ký dịch vụ xem phim 99k
+__label__Mua_sắm Chốt đơn cây vợt cầu lông 450k
+__label__Mua_sắm Mua cái mũ bảo hiểm Fullface 1 triệu 200 nghìn
+__label__Mua_sắm Lấy mấy cuộn giấy vệ sinh và nước rửa tay
+__label__Mua_sắm Sắm bộ nồi inox cao cấp 1tr3
+__label__Mua_sắm Mua cái bàn phím cơ 900 cành
+__label__Mua_sắm Tiền mua đồ ăn sáng ở tiệm bánh
+__label__Mua_sắm Rinh bộ loa vi tính về nhà 2 củ rưỡi
+__label__Mua_sắm Mua cuộn dây sạc iphone 120k
+__label__Mua_sắm Chốt đơn cái áo len lông cừu 500k
+__label__Mua_sắm Mua mấy miếng mặt nạ dưỡng da
+__label__Mua_sắm Sắm cái máy ép trái cây 1tr6
+__label__Mua_sắm Mua đĩa game PS5 mới ra 1tr4
+__label__Mua_sắm Lấy mấy hộp sữa chua và hoa quả
+__label__Mua_sắm Tiền mua đồ chơi cho cháu
+__label__Mua_sắm Rinh bộ dụng cụ làm vườn 300k
+__label__Mua_sắm Mua cái phích nước giữ nhiệt 200k
+__label__Mua_sắm Chốt đơn chiếc túi xách hàng hiệu 3 củ
+__label__Mua_sắm Mua mấy cái kẹp tóc và dây buộc 30k
+__label__Mua_sắm Sắm đôi kính râm thời trang 400 ngàn
+__label__Mua_sắm Mua bộ dao nhà bếp 550k
+__label__Mua_sắm Lấy thêm mấy lon nước ngọt có ga
+__label__Mua_sắm Tiền mua thẻ game online 100k
+__label__Mua_sắm Rinh con robot hút bụi lau nhà 6 triệu
+__label__Mua_sắm Mua cái ổ cứng di động 1tr1
+__label__Mua_sắm Chốt đơn voucher ăn uống giảm giá 200k
+__label__Mua_sắm Mua mấy gói snack khoai tây
+__label__Mua_sắm Sắm bộ bàn ghế làm việc mới 3tr5
+__label__Mua_sắm Mua cái gối ôm hình mèo 150k
+__label__Mua_sắm Lấy thêm mấy chai dầu gội và sữa tắm
+__label__Mua_sắm Tiền mua tranh ảnh trang trí tường
+__label__Mua_sắm Rinh về cái máy lọc không khí 4 củ
+__label__Mua_sắm Mua cái bình giữ nhiệt cafe 280k
+__label__Mua_sắm Chốt đơn bộ đồ ngủ lụa satin 380k
+__label__Mua_sắm Mua mấy cái móc treo quần áo
+__label__Mua_sắm Sắm đôi bông tai bạc 600k
+__label__Mua_sắm Mua cuộn băng dính điện 25k
+__label__Mua_sắm Lấy thêm mấy hộp kem đánh răng
+__label__Mua_sắm Tiền mua thuốc nhỏ mắt và bông gạc
+__label__Mua_sắm Rinh cái máy xay sinh tố mini 650k
+__label__Mua_sắm Mua gói khăn giấy khô 35k
+__label__Mua_sắm Chốt đơn bộ dụng cụ làm nail tại nhà 250 cành
+__label__Mua_sắm Mua mấy cái bóng đèn LED 120k
+__label__Mua_sắm Sắm cái gương soi toàn thân 1tr
+__label__Mua_sắm Mua mấy gói hạt hướng dương và kẹo
+__label__Mua_sắm Rinh về bộ đồ chơi xếp hình Lego 800k
+__label__Mua_sắm Mua cái giá sách treo tường 450k
+__label__Đầu_tư Múc thêm 100 cổ phiếu HPG giá 25 cành/cổ
+__label__Đầu_tư Nạp 5 củ vào tài khoản chứng khoán
+__label__Đầu_tư Bán 500 cổ VNM chốt lời 30tr
+__label__Đầu_tư Gửi tiết kiệm kỳ hạn 12 tháng 50 triệu
+__label__Đầu_tư Mua 2 chỉ vàng SJC tại PNJ
+__label__Đầu_tư Chuyển tiền vào quỹ mở VFMVGF 10.000.000 đồng
+__label__Đầu_tư Đặt lệnh mua Bitcoin 1000 đôla
+__label__Đầu_tư Góp vốn vào dự án startup của thằng bạn 200 củ
+__label__Đầu_tư Rút 1.500.000 từ tài khoản chứng khoán về bank
+__label__Đầu_tư Mua thêm 50 cổ phiếu FPT giá 90k
+__label__Đầu_tư ck 500tr vô tài khoản đầu tư BĐS
+__label__Đầu_tư Chốt lời 100 cổ phiếu MBB, lời 2tr
+__label__Đầu_tư Đóng phí bảo hiểm nhân thọ liên kết đầu tư 12tr/năm
+__label__Đầu_tư Mua trái phiếu chính phủ 500 củ
+__label__Đầu_tư Nạp 500k vào quỹ tích lũy của Finhay
+__label__Đầu_tư Mua 0.5 ETH trên Binance
+__label__Đầu_tư Ký hợp đồng góp vốn vào công ty ABC 1 tỷ đồng
+__label__Đầu_tư Rút tiền lãi từ tiết kiệm về 5.500.000
+__label__Đầu_tư Mua thêm 2 cây vàng miếng SJC
+__label__Đầu_tư Chuyển 20tr vào ví đầu tư của mình
+__label__Đầu_tư Gửi thêm 30 củ vào sổ tiết kiệm online
+__label__Đầu_tư Bán 200 cổ phiếu DXG thu về 4.000.000
+__label__Đầu_tư Mua 1000 dogecoin giá 2 cành/coin
+__label__Đầu_tư Đóng thêm 10tr vào quỹ hưu trí tự nguyện
+__label__Đầu_tư Nạp tiền vào tài khoản margin 50tr
+__label__Đầu_tư Mua chứng chỉ quỹ VCBF 20tr
+__label__Đầu_tư Rút 3tr từ sàn crypto về tài khoản
+__label__Đầu_tư Góp vốn mở quán cà phê với nhỏ bạn 150 củ
+__label__Đầu_tư Mua 1 lượng vàng 9999
+__label__Đầu_tư Đầu tư vào dự án nông nghiệp sạch 500tr
+__label__Đầu_tư Chuyển 2 củ vào tài khoản đầu tư chứng khoán ảo
+__label__Đầu_tư Bán 50 cổ phiếu MWG giá 45k
+__label__Đầu_tư Gửi 100 triệu vào gói tiết kiệm tích lũy
+__label__Đầu_tư Mua 100 cổ phiếu TCB giá 30.500
+__label__Đầu_tư Nạp tiền vào tài khoản giao dịch phái sinh 20tr
+__label__Đầu_tư Rút tiền gốc từ quỹ đầu tư 10.000.000
+__label__Đầu_tư Mua 0.1 BTC hôm qua
+__label__Đầu_tư Đóng 5tr vào bảo hiểm đầu tư An Khang Tài Lộc
+__label__Đầu_tư Mua thêm 3 chỉ vàng ta
+__label__Đầu_tư Chuyển khoản 50 củ vào quỹ đầu tư cổ phiếu
+__label__Đầu_tư Gửi tiết kiệm không kỳ hạn 5tr
+__label__Đầu_tư Bán 200 cổ phiếu SSI, lời 1.5 củ
+__label__Đầu_tư Nạp 10 triệu vào ví Metamask để mua NFT
+__label__Đầu_tư Góp vốn mua chung miếng đất ở quê 300 triệu
+__label__Đầu_tư Rút 2.500.000 tiền cổ tức về tài khoản
+__label__Đầu_tư Mua 1 lượng vàng miếng PNJ
+__label__Đầu_tư Chuyển tiền vào tài khoản chứng khoán 50tr
+__label__Đầu_tư Đóng phí định kỳ cho quỹ đầu tư 2tr
+__label__Đầu_tư Mua 500 cổ phiếu VPB với giá 20 cành
+__label__Đầu_tư Nạp 5 triệu vào tài khoản Binance
+__label__Đầu_tư Gửi 200 củ vào sổ tiết kiệm lãi suất cao
+__label__Đầu_tư Bán hết cổ phiếu HPG, lời được 15tr
+__label__Đầu_tư Mua 100 XRP giá 12k/coin
+__label__Đầu_tư Chuyển 50tr vào quỹ đầu tư trái phiếu
+__label__Đầu_tư Rút 7 củ từ tài khoản đầu tư về
+__label__Đầu_tư Mua thêm 1 cây vàng 9999
+__label__Đầu_tư Góp vốn kinh doanh quán ăn nhỏ 100tr
+__label__Đầu_tư Đóng 3 củ vào bảo hiểm liên kết đầu tư
+__label__Đầu_tư Nạp 1.5tr vào tài khoản chứng khoán cá nhân
+__label__Đầu_tư Mua 50 cổ phiếu VIC với giá 50 cành
+__label__Đầu_tư Bán 3 chỉ vàng miếng, thu về 18tr
+__label__Đầu_tư Gửi thêm 10tr vào tài khoản tích lũy thông minh
+__label__Đầu_tư Chuyển 25tr vào tài khoản đầu tư của Techcombank
+__label__Đầu_tư Rút tiền lãi từ quỹ mở 1.200.000
+__label__Đầu_tư Mua 0.05 BTC trên sàn Remitano
+__label__Đầu_tư Đầu tư vào dự án năng lượng mặt trời 1 tỷ
+__label__Đầu_tư Đóng phí bảo hiểm AIA có yếu tố đầu tư 10tr
+__label__Đầu_tư Nạp 500k vào quỹ đầu tư tự động
+__label__Đầu_tư Mua 100 cổ phiếu EIB giá 18k
+__label__Đầu_tư Bán 2 lượng vàng, lời 30 củ
+__label__Đầu_tư Gửi 50tr vào tài khoản tiết kiệm online lãi suất cao
+__label__Đầu_tư Chuyển 20tr vào tài khoản chứng khoán VPS
+__label__Đầu_tư Rút 10tr từ quỹ đầu tư chứng khoán
+__label__Đầu_tư Mua thêm 2 chỉ vàng 9999
+__label__Đầu_tư Góp vốn 20 củ vào dự án khởi nghiệp
+__label__Đầu_tư Đóng phí thường niên cho quỹ đầu tư 500k
+__label__Đầu_tư Nạp 10tr vào tài khoản đầu tư ETF
+__label__Đầu_tư Mua 500 cổ phiếu HSG giá 15k/cổ
+__label__Đầu_tư Bán 0.2 ETH trên sàn crypto, thu về 12tr
+__label__Đầu_tư Gửi 150 củ vào ngân hàng để lấy lãi
+__label__Đầu_tư Chuyển 10 củ vào tài khoản đầu tư của VCSC
+__label__Đầu_tư Rút 5tr tiền lãi từ tiết kiệm kỳ hạn
+__label__Đầu_tư Mua 1000 ADA giá 7k
+__label__Đầu_tư Đóng 8tr vào bảo hiểm đầu tư Manulife
+__label__Đầu_tư Nạp 2tr vào quỹ tích lũy của app Techcombank
+__label__Đầu_tư Mua 1 chỉ vàng tây
+__label__Đầu_tư Chuyển 30tr vào tài khoản chứng khoán để mua cổ phiếu
+__label__Đầu_tư Bán 100 cổ phiếu HDB, lời 500k
+__label__Đầu_tư Gửi 70tr vào sổ tiết kiệm ngân hàng Agribank
+__label__Đầu_tư Rút 4 củ tiền lãi từ quỹ mở
+__label__Đầu_tư Mua 0.01 BTC hôm nay
+__label__Đầu_tư Đầu tư vào dự án nhà ở xã hội 2 tỷ
+__label__Đầu_tư Đóng phí bảo hiểm FWD có đầu tư 18tr
+__label__Đầu_tư Nạp 1 củ vào tài khoản đầu tư của mình
+__label__Đầu_tư Mua 200 cổ phiếu VND giá 22k
+__label__Đầu_tư Bán 1 lượng vàng 9999, lời 5tr
+__label__Đầu_tư Gửi 40tr vào tài khoản tiết kiệm trực tuyến
+__label__Đầu_tư Chuyển 15tr vào tài khoản đầu tư VCB
+__label__Đầu_tư Rút 6tr từ quỹ đầu tư VinaCapital
+__label__Đầu_tư Mua thêm 0.3 ETH trên sàn giao dịch crypto
+__label__Cho_đi Chuyển khoản 2 củ cho mẹ đóng tiền nhà
+__label__Cho_đi Mừng cưới bạn thân 500k
+__label__Cho_đi Gửi 1 triệu về quê cho ông bà
+__label__Cho_đi Thăm hỏi bạn ốm, mua giỏ trái cây 300k
+__label__Cho_đi Cho thằng em mượn 200k tiền ăn
+__label__Cho_đi Quyên góp quỹ từ thiện 50k
+__label__Cho_đi Lì xì cho cháu nhỏ 20k
+__label__Cho_đi Mua quà sinh nhật cho bồ 1tr5
+__label__Cho_đi Thanh toán tiền ăn trưa hộ đồng nghiệp 75k
+__label__Cho_đi Đóng tiền quỹ lớp 100 cành
+__label__Cho_đi Góp tiền mua quà chung cho sếp 300.000
+__label__Cho_đi Chuyển 500k cho bạn trả tiền phòng trọ
+__label__Cho_đi Mua sữa cho bé nhà hàng xóm 150k
+__label__Cho_đi Hỗ trợ tiền xe về quê cho cô út 400.000
+__label__Cho_đi Gửi bố mẹ 2 củ rưỡi tiêu vặt
+__label__Cho_đi Mừng đầy tháng con bạn 1 chỉ vàng
+__label__Cho_đi Cho đứa cháu 50 dứa mua đồ chơi
+__label__Cho_đi Thanh toán hóa đơn điện nước giúp bà nội 650k
+__label__Cho_đi Đóng tiền học thêm cho đứa em 1tr2
+__label__Cho_đi Ủng hộ quỹ biển đảo 100k
+__label__Cho_đi Tiền mừng tuổi cho mấy đứa cháu 50k mỗi đứa
+__label__Cho_đi Mua thuốc bổ cho cô dì chú bác 700 cành
+__label__Cho_đi ck 300k cho bạn mượn gấp
+__label__Cho_đi Gửi tiền về nhà lo đám giỗ 1tr
+__label__Cho_đi Mua đồ ăn vặt cho tụi nhỏ 80k
+__label__Cho_đi Tiền phụ cấp cho mẹ hàng tháng 3.000.000
+__label__Cho_đi Mừng tân gia nhà bạn 1.000.000
+__label__Cho_đi Cho thằng bạn mượn tiền đổ xăng 50k
+__label__Cho_đi Quyên góp áo ấm cho vùng cao 200k
+__label__Cho_đi Lì xì ông bà đầu năm 200 cành
+__label__Cho_đi Mua vé xem phim bao đứa em 180k
+__label__Cho_đi Góp quỹ từ thiện hỗ trợ trẻ em 150k
+__label__Cho_đi Chuyển khoản 1tr cho em trai đóng học phí
+__label__Cho_đi Mua đồ ăn biếu hàng xóm 120k
+__label__Cho_đi Hỗ trợ tiền thuê nhà cho chị gái 1 củ
+__label__Cho_đi Tiền mừng thọ ông nội 500k
+__label__Cho_đi Cho con gái tiền tiêu vặt đi học 30k
+__label__Cho_đi Đóng tiền quỹ khu phố 20k
+__label__Cho_đi Gửi tiền về cho ba mẹ sửa nhà 5tr
+__label__Cho_đi Mua đồ chơi tặng cháu 250k
+__label__Cho_đi ck 2 củ trả nợ hộ bạn
+__label__Cho_đi Quyên góp cho chùa 100 cành
+__label__Cho_đi Mừng sinh nhật em gái 300k
+__label__Cho_đi Cho bạn mượn tiền mặt 100.000
+__label__Cho_đi Tiền trợ cấp hàng tháng cho ông nội 1tr5
+__label__Cho_đi Mua quà 8/3 cho mẹ và vợ 2tr
+__label__Cho_đi Đóng tiền phạt hộ đứa em 500k
+__label__Cho_đi Gửi tiền về quê cho cô út lo đám cưới con
+__label__Cho_đi Mua đồ ăn tối bao bạn 400k
+__label__Cho_đi Lì xì cho mấy đứa nhỏ trong xóm
+__label__Cho_đi ck 700 dứa cho bạn trả góp điện thoại
+__label__Cho_đi Đóng tiền điện nước giúp chị hai 850k
+__label__Cho_đi Mua gạo ủng hộ người nghèo 300k
+__label__Cho_đi Tiền sinh hoạt phí cho con đi học xa 4tr
+__label__Cho_đi Mừng khai trương quán cà phê của bạn 500k
+__label__Cho_đi Cho thằng em tiền ăn sáng 25k
+__label__Cho_đi Góp tiền mua máy lọc nước cho khu dân cư 1tr
+__label__Cho_đi ck 1tr5 cho mẹ mua thuốc
+__label__Cho_đi Mua quà chia tay đồng nghiệp 450k
+__label__Cho_đi Hỗ trợ tiền viện phí cho chú tư 2 củ
+__label__Cho_đi Tiền mừng sinh nhật cháu 100k
+__label__Cho_đi Đóng tiền bảo hiểm cho con 3tr
+__label__Cho_đi Gửi tiền về quê sửa cái quạt 100k
+__label__Cho_đi Mua bánh kẹo biếu hàng xóm dịp lễ 180k
+__label__Cho_đi ck 500k cho dì mua đồ ăn
+__label__Cho_đi Tiền lì xì Tết cho mấy đứa cháu nội ngoại 50k/đứa
+__label__Cho_đi Góp quỹ lớp học thêm 70 cành
+__label__Cho_đi Mua đồ dùng học tập cho mấy bé khó khăn 200.000
+__label__Cho_đi Hỗ trợ tiền xăng xe cho bạn đi làm 150k
+__label__Cho_đi ck 1 củ cho bạn mượn khẩn cấp
+__label__Cho_đi Tiền phụng dưỡng cha mẹ hàng tháng 5tr
+__label__Cho_đi Mừng cưới đồng nghiệp 300k
+__label__Cho_đi Cho đứa em tiền mua sách vở 120k
+__label__Cho_đi Quyên góp xây cầu đường ở quê 500 cành
+__label__Cho_đi Mua đồ ăn sáng bao bạn 60k
+__label__Cho_đi Tiền tiêu vặt cho con trai 40k
+__label__Cho_đi Gửi tiền về quê cho ba mẹ mua sắm tết 3 củ
+__label__Cho_đi Mua quà cáp thăm thầy cô cũ 600k
+__label__Cho_đi Hỗ trợ tiền thuốc thang cho bà ngoại 800k
+__label__Cho_đi ck 200 dứa cho em trả tiền net
+__label__Cho_đi Đóng tiền học phí cho đứa cháu 1tr8
+__label__Cho_đi Mua đồ chơi cho con bạn 350k
+__label__Cho_đi Tiền mừng thôi nôi con gái bạn 500k
+__label__Cho_đi Góp tiền mua bánh sinh nhật chung 100k
+__label__Cho_đi ck 300k cho bạn mua trà sữa
+__label__Cho_đi Tiền lì xì cho mấy đứa nhỏ đầu ngõ 20k/em
+__label__Cho_đi Mua quà biếu sếp 1tr2
+__label__Cho_đi Hỗ trợ tiền thuê nhà cho đứa cháu 700 cành
+__label__Cho_đi ck 1 củ rưỡi cho ba mẹ sửa cái tivi
+__label__Cho_đi Mua đồ ăn tối bao gia đình 800k
+__label__Cho_đi Tiền mừng đám hỏi em họ 1.000.000
+__label__Cho_đi Cho con tiền đi dã ngoại 150k
+__label__Cho_đi Đóng tiền nước chung cư hộ bạn 120k
+__label__Cho_đi Gửi tiền về quê cho ba mẹ mua đồ dùng 2tr5
+__label__Cho_đi Mua quà sinh nhật cho đứa cháu 280k
+__label__Cho_đi ck 500k cho bạn trả tiền điện
+__label__Cho_đi Tiền mừng đầy tháng cháu nội 1 chỉ vàng
+__label__Cho_đi Cho bạn mượn 200 dứa đi chợ
+__label__Cho_đi Quyên góp tiền xây nhà tình thương 1.000.000
+__label__Cho_đi Mua đồ ăn vặt bao cả đám bạn 250k
+__label__Giao_dịch_khác Chuyển khoản trả tiền điện tháng 10 cho mẹ 750k
+__label__Giao_dịch_khác Đóng tiền internet Viettel 220 cành
+__label__Giao_dịch_khác Mua 1 cây bút bi Thiên Long 5k
+__label__Giao_dịch_khác ck trả nợ thằng bạn 1 củ 5
+__label__Giao_dịch_khác Nạp card điện thoại 50.000
+__label__Giao_dịch_khác Rút tiền mặt ở cây ATM 2 triệu
+__label__Giao_dịch_khác Mua gói data 4G Vina 100k
+__label__Giao_dịch_khác Cho nhỏ em mượn 200 cành mua đồ
+__label__Giao_dịch_khác Tiền nước sinh hoạt tháng này 85k
+__label__Giao_dịch_khác Đóng học phí tiếng Anh 3tr5
+__label__Giao_dịch_khác Mua giấy in A4 cho máy in 80k
+__label__Giao_dịch_khác Chuyển tiền mừng đám cưới con chị họ 500k
+__label__Giao_dịch_khác Nhận lại tiền cọc thuê nhà 3.000.000
+__label__Giao_dịch_khác Ủng hộ quỹ từ thiện 50 cành
+__label__Giao_dịch_khác Sửa cái vòi nước bị rỉ 120k
+__label__Giao_dịch_khác Mua chổi lau nhà và xô nước 95k
+__label__Giao_dịch_khác Trả lại tiền dư cho khách 25k
+__label__Giao_dịch_khác Tiền lì xì đầu năm 1 củ
+__label__Giao_dịch_khác Đổ xăng xe máy 70k
+__label__Giao_dịch_khác Mua cục sạc dự phòng mới 350.000
+__label__Giao_dịch_khác Đóng tiền phạt giao thông 250k
+__label__Giao_dịch_khác Chuyển tiền cho con nhỏ bạn nó nhờ mua đồ giúp 150k
+__label__Giao_dịch_khác Lì xì cho cháu nhỏ 50 cành
+__label__Giao_dịch_khác Gửi tiết kiệm online 5tr
+__label__Giao_dịch_khác Mua thẻ game Garena 200k
+__label__Giao_dịch_khác Tiền điện thoại mẹ nạp cho 100k
+__label__Giao_dịch_khác ck tiền mua sách giáo trình 450k
+__label__Giao_dịch_khác Sắm đôi dép lê đi trong nhà 35k
+__label__Giao_dịch_khác Đặt mua cục pin điện thoại mới 180.000
+__label__Giao_dịch_khác Trả tiền góp xe máy tháng này 1.200.000
+__label__Giao_dịch_khác Mua bộ chén đĩa mới 250 cành
+__label__Giao_dịch_khác Tiền vệ sinh công cộng 10k
+__label__Giao_dịch_khác Đổi sim 4G mới 25k
+__label__Giao_dịch_khác Chuyển khoản trả tiền mượn chị Hai tuần trước 800k
+__label__Giao_dịch_khác Bù tiền xăng xe đi chơi về 50k
+__label__Giao_dịch_khác Mua chậu cây cảnh nhỏ 60k
+__label__Giao_dịch_khác Nạp tiền vào ví điện tử Momo 300.000
+__label__Giao_dịch_khác Rút hết tiền trong tài khoản tiết kiệm 10 củ
+__label__Giao_dịch_khác Đóng tiền thuê server Minecraft 100 cành
+__label__Giao_dịch_khác Mua bao lì xì tết 15k
+__label__Giao_dịch_khác Tiền hoa hồng môi giới 2tr
+__label__Giao_dịch_khác Đổi bình gas mới 350.000
+__label__Giao_dịch_khác Trả tiền điện thoại cho bồ 100k
+__label__Giao_dịch_khác Đóng quỹ lớp 50k
+__label__Giao_dịch_khác Mua cây dù che mưa 80 cành
+__label__Giao_dịch_khác Nạp tiền vào tài khoản chứng khoán 5 củ
+__label__Giao_dịch_khác Tiền mừng sinh nhật ba 1 triệu
+__label__Giao_dịch_khác Cho ông bạn vay nóng 300k
+__label__Giao_dịch_khác Mua bộ dao dĩa ăn trái cây 120k
+__label__Giao_dịch_khác ck tiền học thêm cho cu tí 500k
+__label__Giao_dịch_khác Tiền thưởng cuối năm công ty 10 củ
+__label__Giao_dịch_khác Mua vài cuộn băng dính 20k
+__label__Giao_dịch_khác Đóng tiền học thêm cho thằng bé 300 cành
+__label__Giao_dịch_khác Nhận tiền chu cấp hàng tháng từ gia đình 2tr5
+__label__Giao_dịch_khác Mua bộ quần áo mặc ở nhà 180k
+__label__Giao_dịch_khác Tiền gửi xe máy 5k
+__label__Giao_dịch_khác Chuyển khoản cho mẹ 1 củ
+__label__Giao_dịch_khác Nạp game Liên Quân 100k
+__label__Giao_dịch_khác Mua chai nước rửa chén 35k
+__label__Giao_dịch_khác Tiền phụ cấp đi lại 500k
+__label__Giao_dịch_khác Đóng tiền điện nước cho phòng trọ 350k
+__label__Giao_dịch_khác Mua cái gương soi toàn thân 200 cành
+__label__Giao_dịch_khác ck trả nợ thẻ tín dụng 5tr
+__label__Giao_dịch_khác Nhận tiền hoàn từ Shopee 75k
+__label__Giao_dịch_khác Đổ đầy bình xăng 80k
+__label__Giao_dịch_khác Mua lọ cồn sát khuẩn 25k
+__label__Giao_dịch_khác Tiền học bổng kỳ này 1tr5
+__label__Giao_dịch_khác Chuyển tiền mừng tân gia bạn thân 1 củ
+__label__Giao_dịch_khác Mua gói bảo hiểm nhân thọ 2tr/tháng
+__label__Giao_dịch_khác Tiền góp gạo ăn chung với mấy đứa bạn 300k
+__label__Giao_dịch_khác Đóng tiền phí thường niên ngân hàng 50k
+__label__Giao_dịch_khác Mua ốp lưng điện thoại mới 70 cành
+__label__Giao_dịch_khác Nạp tiền vào tài khoản ngân hàng 2.000.000
+__label__Giao_dịch_khác Tiền ủng hộ bão lụt miền Trung 200k
+__label__Giao_dịch_khác Mua vài cái móc treo quần áo 40k
+__label__Giao_dịch_khác ck trả tiền cho con nhỏ mượn hôm bữa 180.000
+__label__Giao_dịch_khác Tiền mừng sinh nhật cô giáo 100k
+__label__Giao_dịch_khác Mua bộ dây sạc điện thoại 120 cành
+__label__Giao_dịch_khác Nạp tiền điện thoại cho ba 50k
+__label__Giao_dịch_khác Tiền bán đồ cũ trên Chợ Tốt 300k
+__label__Giao_dịch_khác Đóng tiền phạt thư viện 15k
+__label__Giao_dịch_khác Mua cái hộp đựng đồ lặt vặt 55k
+__label__Giao_dịch_khác Chuyển tiền cho thằng bạn mượn khẩn cấp 500k
+__label__Giao_dịch_khác Tiền nhận được từ việc bán sách cũ 150k
+__label__Giao_dịch_khác Mua bình xịt phòng thơm 65k
+__label__Giao_dịch_khác Nạp tiền vào tài khoản game 250 cành
+__label__Giao_dịch_khác Tiền được thưởng do hoàn thành dự án sớm 3 củ
+__label__Giao_dịch_khác Mua cuộn băng keo điện 10k
+__label__Giao_dịch_khác Đóng tiền hội phí lớp 20k
+__label__Giao_dịch_khác Chuyển tiền cho con bạn thân ở nước ngoài 100 đô la Mỹ
+__label__Giao_dịch_khác Tiền nhận từ giải thưởng xổ số 500 cành
+__label__Giao_dịch_khác Mua cái ổ cắm điện đa năng 80k
+__label__Giao_dịch_khác Nạp tiền vào ví điện tử ZaloPay 1tr
+__label__Giao_dịch_khác Tiền cho ba mẹ 2 triệu
+__label__Giao_dịch_khác Mua chổi cọ toilet 25k
+__label__Giao_dịch_khác ck tiền thuê bao dịch vụ Netflix tháng này 260k
+__label__Giao_dịch_khác Tiền quà cáp từ người thân 500 cành
+__label__Giao_dịch_khác Đổ xăng 60.000
+__label__Giao_dịch_khác Mua kem đánh răng và bàn chải 45k
+__label__Giao_dịch_khác Chuyển khoản tiền mừng đầy tháng cháu 300k
