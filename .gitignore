@@ -6,3 +6,20 @@ coverage/
 *.log
 .env*
 !.env.example
+
+# Python & AI
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+env/
+.env/
+brain1_model.bin
+*.bin
+
+# Database
+finance.db
+*.sqlite
+*.sqlite3
+*.db
