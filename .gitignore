@@ -23,3 +23,7 @@ finance.db
 *.sqlite
 *.sqlite3
 *.db
+
+# Runtime-generated files that should not be committed
+brain1_model.bin.bak
+training_data.txt

@@ -17,8 +17,8 @@ export const authMe = (userId: string) =>
 export const fetchJars = (userId: string) =>
     api.get(`/jars?userId=${userId}`);
 
-export const apiCreateJar = (userId: string, name: string, allocation_percent: number, color?: string, icon?: string) =>
-    api.post('/jars', { userId, name, allocation_percent, color: color || '#FFD1DA', icon: icon || 'piggy-bank' });
+export const apiCreateJar = (userId: string, name: string, allocation_percent: number, concept_type: string, sourceJarId: string, color?: string, icon?: string) =>
+    api.post('/jars', { userId, name, allocation_percent, color: color || '#FFD1DA', icon: icon || 'piggy-bank', concept_type, sourceJarId });
 
 export const apiUpdateJar = (jarId: string, userId: string, name: string, allocation_percent: number) =>
     api.put(`/jars/${jarId}`, { userId, name, allocation_percent });
@@ -43,10 +43,14 @@ export const apiConfirmTransaction = (
         description: pending.extracted_name,
         jar_id: selectedJarId,
         userId,
+        predicted_jar_id: pending.predicted_jar_id
     });
 
 export const apiDeleteTransaction = (txId: string, userId: string) =>
     api.delete(`/transactions/${txId}?userId=${userId}`);
+
+export const apiUpdateTransactionJar = (txId: string, newJarId: string, userId: string) =>
+    api.put(`/transactions/${txId}/jar`, { newJarId, userId });
 
 // ─── Income ───────────────────────────────────────────────────────────────────
 export const apiAddIncome = (userId: string, amount: number, description?: string) =>

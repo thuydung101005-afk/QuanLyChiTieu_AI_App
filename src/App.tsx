@@ -140,9 +140,11 @@ export default function App() {
             )}
             {activeTab === 'history' && (
               <HistoryTab
+                userId={auth.userId!}
                 jars={finance.jars}
                 transactions={finance.transactions}
                 onDeleteTransaction={finance.deleteTransaction}
+                onRefresh={finance.fetchDashboardData}
               />
             )}
             {activeTab === 'ai' && (

@@ -20,18 +20,23 @@ export function MagicInputBar({ userId, jars, onSuccess, onClose }: MagicInputBa
     const [rawInput, setRawInput] = useState('');
     const [incomeAmount, setIncomeAmount] = useState('');
     const [isAdding, setIsAdding] = useState(false);
+    const [isPredicting, setIsPredicting] = useState(false);
     const [pendingTx, setPendingTx] = useState<PendingTx | null>(null);
     const [selectedJarId, setSelectedJarId] = useState<string | null>(null);
     const [showJarSelector, setShowJarSelector] = useState(false);
 
     const handlePredict = async () => {
-        if (!rawInput.trim() || isAdding) return;
-        setIsAdding(true);
+        if (!rawInput.trim() || isPredicting || isAdding) return;
+        setIsPredicting(true);
         try {
             const res = await apiPredictTransaction(rawInput, userId);
             const prediction = res.data.brain_1_result;
             setPendingTx(prediction);
             setSelectedJarId(prediction.predicted_jar_id);
+            // Tự động mở selector khi AI không chắc — nhắc user kiểm tra lại
+            if (prediction.confidence_score < 0.35) {
+                setShowJarSelector(true);
+            }
         } catch (err: any) {
             const serverMsg = err.response?.data?.error || err.message || '';
             if (!err.response || serverMsg.includes('microservice') || serverMsg.includes('ECONNREFUSED')) {
@@ -40,7 +45,7 @@ export function MagicInputBar({ userId, jars, onSuccess, onClose }: MagicInputBa
                 alert('Lỗi AI: ' + serverMsg);
             }
         } finally {
-            setIsAdding(false);
+            setIsPredicting(false);
         }
     };
 
@@ -114,17 +119,37 @@ export function MagicInputBar({ userId, jars, onSuccess, onClose }: MagicInputBa
                         <input
                             type="text" value={rawInput} onChange={e => setRawInput(e.target.value)}
                             onKeyDown={e => e.key === 'Enter' && handlePredict()}
-                            placeholder="Gõ: Cà phê sữa 35k" autoFocus disabled={isAdding}
+                            placeholder="Gõ: Cà phê sữa 35k" autoFocus disabled={isPredicting || isAdding}
                             className="w-full bg-white border border-gray-200 shadow-sm rounded-2xl pl-5 pr-14 py-4 text-base font-bold placeholder:text-gray-400 focus:outline-none focus:ring-4 focus:ring-pink-100 transition-all"
                         />
                         <button
-                            onClick={handlePredict} disabled={isAdding || !rawInput.trim()}
+                            onClick={handlePredict} disabled={isPredicting || isAdding || !rawInput.trim()}
                             className="absolute right-2 top-2 bottom-2 aspect-square bg-pink-500 text-white rounded-xl flex items-center justify-center disabled:opacity-50 transition-transform active:scale-95"
                         >
-                            {isAdding ? <Spinner /> : <Send size={18} className="translate-x-[1px]" strokeWidth={2.5} />}
+                            {isPredicting ? <Spinner /> : <Send size={18} className="translate-x-[1px]" strokeWidth={2.5} />}
                         </button>
                     </div>
                 )}
+
+                {/* AI Thinking Skeleton */}
+                <AnimatePresence>
+                    {isPredicting && (
+                        <motion.div initial={{ opacity: 0, height: 0, marginTop: 0 }} animate={{ opacity: 1, height: 'auto', marginTop: 16 }} exit={{ opacity: 0, height: 0, marginTop: 0 }} className="overflow-hidden">
+                            <div className="bg-white rounded-[24px] p-5 border-2 border-pink-100 shadow-sm flex items-start gap-4">
+                                <div className="w-10 h-10 rounded-[50%_50%_50%_50%_/_60%_60%_40%_40%] bg-[#FFF4DC] border border-yellow-200 flex items-center justify-center shrink-0 mt-1">
+                                    <Sparkles size={16} className="text-orange-400 animate-pulse" />
+                                </div>
+                                <div className="flex-1 space-y-3 py-1">
+                                    <div className="h-4 bg-gray-200 rounded-full w-3/4 animate-pulse" />
+                                    <div className="flex gap-2">
+                                        <div className="h-3 bg-gray-100 rounded-full w-12 animate-pulse" />
+                                        <div className="h-3 bg-gray-100 rounded-full w-24 animate-pulse" />
+                                    </div>
+                                </div>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
 
                 {/* Income Input */}
                 {!pendingTx && txType === 'income' && (
@@ -154,8 +179,8 @@ export function MagicInputBar({ userId, jars, onSuccess, onClose }: MagicInputBa
                                     <span>{pendingTx.extracted_name}</span>
                                     <span className="text-gray-300">•</span>
                                     <span className="text-[#FF7FA3]">{pendingTx.extracted_amount.toLocaleString()}đ</span>
-                                    <span className="text-xs text-gray-400 font-medium bg-gray-100 px-2 py-0.5 rounded-full">
-                                        {Math.round(pendingTx.confidence_score * 100)}% chắc
+                                    <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${pendingTx.confidence_score < 0.35 ? 'bg-orange-100 text-orange-500' : 'text-gray-400 bg-gray-100'}`}>
+                                        {Math.round(pendingTx.confidence_score * 100)}% chắc{pendingTx.confidence_score < 0.35 ? ' · Kiểm tra lại!' : ''}
                                     </span>
                                 </div>
                                 <div className="mt-3 flex items-center gap-2 flex-wrap">

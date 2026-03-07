@@ -1,18 +1,22 @@
-import React, { useMemo } from 'react';
-import { Wallet, Trash2 } from 'lucide-react';
-import { motion } from 'motion/react';
+import React, { useMemo, useState } from 'react';
+import { Wallet, Trash2, RefreshCw } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
+import { apiUpdateTransactionJar } from '../services/api';
 import type { Jar, Transaction } from '../types';
 
 interface HistoryTabProps {
+    userId: string;
     jars: Jar[];
     transactions: Transaction[];
     onDeleteTransaction: (id: string) => Promise<void>;
+    onRefresh: () => Promise<void>;
 }
 
-export function HistoryTab({ jars, transactions, onDeleteTransaction }: HistoryTabProps) {
+export function HistoryTab({ userId, jars, transactions, onDeleteTransaction, onRefresh }: HistoryTabProps) {
+    const [correctingTxId, setCorrectingTxId] = useState<string | null>(null);
     // Bar chart: group expenses by month
     const monthlyData = useMemo(() => {
         const map: Record<string, number> = {};
@@ -35,6 +39,14 @@ export function HistoryTab({ jars, transactions, onDeleteTransaction }: HistoryT
         );
         if (!confirmed) return;
         await onDeleteTransaction(tx.id);
+    };
+
+    const handleCorrectJar = async (txId: string, newJarId: string) => {
+        try {
+            await apiUpdateTransactionJar(txId, newJarId, userId);
+            setCorrectingTxId(null);
+            await onRefresh();
+        } catch { alert('Lỗi khi cập nhật hũ!'); }
     };
 
     return (
@@ -100,17 +112,35 @@ export function HistoryTab({ jars, transactions, onDeleteTransaction }: HistoryT
                                 >
                                     <Wallet size={18} />
                                 </div>
-                                <div className="min-w-0">
+                                <div className="min-w-0 flex-1">
                                     <p className="text-sm font-bold text-gray-800 truncate">{tx.description}</p>
-                                    <div className="flex gap-2 items-center mt-0.5">
-                                        <span className="text-[10px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full font-bold shrink-0">{jar?.name}</span>
+                                    <div className="flex gap-2 items-center mt-0.5 flex-wrap">
+                                        <button
+                                            onClick={() => setCorrectingTxId(correctingTxId === tx.id ? null : tx.id)}
+                                            className="text-[10px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full font-bold shrink-0 flex items-center gap-1 hover:bg-pink-100 hover:text-pink-500 transition-colors"
+                                        >
+                                            {jar?.name}{!isIncome && <RefreshCw size={8} />}
+                                        </button>
                                         <span className="text-[10px] text-gray-400 font-medium shrink-0">
                                             {new Date(tx.date).toLocaleDateString('vi-VN')}
                                         </span>
-                                        {isIncome && (
-                                            <span className="text-[10px] bg-green-50 text-green-600 px-2 py-0.5 rounded-full font-bold">Thu nhập</span>
-                                        )}
+                                        {isIncome && <span className="text-[10px] bg-green-50 text-green-600 px-2 py-0.5 rounded-full font-bold">Thu nhập</span>}
                                     </div>
+                                    <AnimatePresence>
+                                        {correctingTxId === tx.id && !isIncome && (
+                                            <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
+                                                <div className="flex flex-wrap gap-1 mt-2 pt-2 border-t border-gray-100">
+                                                    <p className="text-[10px] text-pink-400 font-bold w-full mb-1">🧠 Sửa lại → AI sẽ tự học:</p>
+                                                    {jars.map(j => (
+                                                        <button key={j.id} onClick={() => handleCorrectJar(tx.id, j.id)}
+                                                            className={`text-[10px] px-2 py-0.5 rounded-full font-bold border transition-all ${j.id === tx.jar_id ? 'bg-pink-100 text-pink-500 border-pink-200' : 'bg-white text-gray-500 border-gray-200 hover:border-pink-300'}`}>
+                                                            {j.name}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
                                 </div>
                             </div>
                             <div className="flex items-center gap-2 shrink-0 ml-2">

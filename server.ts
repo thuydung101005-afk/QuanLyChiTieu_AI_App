@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import { initDb, getJars, getTransactions, addTransaction, getDatabaseInfoForAI, createJar, deleteJar, updateJar, addIncome, getUserById, deleteTransaction } from './database.js';
+import { initDb, getJars, getTransactions, addTransaction, getDatabaseInfoForAI, createJar, deleteJar, updateJar, addIncome, getUserById, deleteTransaction, getJarByConcept, updateTransactionJar, getJarByLocalHistory } from './database.js';
 import { GoogleGenAI } from '@google/genai';
 import "dotenv/config";
 import axios from 'axios';
@@ -49,7 +49,7 @@ app.get('/api/jars', (req, res) => {
 
 app.post('/api/jars', (req, res) => {
     try {
-        const { userId, name, allocation_percent, color, icon } = req.body;
+        const { userId, name, allocation_percent, color, icon, concept_type, sourceJarId } = req.body;
         if (!userId || !name || allocation_percent === undefined) {
             return res.status(400).json({ error: "Missing required fields" });
         }
@@ -62,8 +62,9 @@ app.post('/api/jars', (req, res) => {
             name,
             allocation_percent,
             color: color || '#ccc',
-            icon: icon || 'piggy-bank'
-        });
+            icon: icon || 'piggy-bank',
+            concept_type: concept_type || 'GIAO_DICH_KHAC'
+        }, sourceJarId);
 
         res.status(201).json({ success: true, id: jarId });
     } catch (err: any) {
@@ -122,25 +123,41 @@ app.post('/api/transactions/predict', async (req, res) => {
 
         // Fetch dynamic jars for this user
         const jars = getJars(userId);
-
         if (!jars || jars.length === 0) {
             return res.status(400).json({ error: "User has no custom jars configured." });
         }
 
-        // 1. Send description and jars list to Python Microservice
+        // 1. Send description to Python Microservice (Global Concept Architecture)
         const pythonResponse = await axios.post('http://127.0.0.1:8000/predict', {
-            text: description,
-            jars: jars.map((j: any) => ({ id: j.id, name: j.name }))
+            text: description
         });
 
         const brain1Result = pythonResponse.data;
 
-        // 2. We DO NOT save the transaction yet! 
-        // We just return the parsed info to the Frontend's Confirmation Bubble
+        // 2. Map Global Concept back to the User's specific Jar using Local History Override
+        let predictedTargetJarId = jars[0].id; // Fallback
 
+        // Step 1: Lọc Lịch sử Cá nhân (Local History)
+        const historyMatch = getJarByLocalHistory(userId, brain1Result.predicted_concept, description);
+
+        if (historyMatch) {
+            // Đã từng có giao dịch chứa từ khóa này
+            predictedTargetJarId = historyMatch.jar_id;
+        } else {
+            // Step 2: Nếu chưa có lịch sử, lấy hũ đầu tiên cùng Concept (Default Jar)
+            const mappedJar = getJarByConcept(userId, brain1Result.predicted_concept);
+            if (mappedJar) {
+                predictedTargetJarId = mappedJar.id;
+            }
+        }
+
+        // 3. Return to Frontend
         res.status(200).json({
             success: true,
-            brain_1_result: brain1Result
+            brain_1_result: {
+                ...brain1Result,
+                predicted_jar_id: predictedTargetJarId // Inject the mapped ID for UI to highlight
+            }
         });
     } catch (err: any) {
         console.error("Brain 1 Prediction Error:", err.message);
@@ -151,7 +168,7 @@ app.post('/api/transactions/predict', async (req, res) => {
 // The final save route after user confirms the bubble
 app.post('/api/transactions/confirm', (req, res) => {
     try {
-        const { amount, description, jar_id, category_id, userId } = req.body;
+        const { amount, description, jar_id, category_id, userId, predicted_jar_id } = req.body;
 
         if (!userId) {
             return res.status(400).json({ error: "Missing User ID" });
@@ -167,6 +184,20 @@ app.post('/api/transactions/confirm', (req, res) => {
             date: new Date().toISOString(),
             jar_id
         });
+
+        // AUTO-LEARNING TRIGGER: User corrected the prediction
+        if (predicted_jar_id && jar_id !== predicted_jar_id) {
+            const jars = getJars(userId);
+            const selectedJar = jars.find((j: any) => j.id === jar_id);
+            if (selectedJar && selectedJar.concept_type && description) {
+                axios.post('http://127.0.0.1:8000/learn', {
+                    text: description,
+                    concept: selectedJar.concept_type
+                }).catch(err => {
+                    console.error("[Auto-learn] Python service not reachable:", err.message);
+                });
+            }
+        }
 
         res.status(201).json({
             success: true,
@@ -204,6 +235,38 @@ app.delete('/api/transactions/:id', (req, res) => {
         res.json({ success: true });
     } catch (err: any) {
         console.error('Delete Transaction Error:', err.message);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Auto-Learning Endpoint: Update Transaction Jar
+app.put('/api/transactions/:id/jar', async (req, res) => {
+    try {
+        const txId = req.params.id;
+        const { newJarId, userId } = req.body;
+
+        if (!userId || !newJarId) return res.status(400).json({ error: 'Missing Data' });
+
+        // 1. Update Database and Balances
+        const tx = updateTransactionJar(txId, newJarId);
+
+        // 2. Retrieve the global concept of the newly assigned Jar
+        const jars = getJars(userId);
+        const newJar = jars.find((j: any) => j.id === newJarId);
+
+        // 3. Fire-and-forget request to Python AI Service for Auto-Learning
+        if (newJar && newJar.concept_type && tx.description) {
+            axios.post('http://127.0.0.1:8000/learn', {
+                text: tx.description,
+                concept: newJar.concept_type
+            }).catch(err => {
+                console.error("[Auto-learn] Python service not reachable:", err.message);
+            });
+        }
+
+        res.json({ success: true });
+    } catch (err: any) {
+        console.error('Update Transaction Jar Error:', err.message);
         res.status(500).json({ error: err.message });
     }
 });

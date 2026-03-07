@@ -5,16 +5,15 @@ from google import genai
 
 load_dotenv()
 
-# Danh sách các danh mục cần sinh dữ liệu
+# Danh sách các Global Concept cốt lõi
 CATEGORIES = [
-    "Sinh_hoạt",
-    "Giải_trí",
-    "Giáo_dục",
-    "Sức_khỏe",
-    "Mua_sắm",
-    "Đầu_tư",
-    "Cho_đi",
-    "Giao_dịch_khác"
+    "THIET_YEU",
+    "HUONG_THU",
+    "GIAO_DUC",
+    "DAU_TU",
+    "TICH_LUY",
+    "CHO_DI",
+    "GIAO_DICH_KHAC"
 ]
 
 def generate_training_data(api_key: str, num_examples_per_cat: int = 50, output_file: str = "training_data.txt"):

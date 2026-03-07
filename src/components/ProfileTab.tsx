@@ -19,7 +19,16 @@ interface ProfileTabProps {
 export function ProfileTab({ userId, jars, onRefresh, onLogout }: ProfileTabProps) {
     const [isAddingJar, setIsAddingJar] = React.useState(false);
     const [newJarName, setNewJarName] = React.useState('');
-    const [newJarPercent, setNewJarPercent] = React.useState('10');
+    const [newJarPercent, setNewJarPercent] = React.useState('5');
+    const [newJarConcept, setNewJarConcept] = React.useState('GIAO_DICH_KHAC');
+    const [sourceJarId, setSourceJarId] = React.useState('');
+
+    // Khi jars thay đổi (load xong), đảm bảo sourceJarId luôn hợp lệ
+    React.useEffect(() => {
+        if (jars.length > 0 && (!sourceJarId || !jars.find(j => j.id === sourceJarId))) {
+            setSourceJarId(jars[0].id);
+        }
+    }, [jars]);
     const [editingJarId, setEditingJarId] = React.useState<string | null>(null);
     const [editJarName, setEditJarName] = React.useState('');
     const [editJarPercent, setEditJarPercent] = React.useState('');
@@ -27,19 +36,28 @@ export function ProfileTab({ userId, jars, onRefresh, onLogout }: ProfileTabProp
     const totalPercent = jars.reduce((a, j) => a + j.allocation_percent, 0);
 
     const handleCreateJar = async () => {
-        if (!newJarName) return;
+        if (!newJarName || !sourceJarId) return;
         const newPercent = parseInt(newJarPercent, 10);
-        if (totalPercent + newPercent > 100) {
-            alert(`Tổng % phân bổ sẽ vượt quá 100% (hiện tại: ${totalPercent}%). Hãy giảm % của hũ mới!`);
+        const sourceJar = jars.find(j => j.id === sourceJarId);
+
+        if (!sourceJar) return;
+        if (newPercent >= sourceJar.allocation_percent) {
+            alert(`Lỗi! Phần trăm trích xuất (${newPercent}%) phải NHỎ HƠN phần trăm hiện tại của Hũ nguồn (${sourceJar.allocation_percent}%).`);
             return;
         }
+
+        // if (!window.confirm(`Bạn sẽ trích ${newPercent}% (và số dư tương ứng) từ hũ "${sourceJar.name}" sang hũ mới "${newJarName}". Xác nhận?`)) return;
+
         try {
-            await apiCreateJar(userId, newJarName, newPercent);
+            await apiCreateJar(userId, newJarName, newPercent, newJarConcept, sourceJarId);
             setNewJarName('');
-            setNewJarPercent('10');
+            setNewJarPercent('5');
+            setNewJarConcept('GIAO_DICH_KHAC');
             setIsAddingJar(false);
             await onRefresh();
-        } catch { alert('Lỗi tạo hũ'); }
+        } catch (err: any) {
+            alert('Lỗi tạo hũ: ' + (err.response?.data?.error || err.message));
+        }
     };
 
     const handleUpdateJar = async () => {
@@ -106,13 +124,51 @@ export function ProfileTab({ userId, jars, onRefresh, onLogout }: ProfileTabProp
                     {isAddingJar && (
                         <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
                             <div className="bg-pink-50 rounded-2xl p-4 border border-pink-100 mb-4">
-                                <div className="flex gap-2 items-center">
-                                    <input type="text" value={newJarName} onChange={e => setNewJarName(e.target.value)} placeholder="Tên hũ mới..." className="flex-1 bg-white px-3 py-2 rounded-xl text-sm font-bold ring-1 ring-pink-200" />
-                                    <input type="number" value={newJarPercent} onChange={e => setNewJarPercent(e.target.value)} min={1} max={100} className="w-16 bg-white px-3 py-2 rounded-xl text-sm font-bold ring-1 ring-pink-200" />
-                                    <span className="text-xs font-bold text-pink-400">%</span>
-                                    <button onClick={handleCreateJar} className="bg-pink-500 text-white p-2 rounded-xl"><CheckCircle2 size={16} /></button>
+
+                                <div className="flex flex-col gap-3">
+                                    <div className="flex flex-col gap-1">
+                                        <span className="text-xs font-bold text-gray-500">Lấy % từ hũ:</span>
+                                        <select value={sourceJarId} onChange={e => setSourceJarId(e.target.value)} className="w-full bg-white px-3 py-2 rounded-xl text-sm font-bold ring-1 ring-pink-200 text-gray-700">
+                                            {jars.map(j => (
+                                                <option key={j.id} value={j.id}>{j.name} (Đang có {j.allocation_percent}%)</option>
+                                            ))}
+                                        </select>
+                                    </div>
+
+                                    <div className="flex gap-2">
+                                        <div className="flex-1 flex flex-col gap-1">
+                                            <span className="text-xs font-bold text-gray-500">Tên Hũ mới:</span>
+                                            <input type="text" value={newJarName} onChange={e => setNewJarName(e.target.value)} placeholder="Tên hũ con..." className="w-full bg-white px-3 py-2 rounded-xl text-sm font-bold ring-1 ring-pink-200" />
+                                        </div>
+                                        <div className="w-24 flex flex-col gap-1">
+                                            <span className="text-xs font-bold text-gray-500">% Cắt ra:</span>
+                                            <div className="flex gap-1 items-center">
+                                                <input type="number" title="% Trích ra" value={newJarPercent} onChange={e => setNewJarPercent(e.target.value)} min={1} max={99} className="w-full bg-white px-3 py-2 rounded-xl text-sm font-bold ring-1 ring-pink-200" />
+                                                <span className="text-xs font-bold text-pink-400">%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex gap-2 items-end">
+                                        <div className="flex-1 flex flex-col gap-1">
+                                            <span className="text-xs font-bold text-gray-500">Nhóm Concept AI:</span>
+                                            <select value={newJarConcept} onChange={e => setNewJarConcept(e.target.value)} className="w-full bg-white px-3 py-2 rounded-xl text-sm font-bold ring-1 ring-pink-200 text-gray-700">
+                                                <option value="THIET_YEU">Thiết yếu</option>
+                                                <option value="HUONG_THU">Hưởng thụ (Giải trí)</option>
+                                                <option value="TICH_LUY">Tích luỹ</option>
+                                                <option value="DAU_TU">Đầu tư</option>
+                                                <option value="GIAO_DUC">Giáo dục</option>
+                                                <option value="CHO_DI">Cho đi</option>
+                                                <option value="GIAO_DICH_KHAC">Khác</option>
+                                            </select>
+                                        </div>
+                                        <button onClick={handleCreateJar} className="bg-pink-500 text-white px-4 py-2 rounded-xl flex items-center justify-center gap-1 font-bold h-[36px]">
+                                            <CheckCircle2 size={16} /> Lưu
+                                        </button>
+                                    </div>
                                 </div>
-                                <p className="text-xs text-gray-400 mt-2 font-medium">Còn lại: {100 - totalPercent}% chưa phân bổ</p>
+
+                                <p className="text-xs text-gray-400 mt-3 font-medium text-center">Tiền trong Hũ nguồn cũng sẽ được chia bớt sang Hũ mới.</p>
                             </div>
                         </motion.div>
                     )}
