@@ -122,32 +122,44 @@ app.post('/api/transactions/predict', async (req, res) => {
         }
 
         // Fetch dynamic jars for this user
-        const jars = getJars(userId);
+        const jars = getJars(userId) as any[];
         if (!jars || jars.length === 0) {
             return res.status(400).json({ error: "User has no custom jars configured." });
         }
 
+        // IMPORTANT: Chỉ gửi "hũ custom thực sự" (GIAO_DICH_KHAC) lên TF-IDF zero-shot.
+        // Các hũ mặc định (Thiết yếu, Giải trí...) có tên chung chung sẽ bị TF-IDF match nhầm,
+        // do đó chúng phải được quyết định bởi FastText + Local History.
+        const customJarsForTfidf = jars.filter((j: any) => j.concept_type === 'GIAO_DICH_KHAC');
+
         // 1. Send description to Python Microservice (Global Concept Architecture)
         const pythonResponse = await axios.post('http://127.0.0.1:8000/predict', {
-            text: description
+            text: description,
+            jars: customJarsForTfidf.map((j: any) => ({ id: j.id, name: j.name }))
         });
 
         const brain1Result = pythonResponse.data;
 
-        // 2. Map Global Concept back to the User's specific Jar using Local History Override
+        // 2. Map Global Concept back to the User's specific Jar
         let predictedTargetJarId = jars[0].id; // Fallback
 
-        // Step 1: Lọc Lịch sử Cá nhân (Local History)
+        // Step A: Luôn kiểm tra Lịch Sử Cá nhân TRƯỚC (ưu tiên cao nhất)
         const historyMatch = getJarByLocalHistory(userId, brain1Result.predicted_concept, description);
 
         if (historyMatch) {
-            // Đã từng có giao dịch chứa từ khóa này
+            // Lịch sử cá nhân là ưu tiên số 1 - luôn tin tưởng thói quen người dùng
             predictedTargetJarId = historyMatch.jar_id;
+            console.log(`[Predict] ✅ Local History Override → jar_id: ${historyMatch.jar_id}`);
+        } else if (brain1Result.predicted_jar_id) {
+            // Step B: TF-IDF đã chốt chắc nịch một hũ custom (Zero-shot) - dùng khi không có lịch sử
+            predictedTargetJarId = brain1Result.predicted_jar_id;
+            console.log(`[Predict] 🎯 TF-IDF Zero-shot → jar_id: ${brain1Result.predicted_jar_id}`);
         } else {
-            // Step 2: Nếu chưa có lịch sử, lấy hũ đầu tiên cùng Concept (Default Jar)
+            // Step C: Fallback - lấy hũ đầu tiên cùng Concept (hũ mặc định cũ nhất)
             const mappedJar = getJarByConcept(userId, brain1Result.predicted_concept);
             if (mappedJar) {
                 predictedTargetJarId = mappedJar.id;
+                console.log(`[Predict] 💡 Concept Default → jar_id: ${mappedJar.id}, concept: ${brain1Result.predicted_concept}`);
             }
         }
 

@@ -21,6 +21,11 @@ import asyncio
 # FastText (Layer 1)
 import fasttext
 
+# TF-IDF (Layer 0 - Zero-shot)
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+import numpy as np
+
 # Gemini SDK (Layer 2) - new google-genai package
 from google import genai
 from google.genai import types as genai_types
@@ -41,13 +46,19 @@ app = FastAPI(title="AI Brain 1 – Hybrid Classifier")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 
 # ─── Schemas ──────────────────────────────────────────────────────────────────
+class UserJar(BaseModel):
+    id: str
+    name: str
+
 class PredictRequest(BaseModel):
     text: str
+    jars: List[UserJar] = []
 
 class PredictResponse(BaseModel):
     extracted_amount: float
     extracted_name: str
     predicted_concept: str
+    predicted_jar_id: Optional[str] = None
     confidence_score: float
     used_fallback: bool = False   # True nếu Gemini đã được dùng
 
@@ -58,9 +69,9 @@ class LearnRequest(BaseModel):
 # ─── Amount Parser ────────────────────────────────────────────────────────────
 def parse_amount(text: str) -> float:
     """
-    Nhận diện số tiền từ chuỗi tiếng Việt.
-    Hỗ trợ: 35k, 1.5tr, 2 triệu, 1 củ, 5 lít, 200 nghìn, 1,500,000
-    Ưu tiên lấy con số ở cuối hoặc có kèm đơn vị rõ ràng.
+    Nhận diện và tính tổng TẤT CẢ các số tiền có trong chuỗi tiếng Việt.
+    Hỗ trợ: 35k, 1.5tr, 2 triệu, 1 củ, 5 lít, 200 nghìn, 1,500,000, 50.000
+    Chỉ cộng các số liệu mang định dạng tiền tệ rõ ràng để tránh cộng nhầm danh từ riêng có số.
     """
     # Normalize: replace comma-thousands separator
     text = text.replace(",", ".")
@@ -68,37 +79,45 @@ def parse_amount(text: str) -> float:
     # Preprocess shorthand numbers: "1tr5" -> "1.5tr", "2 củ 5" -> "2.5củ"
     text = re.sub(r'(\d+)\s*(tr|triệu|trieu|củ|cu|lít|lit|cành|canh)\s*(\d+)\b', r'\1.\3\2', text, flags=re.IGNORECASE)
 
-    matches = list(re.finditer(
-        r"(\d+(?:\.\d+)?)\s*(k|nghìn|nghin|đ|d|vnd|tr|triệu|trieu|củ|cu|lít|lit|cành|canh|c)?\b",
+    # Regex 1: Số có kèm đơn vị tiền tệ rõ ràng (10k, 5tr, 2 củ)
+    matches_with_unit = list(re.finditer(
+        r"\b(\d+(?:\.\d+)?)\s*(k|nghìn|nghin|đ|d|vnd|tr|triệu|trieu|củ|cu|lít|lit|cành|canh|c)\b",
         text,
         re.IGNORECASE,
     ))
+
+    # Regex 2: Số dứt điểm bằng 000 hoặc có dấu phân cách hàng ngàn (50.000, 100000)
+    matches_raw_money = list(re.finditer(
+        r"\b(\d+(?:\.\d{3})+|\d+000)\b",
+        text,
+    ))
+
+    total_amount = 0.0
     
-    if not matches:
-        return 0.0
+    # 1. Cộng các số có đơn vị
+    for match in matches_with_unit:
+        val = float(match.group(1))
+        unit = match.group(2).lower()
+        if unit in ("k", "nghìn", "nghin", "cành", "canh"):
+            val *= 1_000
+        elif unit in ("tr", "triệu", "trieu", "củ", "cu", "c"):
+            val *= 1_000_000
+        elif unit in ("lít", "lit"):
+            val *= 100_000
+        total_amount += val
+        
+    # 2. Cộng các số raw money (chưa có đơn vị) 
+    # (Nếu đoạn text đó chưa được pick bởi regex 1)
+    unit_match_positions = [m.span() for m in matches_with_unit]
+    for match in matches_raw_money:
+        span = match.span()
+        # Đảm bảo số này không bị over-lap với số đã cộng ở nhóm 1
+        is_overlapped = any(start <= span[0] <= end or start <= span[1] <= end for start, end in unit_match_positions)
+        if not is_overlapped:
+            val = float(match.group(1).replace(".", ""))
+            total_amount += val
 
-    # Ưu tiên lấy match có đơn vị tiền tệ, nếu không có thì lấy chuỗi số cuối cùng
-    best_match = matches[-1] # Mặc định lấy số cuối cùng
-    for match in reversed(matches):
-        if match.group(2): # Nếu có đơn vị
-            best_match = match
-            break
-
-    amount = float(best_match.group(1))
-    unit = (best_match.group(2) or "").lower()
-
-    if unit in ("k", "nghìn", "nghin", "cành", "canh"):
-        amount *= 1_000
-    elif unit in ("tr", "triệu", "trieu", "củ", "cu", "c"):
-        amount *= 1_000_000
-    elif unit in ("lít", "lit"):
-        amount *= 100_000
-    else:
-        # Bare number < 1000 in VN context → assume thousands
-        if 0 < amount < 1_000:
-            amount *= 1_000
-
-    return amount
+    return total_amount
 
 
 def extract_name(text: str) -> str:
@@ -106,12 +125,21 @@ def extract_name(text: str) -> str:
     # Preprocess shorthand numbers: "1tr5" -> "1.5tr"
     clean = re.sub(r'(\d+)\s*(tr|triệu|trieu|củ|cu|lít|lit|cành|canh)\s*(\d+)\b', r'\1.\3\2', text, flags=re.IGNORECASE)
     
+    # 1. Remove numbers with explicit currency units (k, tr, đ, củ, lít, ...)
     clean = re.sub(
-        r"\d+(?:[.,]\d+)?\s*(?:k|nghìn|nghin|đ|d|vnd|tr|triệu|trieu|củ|cu|lít|lit|cành|canh|c)?\b",
+        r"\b\d+(?:[.,]\d+)?\s*(k|nghìn|nghin|đ|d|vnd|tr|triệu|trieu|củ|cu|lít|lit|cành|canh|c)\b",
         "",
         clean,
         flags=re.IGNORECASE,
     )
+    
+    # 2. Remove obvious un-suffixed money numbers: e.g. "50000" (ends in 000) or "50.000" / "50,000"
+    clean = re.sub(
+        r"\b\d+(?:[.,]\d{3})+\b|\b\d+000\b",
+        "",
+        clean,
+    )
+    
     clean = re.sub(r'\s+', ' ', clean).strip()
     return clean or "Giao dịch"
 
@@ -248,6 +276,45 @@ def classify_fasttext(text: str) -> tuple[str, float]:
     
     return predicted_concept, round(confidence, 3)
 
+# ─── TF-IDF Hybrid Ranking (Layer 0) ──────────────────────────────────────────
+def classify_tfidf(text: str, jars: List[UserJar]) -> tuple[Optional[str], float]:
+    """
+    Sử dụng TF-IDF và Cosine Similarity để so khớp input với Tên Hũ.
+    Giải quyết bài toán Cold Start (Zero-shot classification)
+    Returns: (jar_id, confidence) hoặc (None, 0.0) nếu không đạt ngưỡng.
+    """
+    if not jars or not text:
+        return None, 0.0
+        
+    # Chuẩn bị danh sách văn bản (query là text đầu tiên, sau đó là tên các hũ)
+    # Dùng hàm normalize để bỏ dấu tiếng Việt giúp matching linh hoạt hơn
+    clean_query = normalize(extract_name(text).lower().strip())
+    
+    jar_names = [normalize(jar.name.lower().strip()) for jar in jars]
+    corpus = [clean_query] + jar_names
+    
+    try:
+        vectorizer = TfidfVectorizer(ngram_range=(1, 2)) # Hỗ trợ cụm 1-2 từ (VD: "bỉm", "bỉm sữa")
+        tfidf_matrix = vectorizer.fit_transform(corpus)
+        
+        # Tính cosine similarity giữa query (index 0) và tất cả các hũ (index 1 trở đi)
+        cosine_sim = cosine_similarity(tfidf_matrix[0:1], tfidf_matrix[1:]).flatten()
+        
+        best_idx = np.argmax(cosine_sim)
+        best_score = float(cosine_sim[best_idx])
+        
+        if best_score > 0.75: # Ngưỡng tự tin khá cao để tránh nhận nhầm
+            print(f"[Brain0-TFIDF] MATCHED: '{clean_query}' <-> '{jar_names[best_idx]}' (Score: {best_score:.2f})")
+            return jars[best_idx].id, best_score
+            
+        print(f"[Brain0-TFIDF] No match found (Best score: {best_score:.2f} for '{jar_names[best_idx]}')")
+        return None, best_score
+        
+    except Exception as e:
+        print(f"[Brain0-TFIDF] Error: {e}")
+        return None, 0.0
+
+
 
 
 # ─── Gemini Fallback (Layer 2) ────────────────────────────────────────────────
@@ -294,6 +361,7 @@ def save_training_data(text: str, concept: str, source: str = "gemini"):
     """Lưu kết quả phân loại vào bảng training_data để tham khảo."""
     try:
         conn = sqlite3.connect(DB_PATH)
+        conn.execute("PRAGMA journal_mode=WAL")
         conn.execute(
             "INSERT OR IGNORE INTO training_data (id, text, concept, source) VALUES (?, ?, ?, ?)",
             (str(uuid.uuid4()), text, concept, source),
@@ -317,9 +385,27 @@ async def predict_transaction(request: PredictRequest):
     if not name or name.lower() == text.lower():
         name = "Giao dịch"
 
+    # Nhận diện thông tin
+    predicted_concept = "GIAO_DICH_KHAC"
+    confidence = 0.0
+    used_fallback = False
+    predicted_jar_id = None
+
+    # ── Layer 0: TF-IDF Zero-shot Classification ──────────────────────────────
+    if request.jars:
+        predicted_jar_id, tfidf_confidence = classify_tfidf(text, request.jars)
+        if predicted_jar_id:
+            return PredictResponse(
+                extracted_amount=amount,
+                extracted_name=name.capitalize(),
+                predicted_concept="GIAO_DICH_KHAC", # Concept không còn quan trọng vì đã có chính xác ID hũ
+                predicted_jar_id=predicted_jar_id,
+                confidence_score=round(tfidf_confidence, 3),
+                used_fallback=False,
+            )
+
     # ── Layer 1: FastText Classifier ──────────────────────────────────────────
     predicted_concept, confidence = classify_fasttext(text)
-    used_fallback = False
 
     print(f"[Brain1] FastText → concept={predicted_concept}, confidence={confidence:.2f}, text='{text}'")
 
@@ -337,6 +423,7 @@ async def predict_transaction(request: PredictRequest):
         extracted_amount=amount,
         extracted_name=name.capitalize(),
         predicted_concept=predicted_concept,
+        predicted_jar_id=None,
         confidence_score=round(confidence, 3),
         used_fallback=used_fallback,
     )

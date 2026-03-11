@@ -2,6 +2,7 @@ import Database from 'better-sqlite3';
 import Fuse from 'fuse.js';
 
 const db = new Database('finance.db', { verbose: console.log });
+db.pragma('journal_mode = WAL');
 
 // Initialize database tables
 export const initDb = () => {
@@ -90,7 +91,8 @@ export const getJars = (userId: string) => {
 };
 
 export const getJarByConcept = (userId: string, conceptType: string) => {
-  return db.prepare('SELECT * FROM jars WHERE user_id = ? AND concept_type = ?').get(userId, conceptType) as any | undefined;
+  // ORDER BY rowid ASC ensures we always prefer the OLDEST (default) jar when multiple jars share the same concept_type
+  return db.prepare('SELECT * FROM jars WHERE user_id = ? AND concept_type = ? ORDER BY rowid ASC').get(userId, conceptType) as any | undefined;
 };
 
 const STOP_WORDS = new Set([
@@ -114,25 +116,26 @@ export const getJarByLocalHistory = (userId: string, conceptType: string, descri
   const normalizedDesc = description.toLowerCase().trim();
   const searchStr = extractCoreKeywords(normalizedDesc) || normalizedDesc;
 
-  // 1. Thử Tìm Kiếm Chính Xác (Exact Match)
+  // 1. Thử Tìm Kiếm Chính Xác (Exact Match) - tìm trong TẤT CẢ hũ của user (không lọc concept_type)
+  //    để hũ cũ có lịch sử không bị bỏ qua
   let row = db.prepare(`
     SELECT t.jar_id 
     FROM transactions t 
     JOIN jars j ON t.jar_id = j.id 
-    WHERE j.user_id = ? AND j.concept_type = ? AND LOWER(t.description) = ?
+    WHERE j.user_id = ? AND LOWER(t.description) = ?
     ORDER BY t.date DESC LIMIT 1
-  `).get(userId, conceptType, normalizedDesc) as any;
+  `).get(userId, normalizedDesc) as any;
 
   if (row) return row;
 
-  // 2. Lấy tối đa 100 giao dịch gần nhất của concept này
+  // 2. Lấy tối đa 150 giao dịch gần nhất của TẤT CẢ hũ (không lọc concept để bắt lịch sử hũ cũ)
   const txs = db.prepare(`
     SELECT t.jar_id, t.description 
     FROM transactions t 
     JOIN jars j ON t.jar_id = j.id 
-    WHERE j.user_id = ? AND j.concept_type = ?
-    ORDER BY t.date DESC LIMIT 100
-  `).all(userId, conceptType) as any[];
+    WHERE j.user_id = ? AND t.type = 'expense'
+    ORDER BY t.date DESC LIMIT 150
+  `).all(userId) as any[];
 
   if (txs.length === 0) return null;
 
@@ -142,18 +145,49 @@ export const getJarByLocalHistory = (userId: string, conceptType: string, descri
     core_desc: extractCoreKeywords(tx.description) || tx.description.toLowerCase()
   }));
 
-  // 3. Sử dụng Fuse.js
+  // 3. Sử dụng Fuse.js để tìm giao dịch tương tự nhất
   const fuse = new Fuse(txData, {
     keys: ['core_desc'],
     includeScore: true,
-    threshold: 0.4, // Phù hợp với sai chính tả cơ bản
+    threshold: 0.35, // Ngưỡng chặt hơn một chút để tránh match nhầm
     distance: 100,
   });
 
   const results = fuse.search(searchStr);
 
-  if (results.length > 0 && results[0].score !== undefined && results[0].score <= 0.4) {
-    return { jar_id: results[0].item.jar_id };
+  if (results.length > 0 && results[0].score !== undefined && results[0].score <= 0.35) {
+    const matchedJarId = results[0].item.jar_id;
+    // Ưu tiên dùng lịch sử nếu khớp tốt, bất kể concept_type
+    return { jar_id: matchedJarId };
+  }
+
+  // 4. Fallback: Tìm trong lịch sử của đúng concept_type
+  const conceptTxs = db.prepare(`
+    SELECT t.jar_id, t.description 
+    FROM transactions t 
+    JOIN jars j ON t.jar_id = j.id 
+    WHERE j.user_id = ? AND j.concept_type = ?
+    ORDER BY t.date DESC LIMIT 100
+  `).all(userId, conceptType) as any[];
+
+  if (conceptTxs.length === 0) return null;
+
+  const conceptTxData = conceptTxs.map(tx => ({
+    jar_id: tx.jar_id,
+    core_desc: extractCoreKeywords(tx.description) || tx.description.toLowerCase()
+  }));
+
+  const fuse2 = new Fuse(conceptTxData, {
+    keys: ['core_desc'],
+    includeScore: true,
+    threshold: 0.4,
+    distance: 100,
+  });
+
+  const results2 = fuse2.search(searchStr);
+
+  if (results2.length > 0 && results2[0].score !== undefined && results2[0].score <= 0.4) {
+    return { jar_id: results2[0].item.jar_id };
   }
 
   return null;
