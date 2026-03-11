@@ -27,3 +27,7 @@ finance.db
 # Runtime-generated files that should not be committed
 brain1_model.bin.bak
 training_data.txt
+
+finance.db-wal
+finance.db-shm
+
