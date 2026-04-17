@@ -9,12 +9,16 @@ import { useFinanceData } from './hooks/useFinanceData';
 import { AuthScreen } from './components/AuthScreen';
 import { HomeTab } from './components/HomeTab';
 import { HistoryTab } from './components/HistoryTab';
+import { ReportTab } from './components/ReportTab';
 import { AiChatTab } from './components/AiChatTab';
 import { ProfileTab } from './components/ProfileTab';
 import { MagicInputBar } from './components/MagicInputBar';
 import { BottomNav } from './components/BottomNav';
+import { ChickMascot } from './components/ChickMascot';
 
 import type { ActiveTab, ChatMessage } from './types';
+import { ToastProvider } from './contexts/ToastContext';
+import { ToastContainer } from './components/ToastContainer';
 
 export default function App() {
   const auth = useAuth();
@@ -76,6 +80,7 @@ export default function App() {
   }
 
   return (
+    <ToastProvider>
     <div className="min-h-screen bg-[#FCFAFA] flex justify-center items-start p-0 md:p-8 font-sans">
       <div className="w-full max-w-[400px] h-[100dvh] md:h-[800px] bg-white shadow-2xl md:rounded-[40px] overflow-hidden flex flex-col border-0 md:border-[8px] border-[#FFE5E5] relative">
 
@@ -89,15 +94,18 @@ export default function App() {
           </div>
         </div>
 
-        {/* Dynamic Header (hidden on AI tab) */}
-        <AnimatePresence mode="wait">
-          {activeTab !== 'ai' && (
-            <motion.header
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              className="bg-white px-6 pb-6 pt-2 shrink-0 z-10"
-            >
+        {/* Scrollable Container for Header + Main Content */}
+        <div className="flex-1 overflow-y-auto pb-28 bg-[#FDFBF7] relative min-h-0 no-scrollbar">
+          
+          {/* Dynamic Header (hidden on AI tab) */}
+          <AnimatePresence mode="wait">
+            {activeTab !== 'ai' && (
+              <motion.header
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                className="bg-white px-6 pb-8 pt-2 shrink-0 z-10 rounded-b-[40px] shadow-sm mb-6"
+              >
               <div className="flex justify-between items-center mb-6">
                 <div className="flex items-center gap-2 bg-[#FFD1DA] px-4 py-2 rounded-full shadow-sm">
                   <Wallet size={16} className="text-[#FF7FA3]" />
@@ -109,26 +117,19 @@ export default function App() {
                 </div>
               </div>
               <div className="text-center">
-                <motion.div
-                  animate={{ y: [0, -5, 0] }}
-                  transition={{ repeat: Infinity, duration: 2 }}
-                  className="w-16 h-20 mx-auto mb-2 bg-[#FFF4DC] rounded-[50%_50%_50%_50%_/_60%_60%_40%_40%] shadow-[inset_-4px_-4px_10px_rgba(0,0,0,0.05),_4px_4px_10px_rgba(0,0,0,0.1)] border border-yellow-100 flex items-center justify-center relative overflow-hidden"
-                >
-                  <div className="absolute top-6 left-3 w-2 h-2 bg-gray-800 rounded-full" />
-                  <div className="absolute top-6 right-3 w-2 h-2 bg-gray-800 rounded-full" />
-                  <div className="absolute top-9 left-1/2 -translate-x-1/2 w-3 h-1.5 bg-pink-400 rounded-full" />
-                  <div className="absolute top-6 left-2 w-1.5 h-1.5 bg-pink-200 rounded-full opacity-60" />
-                </motion.div>
+                <div className="mx-auto mb-2">
+                  <ChickMascot size={1.0} />
+                </div>
                 <h1 className="text-4xl font-extrabold text-[#FF7FA3] tracking-tight">
                   {finance.totalBalance.toLocaleString()} <span className="text-2xl text-pink-300 font-bold">đ</span>
                 </h1>
               </div>
-            </motion.header>
-          )}
-        </AnimatePresence>
+              </motion.header>
+            )}
+          </AnimatePresence>
 
-        {/* Main Content */}
-        <main className="flex-1 overflow-y-auto pb-28 px-5 bg-[#FDFBF7] relative min-h-0">
+          {/* Main Content */}
+          <main className="px-5 pb-6">
           <AnimatePresence mode="wait">
             {activeTab === 'home' && (
               <HomeTab
@@ -145,6 +146,12 @@ export default function App() {
                 transactions={finance.transactions}
                 onDeleteTransaction={finance.deleteTransaction}
                 onRefresh={finance.fetchDashboardData}
+              />
+            )}
+            {activeTab === 'report' && (
+              <ReportTab
+                jars={finance.jars}
+                transactions={finance.transactions}
               />
             )}
             {activeTab === 'ai' && (
@@ -166,8 +173,9 @@ export default function App() {
                 onLogout={() => { auth.handleLogout(); setActiveTab('home'); }}
               />
             )}
-          </AnimatePresence>
-        </main>
+            </AnimatePresence>
+          </main>
+        </div>
 
         {/* Bottom Navigation */}
         <BottomNav
@@ -189,7 +197,12 @@ export default function App() {
           )}
         </AnimatePresence>
 
+        {/* Portal Root for nested modals */}
+        <div id="app-modal-root" className="absolute inset-0 pointer-events-none z-[100]" />
+        <ToastContainer />
+
       </div>
     </div>
+    </ToastProvider>
   );
 }

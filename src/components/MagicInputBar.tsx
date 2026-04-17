@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { apiPredictTransaction, apiConfirmTransaction, apiAddIncome } from '../services/api';
+import { useToast } from '../contexts/ToastContext';
 import type { Jar, PendingTx, TxType } from '../types';
 
 function cn(...inputs: ClassValue[]) { return twMerge(clsx(inputs)); }
@@ -16,11 +17,13 @@ interface MagicInputBarProps {
 }
 
 export function MagicInputBar({ userId, jars, onSuccess, onClose }: MagicInputBarProps) {
+    const toast = useToast();
     const [txType, setTxType] = useState<TxType>('expense');
     const [rawInput, setRawInput] = useState('');
     const [incomeAmount, setIncomeAmount] = useState('');
     const [isAdding, setIsAdding] = useState(false);
     const [isPredicting, setIsPredicting] = useState(false);
+    const [isRecurring, setIsRecurring] = useState(false);
     const [pendingTx, setPendingTx] = useState<PendingTx | null>(null);
     const [selectedJarId, setSelectedJarId] = useState<string | null>(null);
     const [showJarSelector, setShowJarSelector] = useState(false);
@@ -29,7 +32,7 @@ export function MagicInputBar({ userId, jars, onSuccess, onClose }: MagicInputBa
         if (!rawInput.trim() || isPredicting || isAdding) return;
         setIsPredicting(true);
         try {
-            const res = await apiPredictTransaction(rawInput, userId);
+            const res = await apiPredictTransaction(rawInput);
             const prediction = res.data.brain_1_result;
             setPendingTx(prediction);
             setSelectedJarId(prediction.predicted_jar_id);
@@ -40,9 +43,9 @@ export function MagicInputBar({ userId, jars, onSuccess, onClose }: MagicInputBa
         } catch (err: any) {
             const serverMsg = err.response?.data?.error || err.message || '';
             if (!err.response || serverMsg.includes('microservice') || serverMsg.includes('ECONNREFUSED')) {
-                alert('⚠️ Dịch vụ AI (Python) chưa được khởi động!\n\nHãy chạy lệnh sau trong terminal:\n  python ai_service.py');
+                toast.error('⚠️ Dịch vụ AI (Python) chưa được khởi động! Hãy chạy: python ai_service.py');
             } else {
-                alert('Lỗi AI: ' + serverMsg);
+                toast.error('Lỗi AI: ' + serverMsg);
             }
         } finally {
             setIsPredicting(false);
@@ -54,11 +57,11 @@ export function MagicInputBar({ userId, jars, onSuccess, onClose }: MagicInputBa
         if (!pendingTx || isAdding || !selectedJarId) return;
         setIsAdding(true);
         try {
-            await apiConfirmTransaction(pendingTx, selectedJarId, userId);
+            await apiConfirmTransaction(pendingTx, selectedJarId, isRecurring);
             await onSuccess();
             onClose();
         } catch (err: any) {
-            alert('Lỗi lưu giao dịch: ' + (err.response?.data?.error || err.message));
+            toast.error('Lỗi lưu giao dịch: ' + (err.response?.data?.error || err.message));
         } finally {
             setIsAdding(false);
         }
@@ -68,11 +71,11 @@ export function MagicInputBar({ userId, jars, onSuccess, onClose }: MagicInputBa
         if (!incomeAmount || isAdding) return;
         setIsAdding(true);
         try {
-            await apiAddIncome(userId, parseFloat(incomeAmount), rawInput || 'Nạp tiền ngân sách');
+            await apiAddIncome(parseFloat(incomeAmount), rawInput || 'Nạp tiền ngân sách', isRecurring);
             await onSuccess();
             onClose();
         } catch (err: any) {
-            alert('Lỗi nạp tiền: ' + (err.response?.data?.error || err.message));
+            toast.error('Lỗi nạp tiền: ' + (err.response?.data?.error || err.message));
         } finally {
             setIsAdding(false);
         }
@@ -158,6 +161,10 @@ export function MagicInputBar({ userId, jars, onSuccess, onClose }: MagicInputBa
                             className="w-full bg-white border border-gray-200 shadow-sm rounded-2xl px-5 py-4 text-base font-bold focus:ring-4 focus:ring-green-100 focus:border-green-300 transition-all" />
                         <input type="text" value={rawInput} onChange={e => setRawInput(e.target.value)} placeholder="Mô tả (tuỳ chọn): Lương tháng 10"
                             className="w-full bg-white border border-gray-200 shadow-sm rounded-2xl px-5 py-4 text-base font-bold focus:ring-4 focus:ring-green-100 transition-all" />
+                        <label className="flex items-center gap-2 cursor-pointer pt-1 pb-2 w-max text-sm font-semibold text-gray-500 hover:text-green-600 transition-colors">
+                            <input type="checkbox" checked={isRecurring} onChange={e => setIsRecurring(e.target.checked)} className="w-4 h-4 rounded text-green-500 focus:ring-green-500 border-gray-300" />
+                            <span>Tự động cộng lại khoản này vào tháng sau</span>
+                        </label>
                         <button onClick={handleAddIncome} disabled={!incomeAmount || isAdding}
                             className="w-full mt-2 py-4 rounded-xl font-extrabold text-white bg-gradient-to-r from-green-500 to-emerald-400 hover:opacity-90 shadow-md flex justify-center items-center disabled:opacity-60">
                             {isAdding ? <Spinner /> : 'Phân bổ tự động vào các hũ ✨'}
@@ -215,7 +222,15 @@ export function MagicInputBar({ userId, jars, onSuccess, onClose }: MagicInputBa
                             )}
                         </AnimatePresence>
 
-                        <div className="flex gap-3 mt-2">
+                        <div className="pt-2">
+                            <label className="flex items-center gap-2 cursor-pointer w-max text-sm font-semibold text-gray-500 hover:text-[#FF7FA3] transition-colors">
+                                <input type="checkbox" checked={isRecurring} onChange={e => setIsRecurring(e.target.checked)} 
+                                    className="w-4 h-4 rounded text-pink-500 focus:ring-pink-500 border-gray-300" />
+                                <span>Lặp lại khoản chi này hàng tháng</span>
+                            </label>
+                        </div>
+
+                        <div className="flex gap-3 mt-1">
                             <button onClick={() => setPendingTx(null)} className="flex-1 py-3.5 rounded-xl font-bold text-gray-500 bg-gray-100 hover:bg-gray-200 transition-colors">
                                 Nhập lại
                             </button>

@@ -67,6 +67,19 @@ export const initDb = () => {
     )
   `).run();
 
+  db.prepare(`
+    CREATE TABLE IF NOT EXISTS recurring_transactions (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      amount REAL NOT NULL,
+      description TEXT NOT NULL,
+      jar_id TEXT NOT NULL,
+      type TEXT NOT NULL DEFAULT 'expense',
+      next_date TEXT NOT NULL,
+      FOREIGN KEY(user_id) REFERENCES users(id)
+    )
+  `).run();
+
   // Jars will be seeded per user on signup.
 };
 
@@ -198,35 +211,53 @@ export const updateJarBalance = (jarId: string, amount: number) => {
 };
 
 export const createJar = (
-  jar: { id: string, user_id: string, name: string, allocation_percent: number, color: string, icon: string, concept_type: string },
+  jar: { id: string, user_id: string, name: string, split_amount: number, color: string, icon: string, concept_type: string },
   sourceJarId?: string
 ) => {
   if (sourceJarId) {
-    // San Hũ Logic
+    // San Hũ Logic bằng TIỀN MẶT
     return db.transaction(() => {
       const sourceJar = db.prepare('SELECT * FROM jars WHERE id = ? AND user_id = ?').get(sourceJarId, jar.user_id) as any;
 
-      if (!sourceJar) throw new Error("Source jar not found");
-      if (sourceJar.allocation_percent <= jar.allocation_percent) {
-        throw new Error("Source jar percentage must be greater than new jar percentage");
-      }
+      if (!sourceJar) throw new Error("Hũ nguồn không tồn tại");
+      if (sourceJar.balance <= 0) throw new Error("Hũ nguồn phải có số dư lớn hơn 0 để có thể phân rã tự động");
+      if (sourceJar.balance < jar.split_amount) throw new Error(`Số tiền trích (${jar.split_amount}) lớn hơn số dư hiện tại của hũ nguồn (${sourceJar.balance})`);
 
-      // 1. Calculate deducted balance
-      const deductedBalance = Math.round((sourceJar.balance * jar.allocation_percent) / sourceJar.allocation_percent);
+      const deductedBalance = jar.split_amount;
+      
+      // Tính ngầm % Tương lai cho hũ con (Nội dung chốt của Giám đốc Sản phẩm)
+      const calculatedPercent = Math.round((deductedBalance / sourceJar.balance) * sourceJar.allocation_percent);
+      const newJarPercent = Math.max(0, calculatedPercent); 
+      const updatedSourcePercent = Math.max(0, sourceJar.allocation_percent - newJarPercent);
 
-      // 2. Update Source Jar (% and Balance)
-      db.prepare('UPDATE jars SET allocation_percent = allocation_percent - ?, balance = balance - ? WHERE id = ?')
-        .run(jar.allocation_percent, deductedBalance, sourceJarId);
+      // Cập nhật Hũ nguồn
+      db.prepare('UPDATE jars SET allocation_percent = ?, balance = balance - ? WHERE id = ?')
+        .run(updatedSourcePercent, deductedBalance, sourceJarId);
 
-      // 3. Create New Jar with deducted balance
-      return db.prepare('INSERT INTO jars (id, user_id, name, allocation_percent, balance, color, icon, concept_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?)')
-        .run(jar.id, jar.user_id, jar.name, jar.allocation_percent, deductedBalance, jar.color, jar.icon, jar.concept_type);
+      // Tạo Hũ con mới
+      db.prepare('INSERT INTO jars (id, user_id, name, allocation_percent, balance, color, icon, concept_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?)')
+        .run(jar.id, jar.user_id, jar.name, newJarPercent, deductedBalance, jar.color, jar.icon, jar.concept_type);
+
+      return { newJarPercent };
     })();
   } else {
-    // Luồng Cũ (Tạo độc lập từ số dư 0%)
+    // Luồng cũ (nếu cần dùng) tạo độc lập bằng 0% và 0đ
     return db.prepare('INSERT INTO jars (id, user_id, name, allocation_percent, color, icon, concept_type) VALUES (?, ?, ?, ?, ?, ?, ?)')
-      .run(jar.id, jar.user_id, jar.name, jar.allocation_percent, jar.color, jar.icon, jar.concept_type);
+      .run(jar.id, jar.user_id, jar.name, 0, jar.color, jar.icon, jar.concept_type);
   }
+};
+
+export const bulkUpdateJars = (userId: string, updates: { id: string, percent: number }[]) => {
+  return db.transaction(() => {
+    // Tính tổng để đảm bảo backend cũng bảo vệ 100%
+    const total = updates.reduce((sum, u) => sum + u.percent, 0);
+    if (total !== 100) throw new Error("Tổng phân bổ phần trăm không bằng 100%");
+    
+    const stmt = db.prepare('UPDATE jars SET allocation_percent = ? WHERE id = ? AND user_id = ?');
+    for (const update of updates) {
+      stmt.run(update.percent, update.id, userId);
+    }
+  })();
 };
 
 export const updateJar = (id: string, userId: string, name: string, percent: number) => {
@@ -360,6 +391,53 @@ export const addTrainingData = (entry: {
   return db.prepare(
     'INSERT OR IGNORE INTO training_data (id, text, concept, source) VALUES (?, ?, ?, ?)'
   ).run(entry.id, entry.text, entry.concept, entry.source || 'gemini');
+};
+
+export const addRecurringTransaction = (tx: {
+  id: string;
+  user_id: string;
+  amount: number;
+  description: string;
+  jar_id: string;
+  type: string;
+  next_date: string;
+}) => {
+  return db.prepare(
+    'INSERT INTO recurring_transactions (id, user_id, amount, description, jar_id, type, next_date) VALUES (?, ?, ?, ?, ?, ?, ?)'
+  ).run(tx.id, tx.user_id, tx.amount, tx.description, tx.jar_id, tx.type, tx.next_date);
+};
+
+export const processRecurringTransactions = () => {
+  const now = new Date().toISOString();
+  // Find all due recurring transactions
+  const dues = db.prepare('SELECT * FROM recurring_transactions WHERE next_date <= ?').all(now) as any[];
+  
+  if (dues.length === 0) return 0;
+
+  db.transaction(() => {
+    dues.forEach(due => {
+      // 1. Insert into transactions
+      const txId = `${Date.now()}_${due.id}`;
+      addTransaction({
+        id: txId,
+        amount: due.amount,
+        description: due.description,
+        category_id: due.jar_id,
+        date: new Date().toISOString(),
+        jar_id: due.jar_id,
+        type: due.type as 'expense' | 'income'
+      });
+
+      // 2. Calculate next month's date
+      const nextDate = new Date(due.next_date);
+      nextDate.setMonth(nextDate.getMonth() + 1);
+      
+      // 3. Update the recurring record
+      db.prepare('UPDATE recurring_transactions SET next_date = ? WHERE id = ?').run(nextDate.toISOString(), due.id);
+    });
+  })();
+
+  return dues.length;
 };
 
 export default db;

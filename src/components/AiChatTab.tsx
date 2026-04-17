@@ -36,7 +36,7 @@ export function AiChatTab({
         setIsThinking(true);
 
         try {
-            const res = await apiSendChat(text, userId);
+            const res = await apiSendChat(text);
             setMessages(prev => [...prev, {
                 text: res.data.reply,
                 isAi: true,
@@ -81,16 +81,27 @@ export function AiChatTab({
 
             {/* Messages */}
             <div className="flex-1 overflow-y-auto p-5 space-y-5 pb-24">
-                {messages.map((msg, idx) => (
-                    <div key={idx} className={cn('flex flex-col', msg.isAi ? 'items-start' : 'items-end')}>
-                        <div className={cn(
-                            'max-w-[85%] px-5 py-3.5 rounded-[28px] text-[15px] font-medium leading-relaxed shadow-sm',
-                            msg.isAi
-                                ? 'bg-white text-gray-700 rounded-tl-md border border-gray-100'
-                                : 'bg-[#FFB5A7] text-gray-900 rounded-tr-md font-bold'
-                        )}>
-                            {msg.text}
-                        </div>
+                {messages.map((msg, idx) => {
+                    const renderMessage = (text: string) => {
+                        const parts = text.split(/(\*\*.*?\*\*)/g);
+                        return parts.map((part, i) => {
+                            if (part.startsWith('**') && part.endsWith('**')) {
+                                return <strong key={i} className="font-extrabold">{part.slice(2, -2)}</strong>;
+                            }
+                            return part;
+                        });
+                    };
+
+                    return (
+                        <div key={idx} className={cn('flex flex-col', msg.isAi ? 'items-start' : 'items-end')}>
+                            <div className={cn(
+                                'max-w-[85%] px-5 py-3.5 rounded-[28px] text-[15px] font-medium leading-relaxed shadow-sm',
+                                msg.isAi
+                                    ? 'bg-white text-gray-700 rounded-tl-md border border-gray-100 whitespace-pre-wrap'
+                                    : 'bg-[#FFB5A7] text-gray-900 rounded-tr-md font-bold whitespace-pre-wrap'
+                            )}>
+                                {renderMessage(msg.text)}
+                            </div>
                         {msg.isAi && msg.suggestions && msg.suggestions.length > 0 && (
                             <div className="flex flex-wrap gap-2 mt-2 ml-2">
                                 {msg.suggestions.map((s, sIdx) => (
@@ -106,7 +117,7 @@ export function AiChatTab({
                             </div>
                         )}
                     </div>
-                ))}
+                )})}
 
                 {isThinking && (
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex gap-2 p-4 bg-white rounded-full w-20 shadow-sm border border-gray-100 ml-2">

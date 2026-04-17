@@ -2,9 +2,11 @@ import React, { useMemo, useState } from 'react';
 import { Wallet, Trash2, RefreshCw } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
+import { Download } from 'lucide-react';
 import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import { apiUpdateTransactionJar } from '../services/api';
+import { useToast } from '../contexts/ToastContext';
 import type { Jar, Transaction } from '../types';
 
 interface HistoryTabProps {
@@ -16,6 +18,7 @@ interface HistoryTabProps {
 }
 
 export function HistoryTab({ userId, jars, transactions, onDeleteTransaction, onRefresh }: HistoryTabProps) {
+    const toast = useToast();
     const [correctingTxId, setCorrectingTxId] = useState<string | null>(null);
     // Bar chart: group expenses by month
     const monthlyData = useMemo(() => {
@@ -43,10 +46,32 @@ export function HistoryTab({ userId, jars, transactions, onDeleteTransaction, on
 
     const handleCorrectJar = async (txId: string, newJarId: string) => {
         try {
-            await apiUpdateTransactionJar(txId, newJarId, userId);
+            await apiUpdateTransactionJar(txId, newJarId);
             setCorrectingTxId(null);
             await onRefresh();
-        } catch { alert('Lỗi khi cập nhật hũ!'); }
+            toast.success('Đã cập nhật hũ và AI đã tự học xong!');
+        } catch { toast.error('Lỗi khi cập nhật hũ!'); }
+    };
+
+    const handleExportCSV = () => {
+        const header = ["ID", "Ngày", "Loại", "Danh mục (Hũ)", "Số tiền", "Mô tả"];
+        const rows = transactions.map(tx => {
+            const jarName = jars.find(j => j.id === tx.jar_id)?.name || 'Khác';
+            const type = tx.type === 'income' ? 'Thu nhập' : 'Chi tiêu';
+            const date = new Date(tx.date).toLocaleDateString('vi-VN');
+            return [tx.id, date, type, jarName, tx.amount, `"${tx.description.replace(/"/g, '""')}"`];
+        });
+        
+        const csvContent = "data:text/csv;charset=utf-8,\uFEFF" 
+            + [header.join(","), ...rows.map(e => e.join(","))].join("\n");
+        
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `lich_su_giao_dich_${format(new Date(), 'ddMMyyyy')}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     };
 
     return (
@@ -100,6 +125,15 @@ export function HistoryTab({ userId, jars, transactions, onDeleteTransaction, on
 
             {/* Transaction List */}
             <div className="space-y-3">
+                <div className="flex justify-between items-center mb-2 px-1">
+                    <h3 className="text-sm font-extrabold text-gray-700">Tất cả giao dịch</h3>
+                    <button 
+                        onClick={handleExportCSV}
+                        className="text-xs font-bold text-gray-500 bg-white border border-gray-200 px-3 py-1.5 rounded-full shadow-sm flex items-center gap-1.5 hover:text-[#FF7FA3] hover:border-pink-200 transition-colors"
+                    >
+                        <Download size={14} /> Xuất CSV
+                    </button>
+                </div>
                 {transactions.map(tx => {
                     const jar = jars.find(j => j.id === tx.jar_id);
                     const isIncome = tx.type === 'income';

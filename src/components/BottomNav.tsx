@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, History, Plus, User } from 'lucide-react';
+import { Home, History, Plus, User, PieChart } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import type { ActiveTab } from '../types';
@@ -18,19 +18,29 @@ export function BottomNav({ activeTab, onTabChange, onAddClick, clock }: BottomN
         <nav className="h-[90px] bg-white flex items-start justify-around px-2 pt-4 absolute bottom-0 left-0 right-0 z-30 pb-safe shadow-[0_-20px_40px_rgba(0,0,0,0.03)] rounded-t-[40px] border-t border-gray-50">
             <button
                 onClick={() => onTabChange('home')}
-                className={cn('flex flex-col items-center gap-1.5 w-16 transition-colors', activeTab === 'home' ? 'text-[#FF7FA3]' : 'text-gray-300')}
+                className={cn('flex flex-col items-center gap-1 w-[42px] transition-colors', activeTab === 'home' ? 'text-[#FF7FA3]' : 'text-gray-300')}
             >
-                <Home size={24} strokeWidth={activeTab === 'home' ? 3 : 2} />
-                <span className="text-[10px] font-extrabold">Trang chủ</span>
+                <Home size={22} strokeWidth={activeTab === 'home' ? 3 : 2} />
+                <span className="text-[9px] font-extrabold line-clamp-1">Trang chủ</span>
             </button>
 
             <button
                 onClick={() => onTabChange('history')}
-                className={cn('flex flex-col items-center gap-1.5 w-16 transition-colors', activeTab === 'history' ? 'text-[#FFB5A7]' : 'text-gray-300')}
+                className={cn('flex flex-col items-center gap-1 w-[42px] transition-colors', activeTab === 'history' ? 'text-[#FFB5A7]' : 'text-gray-300')}
             >
-                <History size={24} strokeWidth={activeTab === 'history' ? 3 : 2} />
-                <span className="text-[10px] font-extrabold">Lịch sử</span>
+                <History size={22} strokeWidth={activeTab === 'history' ? 3 : 2} />
+                <span className="text-[9px] font-extrabold line-clamp-1">Lịch sử</span>
             </button>
+
+            <button
+                onClick={() => onTabChange('report')}
+                className={cn('flex flex-col items-center gap-1 w-[42px] transition-colors', activeTab === 'report' ? 'text-[#a78bfa]' : 'text-gray-300')}
+            >
+                <PieChart size={22} strokeWidth={activeTab === 'report' ? 3 : 2} />
+                <span className="text-[9px] font-extrabold line-clamp-1">Báo cáo</span>
+            </button>
+
+            {/* Central FAB is kept the same */}
 
             {/* Central FAB */}
             <div className="relative w-16 flex justify-center">
@@ -44,18 +54,18 @@ export function BottomNav({ activeTab, onTabChange, onAddClick, clock }: BottomN
 
             <button
                 onClick={() => onTabChange('ai')}
-                className={cn('flex flex-col items-center gap-1.5 w-16 transition-colors', activeTab === 'ai' ? 'text-orange-400' : 'text-gray-300')}
+                className={cn('flex flex-col items-center gap-1 w-[42px] transition-colors', activeTab === 'ai' ? 'text-orange-400' : 'text-gray-300')}
             >
-                <div className={`w-6 h-6 border-2 rounded-[50%_50%_50%_50%_/_60%_60%_40%_40%] ${activeTab === 'ai' ? 'border-orange-400 bg-orange-50' : 'border-gray-300'}`} />
-                <span className="text-[10px] font-extrabold">Trợ Lý</span>
+                <div className={`w-[22px] h-[22px] border-2 rounded-[50%_50%_50%_50%_/_60%_60%_40%_40%] ${activeTab === 'ai' ? 'border-orange-400 bg-orange-50' : 'border-gray-300'}`} />
+                <span className="text-[9px] font-extrabold line-clamp-1">Trợ Lý</span>
             </button>
 
             <button
                 onClick={() => onTabChange('profile')}
-                className={cn('flex flex-col items-center gap-1.5 w-16 transition-colors', activeTab === 'profile' ? 'text-[#CBE4F9]' : 'text-gray-300')}
+                className={cn('flex flex-col items-center gap-1 w-[42px] transition-colors', activeTab === 'profile' ? 'text-[#8cbbe0]' : 'text-gray-300')}
             >
-                <User size={24} strokeWidth={activeTab === 'profile' ? 3 : 2} />
-                <span className="text-[10px] font-extrabold">Tài Khoản</span>
+                <User size={22} strokeWidth={activeTab === 'profile' ? 3 : 2} />
+                <span className="text-[9px] font-extrabold line-clamp-1">Tài Khoản</span>
             </button>
         </nav>
     );

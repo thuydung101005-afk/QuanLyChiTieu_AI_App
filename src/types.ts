@@ -30,6 +30,6 @@ export interface PendingTx {
     confidence_score: number;
 }
 
-export type ActiveTab = 'home' | 'history' | 'ai' | 'profile';
+export type ActiveTab = 'home' | 'history' | 'report' | 'ai' | 'profile';
 export type AuthMode = 'login' | 'signup';
 export type TxType = 'expense' | 'income';

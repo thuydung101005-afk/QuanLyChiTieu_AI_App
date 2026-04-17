@@ -1,10 +1,11 @@
 import express from 'express';
 import cors from 'cors';
-import { initDb, getJars, getTransactions, addTransaction, getDatabaseInfoForAI, createJar, deleteJar, updateJar, addIncome, getUserById, deleteTransaction, getJarByConcept, updateTransactionJar, getJarByLocalHistory } from './database.js';
+import { initDb, getJars, getTransactions, addTransaction, getDatabaseInfoForAI, createJar, deleteJar, updateJar, bulkUpdateJars, addIncome, getUserById, deleteTransaction, getJarByConcept, updateTransactionJar, getJarByLocalHistory, addRecurringTransaction, processRecurringTransactions } from './database.js';
 import { GoogleGenAI } from '@google/genai';
 import "dotenv/config";
 import axios from 'axios';
 import authRoutes from './authRoutes.js';
+import jwt from 'jsonwebtoken';
 
 const app = express();
 const port = 3001;
@@ -12,14 +13,29 @@ const port = 3001;
 app.use(cors());
 app.use(express.json());
 
+const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret_key_for_development_only';
+
+// Middleware to verify JWT token
+const authenticateToken = (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+
+    if (token == null) return res.status(401).json({ error: 'Token is required' });
+
+    jwt.verify(token, JWT_SECRET, (err: any, user: any) => {
+        if (err) return res.status(403).json({ error: 'Invalid or expired token' });
+        (req as any).user = user;
+        next();
+    });
+};
+
 // Routes
 app.use('/api/auth', authRoutes);
 
 // Session validation endpoint (for localStorage auto-restore)
-app.get('/api/auth/me', (req, res) => {
+app.get('/api/auth/me', authenticateToken, (req, res) => {
     try {
-        const userId = req.query.userId as string;
-        if (!userId) return res.status(401).json({ error: 'No userId provided' });
+        const userId = (req as any).user.userId;
         const user = getUserById(userId);
         if (!user) return res.status(401).json({ error: 'User not found' });
         res.json({ valid: true, user });
@@ -34,12 +50,9 @@ initDb();
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 // Endpoints
-app.get('/api/jars', (req, res) => {
+app.get('/api/jars', authenticateToken, (req, res) => {
     try {
-        const userId = req.query.userId as string;
-        if (!userId) {
-            return res.status(400).json({ error: "Missing User ID" });
-        }
+        const userId = (req as any).user.userId;
         const jars = getJars(userId);
         res.json(jars);
     } catch (err: any) {
@@ -47,37 +60,51 @@ app.get('/api/jars', (req, res) => {
     }
 });
 
-app.post('/api/jars', (req, res) => {
+app.post('/api/jars', authenticateToken, (req, res) => {
     try {
-        const { userId, name, allocation_percent, color, icon, concept_type, sourceJarId } = req.body;
-        if (!userId || !name || allocation_percent === undefined) {
+        const userId = (req as any).user.userId;
+        const { name, split_amount, color, icon, concept_type, sourceJarId } = req.body;
+        if (!name || split_amount === undefined) {
             return res.status(400).json({ error: "Missing required fields" });
         }
 
         const jarId = `${userId}_${Date.now()}`; // Unique custom jar id
 
-        createJar({
+        const payload = createJar({
             id: jarId,
             user_id: userId,
             name,
-            allocation_percent,
+            split_amount,
             color: color || '#ccc',
             icon: icon || 'piggy-bank',
             concept_type: concept_type || 'GIAO_DICH_KHAC'
         }, sourceJarId);
 
-        res.status(201).json({ success: true, id: jarId });
+        res.status(201).json({ success: true, id: jarId, newJarPercent: payload?.newJarPercent || 0 });
     } catch (err: any) {
         res.status(500).json({ error: err.message });
     }
 });
 
-app.put('/api/jars/:id', (req, res) => {
+app.put('/api/jars/bulk', authenticateToken, (req, res) => {
+    try {
+        const userId = (req as any).user.userId;
+        const { updates } = req.body; // array of { id, percent }
+        if (!updates || !Array.isArray(updates)) {
+            return res.status(400).json({ error: "Invalid updates format" });
+        }
+        bulkUpdateJars(userId, updates);
+        res.json({ success: true });
+    } catch (err: any) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.put('/api/jars/:id', authenticateToken, (req, res) => {
     try {
         const jarId = req.params.id;
-        const { userId, name, allocation_percent } = req.body;
-
-        if (!userId) return res.status(400).json({ error: "Missing User ID" });
+        const userId = (req as any).user.userId;
+        const { name, allocation_percent } = req.body;
 
         updateJar(jarId, userId, name, allocation_percent);
         res.json({ success: true });
@@ -86,12 +113,10 @@ app.put('/api/jars/:id', (req, res) => {
     }
 });
 
-app.delete('/api/jars/:id', (req, res) => {
+app.delete('/api/jars/:id', authenticateToken, (req, res) => {
     try {
         const jarId = req.params.id;
-        const userId = req.query.userId as string;
-
-        if (!userId) return res.status(400).json({ error: "Missing User ID" });
+        const userId = (req as any).user.userId;
 
         deleteJar(jarId, userId);
         res.json({ success: true });
@@ -100,12 +125,9 @@ app.delete('/api/jars/:id', (req, res) => {
     }
 });
 
-app.get('/api/transactions', (req, res) => {
+app.get('/api/transactions', authenticateToken, (req, res) => {
     try {
-        const userId = req.query.userId as string;
-        if (!userId) {
-            return res.status(400).json({ error: "Missing User ID" });
-        }
+        const userId = (req as any).user.userId;
         const transactions = getTransactions(userId);
         res.json(transactions);
     } catch (err: any) {
@@ -113,12 +135,13 @@ app.get('/api/transactions', (req, res) => {
     }
 });
 
-app.post('/api/transactions/predict', async (req, res) => {
+app.post('/api/transactions/predict', authenticateToken, async (req, res) => {
     try {
-        const { description, userId } = req.body;
+        const userId = (req as any).user.userId;
+        const { description } = req.body;
 
-        if (!description || !userId) {
-            return res.status(400).json({ error: "Missing description or User ID" });
+        if (!description) {
+            return res.status(400).json({ error: "Missing description" });
         }
 
         // Fetch dynamic jars for this user
@@ -178,24 +201,37 @@ app.post('/api/transactions/predict', async (req, res) => {
 });
 
 // The final save route after user confirms the bubble
-app.post('/api/transactions/confirm', (req, res) => {
+app.post('/api/transactions/confirm', authenticateToken, (req, res) => {
     try {
-        const { amount, description, jar_id, category_id, userId, predicted_jar_id } = req.body;
-
-        if (!userId) {
-            return res.status(400).json({ error: "Missing User ID" });
-        }
+        const userId = (req as any).user.userId;
+        const { amount, description, jar_id, category_id, predicted_jar_id, is_recurring } = req.body;
 
         const id = Date.now().toString();
+        const dateNow = new Date().toISOString();
 
         addTransaction({
             id,
             amount,
             description,
             category_id: category_id || jar_id, // fallback
-            date: new Date().toISOString(),
+            date: dateNow,
             jar_id
         });
+
+        // RECURRING TRIGGER
+        if (is_recurring) {
+            const nextMonth = new Date();
+            nextMonth.setMonth(nextMonth.getMonth() + 1);
+            addRecurringTransaction({
+                id: `rec_${id}`,
+                user_id: userId,
+                amount,
+                description,
+                jar_id,
+                type: 'expense',
+                next_date: nextMonth.toISOString()
+            });
+        }
 
         // AUTO-LEARNING TRIGGER: User corrected the prediction
         if (predicted_jar_id && jar_id !== predicted_jar_id) {
@@ -222,14 +258,36 @@ app.post('/api/transactions/confirm', (req, res) => {
 });
 
 // Income Route
-app.post('/api/incomes', (req, res) => {
+app.post('/api/incomes', authenticateToken, (req, res) => {
     try {
-        const { userId, amount, description } = req.body;
-        if (!userId || !amount) {
-            return res.status(400).json({ error: "Missing User ID or amount" });
+        const userId = (req as any).user.userId;
+        const { amount, description, is_recurring } = req.body;
+        if (!amount) {
+            return res.status(400).json({ error: "Missing amount" });
         }
 
         addIncome(userId, amount, description);
+
+        if (is_recurring) {
+            const nextMonth = new Date();
+            nextMonth.setMonth(nextMonth.getMonth() + 1);
+            // Since income is split across jars, we just assign to the first jar for record keeping
+            // But wait, addIncome splits it, so recurring income should just be handled differently
+            // PENDING FIX: MISA typically allows recurring for specific jars, but for now we'll store it as 'income' on user's first jar
+            const jars = getJars(userId) as any[];
+            if (jars.length > 0) {
+                addRecurringTransaction({
+                    id: `rec_${Date.now()}`,
+                    user_id: userId,
+                    amount,
+                    description: description || 'Thu nhập định kỳ',
+                    jar_id: jars[0].id,
+                    type: 'income',
+                    next_date: nextMonth.toISOString()
+                });
+            }
+        }
+
         res.status(201).json({ success: true });
     } catch (err: any) {
         res.status(500).json({ error: err.message });
@@ -237,11 +295,10 @@ app.post('/api/incomes', (req, res) => {
 });
 
 // Delete a transaction (and reverse jar balance)
-app.delete('/api/transactions/:id', (req, res) => {
+app.delete('/api/transactions/:id', authenticateToken, (req, res) => {
     try {
+        const userId = (req as any).user.userId;
         const txId = req.params.id;
-        const userId = req.query.userId as string;
-        if (!userId) return res.status(400).json({ error: 'Missing User ID' });
 
         deleteTransaction(txId);
         res.json({ success: true });
@@ -252,12 +309,13 @@ app.delete('/api/transactions/:id', (req, res) => {
 });
 
 // Auto-Learning Endpoint: Update Transaction Jar
-app.put('/api/transactions/:id/jar', async (req, res) => {
+app.put('/api/transactions/:id/jar', authenticateToken, async (req, res) => {
     try {
+        const userId = (req as any).user.userId;
         const txId = req.params.id;
-        const { newJarId, userId } = req.body;
+        const { newJarId } = req.body;
 
-        if (!userId || !newJarId) return res.status(400).json({ error: 'Missing Data' });
+        if (!newJarId) return res.status(400).json({ error: 'Missing Data' });
 
         // 1. Update Database and Balances
         const tx = updateTransactionJar(txId, newJarId);
@@ -283,13 +341,10 @@ app.put('/api/transactions/:id/jar', async (req, res) => {
     }
 });
 
-app.post('/api/chat', async (req, res) => {
+app.post('/api/chat', authenticateToken, async (req, res) => {
     try {
-        const { message, userId } = req.body;
-
-        if (!userId) {
-            return res.status(400).json({ error: "Missing User ID" });
-        }
+        const userId = (req as any).user.userId;
+        const { message } = req.body;
 
         const dbInfo = getDatabaseInfoForAI(userId);
 
@@ -304,7 +359,7 @@ Trả lời câu hỏi sau của người dùng một cách thân thiện, xưng
 Trả lời phải ngắn gọn (dưới 4 câu) và có kèm 1-2 từ khoá gợi ý câu hỏi tiếp theo ở cuối dưới dạng [Gợi ý: "Câu hỏi 1", "Câu hỏi 2"].`;
 
         const response = await ai.models.generateContent({
-            model: 'gemini-2.5-pro',
+            model: 'gemini-2.5-flash',
             contents: prompt,
         });
 
@@ -329,4 +384,16 @@ Trả lời phải ngắn gọn (dưới 4 câu) và có kèm 1-2 từ khoá g�
 
 app.listen(port, () => {
     console.log(`Backend API running on http://localhost:${port}`);
+    
+    // CRONJOB: Check recurring transactions every minute
+    setInterval(() => {
+        try {
+            const processedCount = processRecurringTransactions();
+            if (processedCount > 0) {
+                console.log(`[CRON] Processed ${processedCount} recurring transactions.`);
+            }
+        } catch (err: any) {
+            console.error(`[CRON] Error processing recurring transactions:`, err.message);
+        }
+    }, 60000);
 });

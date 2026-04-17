@@ -36,7 +36,7 @@ load_dotenv(override=True)
 # ─── Config ────────────────────────────────────────────────────────────────────
 CONFIDENCE_THRESHOLD = 0.45   # Tăng ngưỡng lên 0.45 để giao cho Gemini nếu FastText không chắc chắn
 DB_PATH = "finance.db"        # SQLite DB (same as Node backend)
-GEMINI_MODEL = "gemini-2.0-flash"   # Fast + cheap for classification
+GEMINI_MODEL = "gemini-2.5-flash"   # Sử dụng Model mới nhất giống Node.js để tránh văng Rate Limit
 
 # Setup Gemini client
 _gemini_key = os.getenv("GEMINI_API_KEY", "")

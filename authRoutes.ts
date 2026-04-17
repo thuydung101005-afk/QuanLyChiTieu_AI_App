@@ -1,8 +1,10 @@
 import express from 'express';
 import bcrypt from 'bcrypt';
 import db, { seedDefaultJarsForUser } from './database.js';
+import jwt from 'jsonwebtoken';
 
 const router = express.Router();
+const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret_key_for_development_only';
 
 router.post('/signup', async (req, res) => {
     try {
@@ -50,8 +52,10 @@ router.post('/login', async (req, res) => {
             return res.status(401).json({ error: 'Invalid credentials' });
         }
 
-        // Ideally issue JWT here, returning user id for basic state management for now
-        res.json({ success: true, user: { id: user.id, username: user.username } });
+        // Issue JWT here
+        const token = jwt.sign({ userId: user.id, username: user.username }, JWT_SECRET, { expiresIn: '7d' });
+        
+        res.json({ success: true, token, user: { id: user.id, username: user.username } });
 
     } catch (err: any) {
         res.status(500).json({ error: err.message });

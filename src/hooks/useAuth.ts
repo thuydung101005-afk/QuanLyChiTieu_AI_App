@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { authLogin, authSignup, authMe } from '../services/api';
 import type { AuthMode } from '../types';
 
-const SESSION_KEY = 'finbrain_userId';
+const SESSION_KEY = 'finbrain_jwt_token';
 
 export function useAuth() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -15,14 +15,14 @@ export function useAuth() {
 
     // --- Auto-restore session from localStorage on mount ---
     useEffect(() => {
-        const storedId = localStorage.getItem(SESSION_KEY);
-        if (!storedId) {
+        const storedToken = localStorage.getItem(SESSION_KEY);
+        if (!storedToken) {
             setIsRestoring(false);
             return;
         }
-        authMe(storedId)
-            .then(() => {
-                setUserId(storedId);
+        authMe()
+            .then((res) => {
+                setUserId(res.data.user.id);
                 setIsAuthenticated(true);
             })
             .catch(() => {
@@ -37,14 +37,16 @@ export function useAuth() {
             setAuthError('');
             if (authMode === 'login') {
                 const res = await authLogin(authUsername, authPassword);
+                const token = res.data.token;
                 const id = res.data.user.id;
-                localStorage.setItem(SESSION_KEY, id);
+                
+                localStorage.setItem(SESSION_KEY, token);
                 setUserId(id);
                 setIsAuthenticated(true);
             } else {
                 await authSignup(authUsername, authPassword);
                 setAuthMode('login');
-                alert('Đăng ký thành công! Hãy đăng nhập nhé.');
+                setAuthError('✅ Đăng ký thành công! Hãy đăng nhập nhé.');
             }
         } catch (err: any) {
             setAuthError(err.response?.data?.error || 'Lỗi xác thực!');

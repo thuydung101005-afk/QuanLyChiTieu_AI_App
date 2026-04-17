@@ -10,8 +10,8 @@ export function useFinanceData(userId: string | null) {
         if (!userId) return;
         try {
             const [jarsRes, txRes] = await Promise.all([
-                fetchJars(userId),
-                fetchTransactions(userId),
+                fetchJars(),
+                fetchTransactions(),
             ]);
             setJars(jarsRes.data);
             setTransactions(txRes.data);
@@ -22,7 +22,7 @@ export function useFinanceData(userId: string | null) {
 
     const deleteTransaction = async (txId: string) => {
         if (!userId) return;
-        await apiDeleteTransaction(txId, userId);
+        await apiDeleteTransaction(txId);
         await fetchDashboardData();
     };
 
