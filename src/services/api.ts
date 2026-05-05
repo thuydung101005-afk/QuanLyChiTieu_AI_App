@@ -1,7 +1,18 @@
 import axios from 'axios';
 import type { PendingTx } from '../types';
 
-export const api = axios.create({ baseURL: '/api' });
+// =========================================================================
+// 🚀 DÁN LINK NGROK HOẶC IP LOCAL VÀO ĐÂY ĐỂ ĐÓNG GÓI ANDROID
+// Ví dụ IP Local: 'http://192.168.0.120:3001/api' (Dùng chung mạng WiFi)
+// =========================================================================
+const NGROK_URL = 'https://phobia-canola-womanless.ngrok-free.dev/api'; 
+
+export const api = axios.create({ 
+    baseURL: NGROK_URL || '/api',
+    headers: {
+        'ngrok-skip-browser-warning': 'true'
+    }
+});
 
 const SESSION_KEY = 'finbrain_jwt_token';
 
@@ -20,11 +31,47 @@ api.interceptors.request.use(
 export const authLogin = (username: string, password: string) =>
     api.post('/auth/login', { username, password });
 
-export const authSignup = (username: string, password: string) =>
-    api.post('/auth/signup', { username, password });
+export const authSignup = (username: string, password: string, email: string) =>
+    api.post('/auth/signup', { username, password, email });
+
+export const authVerifyOtp = (email: string, otp: string) =>
+    api.post('/auth/verify-otp', { email, otp });
+
+export const authResendOtp = (email: string, type: 'verify' | 'reset' = 'verify') =>
+    api.post('/auth/resend-otp', { email, type });
+
+export const authForgotPassword = (email: string) =>
+    api.post('/auth/forgot-password', { email });
+
+export const authVerifyResetOtp = (email: string, otp: string) =>
+    api.post('/auth/verify-reset-otp', { email, otp });
+
+export const authResetPassword = (resetToken: string, newPassword: string) =>
+    api.post('/auth/reset-password', { resetToken, newPassword });
 
 export const authMe = () =>
     api.get(`/auth/me`);
+
+export const apiChangePassword = (oldPassword: string, newPassword: string) =>
+    api.put('/auth/change-password', { oldPassword, newPassword });
+
+export const apiRequestEmailChange = (newEmail: string) =>
+    api.post('/auth/change-email/request', { newEmail });
+
+export const apiVerifyEmailChange = (newEmail: string, otp: string) =>
+    api.post('/auth/change-email/verify', { newEmail, otp });
+
+export const apiGetNotifications = () => 
+    api.get('/auth/notifications');
+
+export const apiMarkNotificationRead = (id: string) => 
+    api.put(`/auth/notifications/${id}/read`);
+
+export const apiMarkAllNotificationsRead = () => 
+    api.put('/auth/notifications/read-all');
+
+export const apiTriggerMonthlyAIReport = () =>
+    api.post('/auth/notifications/trigger-monthly-ai');
 
 // ─── Jars ────────────────────────────────────────────────────────────────────
 export const fetchJars = () =>

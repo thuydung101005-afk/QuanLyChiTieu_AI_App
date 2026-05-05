@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
-import { initDb, getJars, getTransactions, addTransaction, getDatabaseInfoForAI, createJar, deleteJar, updateJar, bulkUpdateJars, addIncome, getUserById, deleteTransaction, getJarByConcept, updateTransactionJar, getJarByLocalHistory, addRecurringTransaction, processRecurringTransactions } from './database.js';
+import { initDb, getJars, getTransactions, addTransaction, getDatabaseInfoForAI, createJar, deleteJar, updateJar, bulkUpdateJars, addIncome, getUserById, deleteTransaction, getJarByConcept, updateTransactionJar, getJarByLocalHistory, addRecurringTransaction, processRecurringTransactions, getMonthlySummaryForAI, hasSentAIReportThisMonth, markAIReportSent, createNotification, getAllUsers } from './database.js';
+import db from './database.js';
 import { GoogleGenAI } from '@google/genai';
 import "dotenv/config";
 import axios from 'axios';
@@ -49,7 +50,63 @@ initDb();
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
+const generateAndSendMonthlyAIReport = async (userId: string, year: number, month: number) => {
+    try {
+        const monthStr = `${year}-${month.toString().padStart(2, '0')}`;
+        if (hasSentAIReportThisMonth(userId, monthStr)) return false;
+
+        const summary = getMonthlySummaryForAI(userId, year, month);
+        
+        // Skip if no income and no expense
+        if (summary.totalIncome === 0 && summary.totalExpense === 0) return false;
+
+        const user = getUserById(userId);
+        const userName = user ? user.username : 'bạn';
+
+        const prompt = `Bạn là chuyên gia tài chính cá nhân thân thiện (tên là Bé Trứng). Dựa trên dữ liệu tài chính tháng trước của người dùng tên là "${userName}":
+Tổng thu: ${summary.totalIncome.toLocaleString()}đ
+Tổng chi: ${summary.totalExpense.toLocaleString()}đ
+Hũ chi nhiều nhất: ${summary.highestSpendingCategory} (${summary.highestSpendingAmount.toLocaleString()}đ)
+
+Hãy viết 1 nhận xét hoặc lời khuyên thật ngắn gọn, dưới 50 từ, mang phong cách chuyên gia nhưng gần gũi. Bắt buộc xưng hô là "Bé Trứng" và gọi người dùng bằng tên "${userName}".`;
+
+        const response = await ai.models.generateContent({
+            model: 'gemini-2.5-flash',
+            contents: prompt,
+        });
+
+        const textRes = response.text || "Tháng qua bạn đã quản lý tốt, hãy tiếp tục phát huy nhé!";
+        
+        createNotification(userId, `Báo cáo tháng ${month}`, textRes, 'ai');
+        markAIReportSent(userId, monthStr);
+        return true;
+    } catch (err: any) {
+        console.error(`AI Report Error for user ${userId}:`, err.message);
+        return false;
+    }
+};
+
 // Endpoints
+app.post('/api/auth/notifications/trigger-monthly-ai', authenticateToken, async (req, res) => {
+    try {
+        const userId = (req as any).user.userId;
+        const date = new Date();
+        const year = date.getFullYear();
+        const month = date.getMonth() + 1; // 1-12 (current month — for demo purposes)
+        const monthStr = `${year}-${month.toString().padStart(2, '0')}`;
+
+        // For demo: clear the flag so report can be triggered multiple times
+        db.prepare('DELETE FROM ai_reports_log WHERE user_id = ? AND month_str = ?').run(userId, monthStr);
+
+        const sent = await generateAndSendMonthlyAIReport(userId, year, month);
+        if (!sent) {
+            return res.status(200).json({ success: false, message: 'Không đủ dữ liệu để tạo báo cáo tháng này. Hãy thêm một số giao dịch trước nhé!' });
+        }
+        res.json({ success: true });
+    } catch (err: any) {
+        res.status(500).json({ error: err.message });
+    }
+});
 app.get('/api/jars', authenticateToken, (req, res) => {
     try {
         const userId = (req as any).user.userId;
@@ -396,4 +453,34 @@ app.listen(port, () => {
             console.error(`[CRON] Error processing recurring transactions:`, err.message);
         }
     }, 60000);
+
+    // CRONJOB: Check monthly AI reports (Runs every hour)
+    setInterval(async () => {
+        try {
+            const date = new Date();
+            // Run on the 1st of the month
+            if (date.getDate() === 1) {
+                let year = date.getFullYear();
+                let month = date.getMonth(); // last month
+                if (month === 0) {
+                    month = 12;
+                    year -= 1;
+                }
+                
+                const users = getAllUsers();
+                let count = 0;
+                for (const user of users) {
+                    const sent = await generateAndSendMonthlyAIReport(user.id, year, month);
+                    if (sent) count++;
+                    // Add small delay to avoid rate limiting
+                    await new Promise(r => setTimeout(r, 1000));
+                }
+                if (count > 0) {
+                    console.log(`[CRON] Sent ${count} Monthly AI Reports.`);
+                }
+            }
+        } catch (err: any) {
+            console.error(`[CRON] Error sending monthly AI reports:`, err.message);
+        }
+    }, 3600000); // Check every hour
 });

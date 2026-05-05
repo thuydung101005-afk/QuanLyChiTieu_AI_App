@@ -1,6 +1,7 @@
-import React from 'react';
-import { Wallet, ChevronRight, Home, Gamepad2, TrendingUp, BookOpen, PiggyBank, Heart } from 'lucide-react';
-import { motion } from 'motion/react';
+import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
+import { Wallet, ChevronRight, Home, Gamepad2, TrendingUp, BookOpen, PiggyBank, Heart, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 import type { Jar, Transaction } from '../types';
 
 const ICONS: Record<string, React.ComponentType<{ size?: number; strokeWidth?: number }>> = {
@@ -16,6 +17,8 @@ interface HomeTabProps {
 }
 
 export function HomeTab({ jars, transactions, totalBalance, onViewHistory }: HomeTabProps) {
+    const [selectedJar, setSelectedJar] = useState<Jar | null>(null);
+
     // 1. Calculate this month's budget pool
     const currentMonth = new Date().getMonth();
     const currentYear = new Date().getFullYear();
@@ -28,6 +31,11 @@ export function HomeTab({ jars, transactions, totalBalance, onViewHistory }: Hom
     const totalIncomeThisMonth = thisMonthTxs
         .filter(tx => tx.type === 'income')
         .reduce((sum, tx) => sum + tx.amount, 0);
+
+    // Filter transactions for the selected jar
+    const selectedJarTxs = selectedJar 
+        ? transactions.filter(tx => tx.jar_id === selectedJar.id).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+        : [];
 
     return (
         <motion.div
@@ -47,12 +55,13 @@ export function HomeTab({ jars, transactions, totalBalance, onViewHistory }: Hom
                         const Icon = ICONS[jar.icon] || Home;
 
                         // Calculate logic for progress bar
-                        const budget = (totalIncomeThisMonth * jar.allocation_percent) / 100;
                         const spent = thisMonthTxs
                             .filter(tx => tx.type === 'expense' && tx.jar_id === jar.id)
                             .reduce((sum, tx) => sum + tx.amount, 0);
 
-                        const percentSpent = budget > 0 ? (spent / budget) * 100 : (spent > 0 ? 100 : 0);
+                        // Tổng tiền khả dụng của hũ = Số dư hiện tại + Số tiền đã chi
+                        const totalAvailable = jar.balance + spent;
+                        const percentSpent = totalAvailable > 0 ? (spent / totalAvailable) * 100 : (spent > 0 ? 100 : 0);
 
                         let progressColor = 'bg-green-400';
                         if (percentSpent > 100) progressColor = 'bg-red-500';
@@ -62,7 +71,8 @@ export function HomeTab({ jars, transactions, totalBalance, onViewHistory }: Hom
                         return (
                             <div
                                 key={jar.id}
-                                className="bg-white rounded-[28px] p-4 shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-gray-100 flex flex-col items-center justify-center text-center hover:-translate-y-1 transition-transform cursor-pointer relative"
+                                onClick={() => setSelectedJar(jar)}
+                                className="bg-white rounded-[28px] p-4 shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-gray-100 flex flex-col items-center justify-center text-center hover:-translate-y-1 transition-transform cursor-pointer select-none relative active:scale-95"
                             >
                                 <div
                                     className="w-12 h-12 rounded-[18px] flex items-center justify-center mb-3 shadow-inner"
@@ -99,7 +109,7 @@ export function HomeTab({ jars, transactions, totalBalance, onViewHistory }: Hom
             <div className="bg-white rounded-[32px] p-5 shadow-[0_4px_20px_rgba(0,0,0,0.04)] border border-pink-50">
                 <div className="flex justify-between items-center mb-4">
                     <h3 className="text-sm font-extrabold text-gray-700">Chi tiêu mới nhất</h3>
-                    <button onClick={onViewHistory} className="text-xs font-bold text-[#FF7FA3] flex items-center">
+                    <button onClick={onViewHistory} className="text-xs font-bold text-[#FF7FA3] flex items-center hover:opacity-80">
                         Xem full <ChevronRight size={14} />
                     </button>
                 </div>
@@ -132,6 +142,82 @@ export function HomeTab({ jars, transactions, totalBalance, onViewHistory }: Hom
                     )}
                 </div>
             </div>
+
+            {/* Jar Details Modal */}
+            {document.getElementById('app-modal-root') && createPortal(
+                <AnimatePresence>
+                    {selectedJar && (
+                        <div className="absolute inset-0 z-50 flex flex-col justify-end pointer-events-none">
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="absolute inset-0 bg-black/30 pointer-events-auto backdrop-blur-sm"
+                            onClick={() => setSelectedJar(null)}
+                        />
+                        <motion.div
+                            initial={{ y: '100%', opacity: 0.5 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            exit={{ y: '100%', opacity: 0 }}
+                            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                            className="relative bg-white w-full max-h-[85vh] rounded-t-[40px] p-6 pb-24 shadow-2xl pointer-events-auto flex flex-col"
+                            style={{ borderTop: `8px solid ${selectedJar.color}` }}
+                        >
+                            <button 
+                                onClick={() => setSelectedJar(null)}
+                                className="absolute top-4 right-4 w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-500 hover:bg-gray-200"
+                            >
+                                <X size={20} />
+                            </button>
+                            
+                            <div className="flex items-center gap-4 mb-6 mt-2">
+                                <div
+                                    className="w-16 h-16 rounded-2xl flex items-center justify-center shadow-sm"
+                                    style={{ backgroundColor: `${selectedJar.color}20`, color: selectedJar.color }}
+                                >
+                                    {React.createElement(ICONS[selectedJar.icon] || Home, { size: 32, strokeWidth: 2.5 })}
+                                </div>
+                                <div>
+                                    <h2 className="text-2xl font-extrabold text-gray-800">{selectedJar.name}</h2>
+                                    <p className="text-sm font-bold text-gray-500">Số dư: <span style={{ color: selectedJar.color }}>{selectedJar.balance.toLocaleString()}đ</span></p>
+                                </div>
+                            </div>
+
+                            <h3 className="text-sm font-extrabold text-gray-700 mb-4 px-1">Lịch sử chi tiêu</h3>
+                            
+                            <div className="flex-1 overflow-y-auto space-y-3 pr-2 no-scrollbar">
+                                {selectedJarTxs.length === 0 ? (
+                                    <div className="py-10 text-center flex flex-col items-center opacity-60">
+                                        <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-3">
+                                            <PiggyBank size={28} className="text-gray-400" />
+                                        </div>
+                                        <p className="text-sm font-bold text-gray-500">Chưa có giao dịch ở hũ này</p>
+                                    </div>
+                                ) : (
+                                    selectedJarTxs.map(tx => {
+                                        const isIncome = tx.type === 'income';
+                                        return (
+                                            <div key={tx.id} className="flex justify-between items-center p-4 rounded-2xl bg-gray-50/70 border border-gray-100">
+                                                <div>
+                                                    <p className="text-sm font-bold text-gray-800">{tx.description}</p>
+                                                    <p className="text-[11px] font-semibold text-gray-400 mt-1">
+                                                        {new Date(tx.date).toLocaleDateString('vi-VN')}
+                                                    </p>
+                                                </div>
+                                                <p className={`text-base font-extrabold ${isIncome ? 'text-green-500' : 'text-red-500'}`}>
+                                                    {isIncome ? '+' : '-'}{tx.amount.toLocaleString()}đ
+                                                </p>
+                                            </div>
+                                        );
+                                    })
+                                )}
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+                </AnimatePresence>,
+                document.getElementById('app-modal-root')!
+            )}
         </motion.div>
     );
 }

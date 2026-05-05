@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { apiSendChat } from '../services/api';
+import { ChickMascot } from './ChickMascot';
 import type { ChatMessage } from '../types';
 
 function cn(...inputs: ClassValue[]) { return twMerge(clsx(inputs)); }
@@ -61,22 +62,9 @@ export function AiChatTab({
             className="flex flex-col h-full absolute inset-0 bg-[#FFF7F0] z-20"
         >
             {/* Chat Header */}
-            <div className="h-28 bg-white rounded-b-[40px] shadow-[0_4px_20px_rgba(0,0,0,0.03)] flex flex-col items-center justify-end pb-4 shrink-0">
-                <motion.div
-                    animate={{ rotate: [-2, 2, -2] }}
-                    transition={{ repeat: Infinity, duration: 3, ease: 'easeInOut' }}
-                    className="w-16 h-20 bg-[#FFF4DC] rounded-[50%_50%_50%_50%_/_60%_60%_40%_40%] shadow-[inset_-4px_-4px_10px_rgba(0,0,0,0.05),_4px_4px_10px_rgba(0,0,0,0.1)] border border-yellow-100 flex items-center justify-center relative -mt-6 mb-1"
-                >
-                    <div className="absolute top-6 left-3 w-2 h-2 bg-gray-800 rounded-full" />
-                    <div className="absolute top-6 right-3 w-2 h-2 bg-gray-800 rounded-full" />
-                    <div className="absolute top-9 left-1/2 -translate-x-1/2 w-3 h-1.5 bg-pink-400 rounded-[0_0_10px_10px]" />
-                    <motion.div
-                        animate={{ y: -10, opacity: [0, 1, 0] }}
-                        transition={{ repeat: Infinity, duration: 2 }}
-                        className="absolute -top-2 right-0 text-pink-400 text-xs"
-                    >💖</motion.div>
-                </motion.div>
-                <h2 className="text-base font-extrabold text-orange-400 tracking-tight">Egg-u Trợ Lý</h2>
+            <div className="h-36 bg-white rounded-b-[40px] shadow-[0_4px_20px_rgba(0,0,0,0.03)] flex flex-col items-center justify-end pb-3 shrink-0">
+                <ChickMascot size={0.55} />
+                <h2 className="text-base font-extrabold text-orange-400 tracking-tight mt-1">Trứng-kun Trợ Lý</h2>
             </div>
 
             {/* Messages */}

@@ -12,6 +12,8 @@ export const initDb = () => {
       id TEXT PRIMARY KEY,
       username TEXT UNIQUE NOT NULL,
       password TEXT NOT NULL,
+      email TEXT,
+      is_verified INTEGER DEFAULT 0,
       created_at TEXT DEFAULT CURRENT_TIMESTAMP
     )
   `).run();
@@ -79,6 +81,47 @@ export const initDb = () => {
       FOREIGN KEY(user_id) REFERENCES users(id)
     )
   `).run();
+
+  // OTP codes table
+  db.prepare(`
+    CREATE TABLE IF NOT EXISTS otp_codes (
+      id TEXT PRIMARY KEY,
+      email TEXT NOT NULL,
+      otp TEXT NOT NULL,
+      type TEXT NOT NULL,
+      expires_at TEXT NOT NULL,
+      used INTEGER DEFAULT 0
+    )
+  `).run();
+
+  // Notifications table
+  db.prepare(`
+    CREATE TABLE IF NOT EXISTS notifications (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      title TEXT NOT NULL,
+      message TEXT NOT NULL,
+      type TEXT DEFAULT 'system',
+      is_read INTEGER DEFAULT 0,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY(user_id) REFERENCES users(id)
+    )
+  `).run();
+
+  // AI Reports Log table
+  db.prepare(`
+    CREATE TABLE IF NOT EXISTS ai_reports_log (
+      user_id TEXT NOT NULL,
+      month_str TEXT NOT NULL,
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      PRIMARY KEY (user_id, month_str),
+      FOREIGN KEY(user_id) REFERENCES users(id)
+    )
+  `).run();
+
+  // Safe migrations for existing DBs
+  try { db.prepare(`ALTER TABLE users ADD COLUMN email TEXT`).run(); } catch {}
+  try { db.prepare(`ALTER TABLE users ADD COLUMN is_verified INTEGER DEFAULT 0`).run(); } catch {}
 
   // Jars will be seeded per user on signup.
 };
@@ -306,6 +349,49 @@ export const addTransaction = (transaction: {
   const balanceDelta = txType === 'expense' ? -Math.abs(transaction.amount) : Math.abs(transaction.amount);
   updateJarBalance(transaction.jar_id, balanceDelta);
 
+  // Trigger Notification for Alert >= 80% budget
+  if (txType === 'expense') {
+    const jar = db.prepare('SELECT * FROM jars WHERE id = ?').get(transaction.jar_id) as any;
+    if (jar && jar.allocation_percent > 0) {
+      const dateObj = new Date(transaction.date);
+      const startOfMonth = new Date(dateObj.getFullYear(), dateObj.getMonth(), 1).toISOString();
+      const endOfMonth = new Date(dateObj.getFullYear(), dateObj.getMonth() + 1, 0, 23, 59, 59).toISOString();
+      
+      const spentRow = db.prepare(`
+        SELECT SUM(amount) as total 
+        FROM transactions 
+        WHERE jar_id = ? AND type = 'expense' AND date >= ? AND date <= ?
+      `).get(jar.id, startOfMonth, endOfMonth) as any;
+      
+      const totalSpent = spentRow?.total || 0;
+      const totalAvailable = jar.balance + totalSpent;
+      
+      if (totalAvailable > 0) {
+        const percentSpent = (totalSpent / totalAvailable) * 100;
+        const previousSpent = totalSpent - Math.abs(transaction.amount);
+        const previousPercent = (previousSpent / totalAvailable) * 100;
+        
+        if (percentSpent >= 80 && percentSpent <= 100 && previousPercent < 80) {
+          createNotification(
+            jar.user_id, 
+            'Cảnh báo ngân sách', 
+            `Hũ "${jar.name}" đã tiêu hết ${Math.round(percentSpent)}% ngân sách khả dụng!`, 
+            'alert'
+          );
+        }
+        
+        if (percentSpent > 100 && previousPercent <= 100) {
+          createNotification(
+            jar.user_id, 
+            'Vượt ngân sách!', 
+            `Hũ "${jar.name}" đã chi vượt mức (lên đến ${Math.round(percentSpent)}%). Vui lòng cân đối lại!`, 
+            'alert'
+          );
+        }
+      }
+    }
+  }
+
   return info;
 };
 
@@ -363,7 +449,60 @@ export const addIncome = (userId: string, totalAmount: number, description: stri
 };
 
 export const getUserById = (userId: string) => {
-  return db.prepare('SELECT id, username, created_at FROM users WHERE id = ?').get(userId);
+  return db.prepare('SELECT id, username, email, is_verified, created_at FROM users WHERE id = ?').get(userId);
+};
+
+export const getAllUsers = () => {
+  return db.prepare('SELECT id, username FROM users').all() as any[];
+};
+
+export const getUserByEmail = (email: string) => {
+  return db.prepare('SELECT id, username, email, is_verified, created_at FROM users WHERE email = ?').get(email) as any | undefined;
+};
+
+export const getUserByUsername = (username: string) => {
+  return db.prepare('SELECT * FROM users WHERE username = ?').get(username) as any | undefined;
+};
+
+export const setUserVerified = (userId: string) => {
+  db.prepare('UPDATE users SET is_verified = 1 WHERE id = ?').run(userId);
+};
+
+export const setUserEmail = (userId: string, email: string) => {
+  db.prepare('UPDATE users SET email = ? WHERE id = ?').run(email, userId);
+};
+
+export const updateUserPassword = (userId: string, hashedPassword: string) => {
+  db.prepare('UPDATE users SET password = ? WHERE id = ?').run(hashedPassword, userId);
+};
+
+// OTP helpers
+export const createOtp = (email: string, otp: string, type: 'verify' | 'reset'): string => {
+  // Invalidate previous OTPs of same type for this email
+  db.prepare(`DELETE FROM otp_codes WHERE email = ? AND type = ?`).run(email, type);
+
+  const id = `${Date.now()}_${Math.random().toString(36).slice(2)}`;
+  const expiresAt = new Date(Date.now() + 5 * 60 * 1000).toISOString(); // 5 min
+  db.prepare('INSERT INTO otp_codes (id, email, otp, type, expires_at, used) VALUES (?, ?, ?, ?, ?, 0)')
+    .run(id, email, otp, type, expiresAt);
+  return id;
+};
+
+export const verifyOtp = (email: string, otp: string, type: 'verify' | 'reset'): { valid: boolean; reason?: string } => {
+  const record = db.prepare(
+    `SELECT * FROM otp_codes WHERE email = ? AND otp = ? AND type = ? AND used = 0 ORDER BY expires_at DESC LIMIT 1`
+  ).get(email, otp, type) as any;
+
+  if (!record) return { valid: false, reason: 'Mã OTP không đúng' };
+  if (new Date(record.expires_at) < new Date()) return { valid: false, reason: 'Mã OTP đã hết hạn' };
+
+  // Mark as used
+  db.prepare('UPDATE otp_codes SET used = 1 WHERE id = ?').run(record.id);
+  return { valid: true };
+};
+
+export const generateOtp = (): string => {
+  return String(Math.floor(100000 + Math.random() * 900000));
 };
 
 export const deleteTransaction = (id: string) => {
@@ -434,10 +573,91 @@ export const processRecurringTransactions = () => {
       
       // 3. Update the recurring record
       db.prepare('UPDATE recurring_transactions SET next_date = ? WHERE id = ?').run(nextDate.toISOString(), due.id);
+
+      // 4. Trigger Notification
+      createNotification(
+        due.user_id, 
+        'Giao dịch định kỳ', 
+        `Đã tự động ghi nhận: ${due.description} (-${due.amount.toLocaleString()}đ)`, 
+        'recurring'
+      );
     });
   })();
 
   return dues.length;
+};
+
+// ── Notifications ────────────────────────────────────────────────────────────
+export const getNotifications = (userId: string) => {
+  return db.prepare('SELECT * FROM notifications WHERE user_id = ? ORDER BY created_at DESC').all(userId);
+};
+
+export const createNotification = (userId: string, title: string, message: string, type: string = 'system') => {
+  const id = `${Date.now()}_${Math.random().toString(36).slice(2)}`;
+  db.prepare(
+    'INSERT INTO notifications (id, user_id, title, message, type) VALUES (?, ?, ?, ?, ?)'
+  ).run(id, userId, title, message, type);
+  return id;
+};
+
+export const markNotificationRead = (id: string, userId: string) => {
+  return db.prepare('UPDATE notifications SET is_read = 1 WHERE id = ? AND user_id = ?').run(id, userId);
+};
+
+export const markAllNotificationsRead = (userId: string) => {
+  return db.prepare('UPDATE notifications SET is_read = 1 WHERE user_id = ?').run(userId);
+};
+
+// ── AI Reporting ─────────────────────────────────────────────────────────────
+export const getMonthlySummaryForAI = (userId: string, year: number, month: number) => {
+  // month is 1-12
+  const startOfMonth = new Date(year, month - 1, 1).toISOString();
+  const endOfMonth = new Date(year, month, 0, 23, 59, 59).toISOString();
+
+  const jars = db.prepare('SELECT * FROM jars WHERE user_id = ?').all(userId) as any[];
+  const transactions = db.prepare('SELECT * FROM transactions WHERE jar_id IN (SELECT id FROM jars WHERE user_id = ?) AND date >= ? AND date <= ?').all(userId, startOfMonth, endOfMonth) as any[];
+
+  let totalIncome = 0;
+  let totalExpense = 0;
+  const jarSpending: Record<string, number> = {};
+  jars.forEach(j => { jarSpending[j.name] = 0; });
+
+  transactions.forEach(tx => {
+    if (tx.type === 'income') {
+      totalIncome += tx.amount;
+    } else {
+      totalExpense += Math.abs(tx.amount);
+      const jar = jars.find(j => j.id === tx.jar_id);
+      if (jar) jarSpending[jar.name] += Math.abs(tx.amount);
+    }
+  });
+
+  let maxJar = '';
+  let maxAmount = -1;
+  for (const [jarName, amount] of Object.entries(jarSpending)) {
+    if (amount > maxAmount) {
+      maxAmount = amount;
+      maxJar = jarName;
+    }
+  }
+
+  return {
+    totalIncome,
+    totalExpense,
+    netSavings: totalIncome - totalExpense,
+    highestSpendingCategory: maxJar,
+    highestSpendingAmount: maxAmount,
+    jarBalances: jars.map(j => ({ name: j.name, balance: j.balance }))
+  };
+};
+
+export const hasSentAIReportThisMonth = (userId: string, monthStr: string) => {
+  const row = db.prepare('SELECT 1 FROM ai_reports_log WHERE user_id = ? AND month_str = ?').get(userId, monthStr);
+  return !!row;
+};
+
+export const markAIReportSent = (userId: string, monthStr: string) => {
+  db.prepare('INSERT OR IGNORE INTO ai_reports_log (user_id, month_str) VALUES (?, ?)').run(userId, monthStr);
 };
 
 export default db;

@@ -1,16 +1,41 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { motion } from 'motion/react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend } from 'recharts';
 import { format, startOfMonth, endOfMonth, isWithinInterval, subMonths } from 'date-fns';
-import { vi } from 'date-fns/locale';
+import { Sparkles, Loader2 } from 'lucide-react';
 import type { Jar, Transaction } from '../types';
+import { apiTriggerMonthlyAIReport } from '../services/api';
 
 interface ReportTabProps {
     jars: Jar[];
     transactions: Transaction[];
+    onAIReportSent?: () => void;
 }
 
-export function ReportTab({ jars, transactions }: ReportTabProps) {
+export function ReportTab({ jars, transactions, onAIReportSent }: ReportTabProps) {
+    const [isGenerating, setIsGenerating] = useState(false);
+    const [toastMsg, setToastMsg] = useState<string | null>(null);
+
+    const handleTriggerAIReport = async () => {
+        setIsGenerating(true);
+        setToastMsg(null);
+        try {
+            const res = await apiTriggerMonthlyAIReport();
+            if (res.data.success === false) {
+                setToastMsg(`⚠️ ${res.data.message}`);
+            } else {
+                setToastMsg('✨ Trợ lý AI đã gửi báo cáo! Hãy kiểm tra chuông thông báo nhé 🔔');
+                onAIReportSent?.();
+            }
+        } catch (err: any) {
+            const msg = err?.response?.data?.error || 'Có lỗi xảy ra, thử lại sau nhé!';
+            setToastMsg(`❌ ${msg}`);
+        } finally {
+            setIsGenerating(false);
+            setTimeout(() => setToastMsg(null), 7000);
+        }
+    };
+
     // 1. Dữ liệu Pie Chart: % Chi tiêu theo Hũ trong tháng hiện tại
     const currentMonthStart = startOfMonth(new Date());
     const currentMonthEnd = endOfMonth(new Date());
@@ -63,7 +88,37 @@ export function ReportTab({ jars, transactions }: ReportTabProps) {
             exit={{ opacity: 0, y: -10 }}
             className="space-y-6 pt-2 pb-10"
         >
-            <h2 className="text-xl font-extrabold text-gray-800 text-center mb-2">Báo Cáo Phân Tích</h2>
+            {/* Header + AI Button */}
+            <div className="flex items-center justify-between">
+                <h2 className="text-xl font-extrabold text-gray-800">Báo Cáo Phân Tích</h2>
+                <motion.button
+                    onClick={handleTriggerAIReport}
+                    disabled={isGenerating}
+                    whileTap={{ scale: 0.95 }}
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-2xl text-xs font-bold text-white shadow-lg disabled:opacity-70"
+                    style={{ background: 'linear-gradient(135deg, #a855f7, #ec4899)' }}
+                >
+                    {isGenerating ? (
+                        <Loader2 size={14} className="animate-spin" />
+                    ) : (
+                        <Sparkles size={14} />
+                    )}
+                    {isGenerating ? 'Đang xử lý...' : 'Nhận Lời khuyên AI'}
+                </motion.button>
+            </div>
+
+            {/* Toast notification */}
+            {toastMsg && (
+                <motion.div
+                    initial={{ opacity: 0, y: -8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    className="text-xs font-semibold text-center px-4 py-3 rounded-2xl"
+                    style={{ background: 'linear-gradient(135deg, #fdf4ff, #fce7f3)', color: '#9333ea', border: '1px solid #e9d5ff' }}
+                >
+                    {toastMsg}
+                </motion.div>
+            )}
 
             {/* Chi tiêu tháng này */}
             <div className="bg-white rounded-[32px] p-5 shadow-[0_4px_20px_rgba(0,0,0,0.04)] border border-pink-50">
