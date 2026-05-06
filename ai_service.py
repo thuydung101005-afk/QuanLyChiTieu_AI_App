@@ -39,7 +39,7 @@ DB_PATH = "finance.db"        # SQLite DB (same as Node backend)
 GEMINI_MODEL = "gemini-2.5-flash"   # Sử dụng Model mới nhất giống Node.js để tránh văng Rate Limit
 
 # Setup Gemini client
-_gemini_key = os.getenv("GEMINI_API_KEY", "")
+_gemini_key = os.getenv("GEMINI_API_KEY_PYTHON", os.getenv("GEMINI_API_KEY", ""))
 _gemini_client = genai.Client(api_key=_gemini_key) if _gemini_key else None
 
 app = FastAPI(title="AI Brain 1 – Hybrid Classifier")

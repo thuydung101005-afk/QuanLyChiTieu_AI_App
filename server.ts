@@ -48,7 +48,7 @@ app.get('/api/auth/me', authenticateToken, (req, res) => {
 // Initialize SQLite database
 initDb();
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY_NODE || process.env.GEMINI_API_KEY });
 
 const generateAndSendMonthlyAIReport = async (userId: string, year: number, month: number) => {
     try {
