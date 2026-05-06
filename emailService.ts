@@ -1,12 +1,7 @@
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-    },
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
+const FROM = process.env.EMAIL_FROM || 'FinBrain App <onboarding@resend.dev>';
 
 function buildOtpEmail(otp: string, type: 'verify' | 'reset', username?: string): string {
     const isVerify = type === 'verify';
@@ -74,10 +69,14 @@ export async function sendOtpEmail(to: string, otp: string, type: 'verify' | 're
         ? '🐣 FinBrain - Mã xác minh tài khoản của bạn'
         : '🔐 FinBrain - Mã đặt lại mật khẩu';
 
-    await transporter.sendMail({
-        from: `"FinBrain App" <${process.env.EMAIL_USER}>`,
+    const { error } = await resend.emails.send({
+        from: FROM,
         to,
         subject,
         html: buildOtpEmail(otp, type, username),
     });
+
+    if (error) {
+        throw new Error(`Resend error: ${error.message}`);
+    }
 }
