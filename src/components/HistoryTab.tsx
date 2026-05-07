@@ -1,9 +1,9 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { Wallet, Trash2, RefreshCw, Download, Calendar, ChevronDown, Flame } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid, LabelList } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid, LabelList, AreaChart, Area, ReferenceLine } from 'recharts';
 import { format } from 'date-fns';
-import { apiUpdateTransactionJar, apiGetSpikeTxIds } from '../services/api';
+import { apiUpdateTransactionJar, apiGetSpikeTxIds, apiGetBudget } from '../services/api';
 import { useToast } from '../contexts/ToastContext';
 import { ConfirmDialog } from './ConfirmDialog';
 import type { Jar, Transaction } from '../types';
@@ -21,6 +21,21 @@ export function HistoryTab({ userId, jars, transactions, onDeleteTransaction, on
     const [correctingTxId, setCorrectingTxId] = useState<string | null>(null);
     const [pendingDeleteTx, setPendingDeleteTx] = useState<Transaction | null>(null);
     const [spikeTxIds, setSpikeTxIds] = useState<Set<string>>(new Set());
+    const [monthlyBudget, setMonthlyBudget] = useState<number>(0);
+
+    // Fetch monthly budget để overlay reference line trên biểu đồ
+    useEffect(() => {
+        let cancelled = false;
+        (async () => {
+            try {
+                const res = await apiGetBudget();
+                if (cancelled) return;
+                const value = Number(res.data?.monthly_budget);
+                if (Number.isFinite(value)) setMonthlyBudget(value);
+            } catch { /* silent */ }
+        })();
+        return () => { cancelled = true; };
+    }, []);
 
     // Fetch spike tx IDs từ Brain 2 (để vẽ badge 🔥)
     useEffect(() => {
@@ -82,7 +97,7 @@ export function HistoryTab({ userId, jars, transactions, onDeleteTransaction, on
 
     const totalPieValue = useMemo(() => pieChartData.reduce((s, d) => s + d.value, 0), [pieChartData]);
 
-    // Đồng bộ Dữ liệu Biểu Đồ Cột
+    // Đồng bộ Dữ liệu Biểu Đồ Cột / Vùng
     const barChartData = useMemo(() => {
         if (filterMonth !== 'all') {
             const map: Record<number, number> = {};
@@ -96,14 +111,25 @@ export function HistoryTab({ userId, jars, transactions, onDeleteTransaction, on
                 const day = new Date(t.date).getDate();
                 map[day] += t.amount;
             });
-            return Object.entries(map).map(([day, total]) => ({ name: day, total }));
+
+            // Thêm cumulative để biểu đồ miền lũy kế thấy được tốc độ chi tiêu
+            let running = 0;
+            return Object.entries(map).map(([day, total]) => {
+                running += total;
+                return { name: day, total, cumulative: running };
+            });
         } else {
             const map: Record<string, number> = {};
             transactions.filter(t => t.type === 'expense').forEach(t => {
                 const key = format(new Date(t.date), 'MM/yy');
                 map[key] = (map[key] || 0) + t.amount;
             });
-            return Object.entries(map).sort(([a], [b]) => a.localeCompare(b)).slice(-6).map(([month, total]) => ({ name: month, total }));
+            const sorted = Object.entries(map).sort(([a], [b]) => a.localeCompare(b)).slice(-6);
+            let running = 0;
+            return sorted.map(([month, total]) => {
+                running += total;
+                return { name: month, total, cumulative: running };
+            });
         }
     }, [transactions, filteredTransactions, filterMonth, filterYear, currentDate]);
 
@@ -160,14 +186,22 @@ export function HistoryTab({ userId, jars, transactions, onDeleteTransaction, on
     // Custom Tooltip for Charts to make it WOW
     const CustomTooltip = ({ active, payload, label }: any) => {
         if (active && payload && payload.length) {
+            const item = payload[0].payload;
+            const daily = item?.total ?? payload[0].value;
+            const cumulative = item?.cumulative;
             return (
-                <div className="bg-white/90 backdrop-blur-md p-3 rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] border border-white/50">
+                <div className="bg-white/95 backdrop-blur-md p-3 rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] border border-white/50">
                     <p className="text-xs font-bold text-gray-500 mb-1">
                         {filterMonth !== 'all' ? `Ngày ${label}` : label}
                     </p>
                     <p className="text-sm font-extrabold text-pink-500">
-                        {payload[0].value.toLocaleString()}đ
+                        Chi: {Number(daily).toLocaleString()}đ
                     </p>
+                    {cumulative !== undefined && cumulative !== daily && (
+                        <p className="text-[11px] font-bold text-purple-500 mt-0.5">
+                            Lũy kế: {Number(cumulative).toLocaleString()}đ
+                        </p>
+                    )}
                 </div>
             );
         }
@@ -303,9 +337,11 @@ export function HistoryTab({ userId, jars, transactions, onDeleteTransaction, on
                         )}
                     </div>
 
-                    {/* Bar Chart */}
+                    {/* Area Chart - Cumulative spending */}
                     {barChartData.length > 0 && (() => {
-                        // Tính top 3 giá trị lớn nhất để chỉ hiện label cho chúng
+                        const isMonthView = filterMonth !== 'all';
+                        // Tính tổng cuối kỳ + ngày chi nhiều nhất để hiển thị label nổi bật
+                        const finalCumulative = barChartData.length > 0 ? barChartData[barChartData.length - 1].cumulative : 0;
                         const top3Values = [...barChartData]
                             .map(d => d.total)
                             .filter(v => v > 0)
@@ -313,48 +349,114 @@ export function HistoryTab({ userId, jars, transactions, onDeleteTransaction, on
                             .slice(0, 3);
                         const top3Set = new Set(top3Values);
 
-                        const CustomBarLabel = (props: any) => {
-                            const { x, y, width, value } = props;
-                            if (!value || value <= 0 || !top3Set.has(value)) return null;
+                        // Custom dot: chỉ vẽ chấm + label cho ngày có chi tiêu (total > 0)
+                        const SpendingDot = (props: any) => {
+                            const { cx, cy, payload } = props;
+                            if (!payload || payload.total <= 0) return null;
+                            const isPeak = top3Set.has(payload.total);
                             return (
-                                <text
-                                    x={x + width / 2}
-                                    y={y - 5}
-                                    fill="#f43f5e"
-                                    textAnchor="middle"
-                                    fontSize={9}
-                                    fontWeight={800}
-                                >
-                                    {`${(value / 1000).toFixed(0)}k`}
-                                </text>
+                                <g>
+                                    <circle
+                                        cx={cx}
+                                        cy={cy}
+                                        r={isPeak ? 4 : 2.5}
+                                        fill={isPeak ? '#f43f5e' : '#fb7185'}
+                                        stroke="#fff"
+                                        strokeWidth={1.5}
+                                    />
+                                    {/* Label hiện trên CHẤM cho ngày có chi tiêu */}
+                                    <text
+                                        x={cx}
+                                        y={cy - (isPeak ? 10 : 8)}
+                                        textAnchor="middle"
+                                        fill={isPeak ? '#e11d48' : '#9ca3af'}
+                                        fontSize={isPeak ? 10 : 8.5}
+                                        fontWeight={isPeak ? 800 : 600}
+                                    >
+                                        {`${(payload.total / 1000).toFixed(payload.total >= 1_000_000 ? 1 : 0)}${payload.total >= 1_000_000 ? 'M' : 'k'}`}
+                                    </text>
+                                </g>
                             );
                         };
+
+                        // Y-axis max: lớn hơn của (cumulative cuối, monthly_budget) + 15% padding
+                        const yMax = Math.max(finalCumulative, isMonthView ? monthlyBudget : 0) * 1.15;
 
                         return (
                             <div className="bg-white rounded-[32px] p-5 shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-gray-50">
                                 <h3 className="text-sm font-extrabold text-gray-800 mb-1 text-center">
-                                    {filterMonth !== 'all' ? `Biến Động Chi Tiêu Tháng ${filterMonth}` : 'Chi Tiêu 6 Tháng Gần Nhất'}
+                                    {isMonthView ? `Biến Động Chi Tiêu Tháng ${filterMonth}` : 'Chi Tiêu 6 Tháng Gần Nhất'}
                                 </h3>
-                                <p className="text-[10px] text-center text-gray-400 font-medium mb-4">
-                                    Hover vào cột để xem chi tiết · Nhãn hiện trên 3 ngày chi nhiều nhất
+                                <p className="text-[10px] text-center text-gray-400 font-medium mb-1">
+                                    {isMonthView ? 'Vùng tím = chi tiêu lũy kế · Đường đỏ nét đứt = hạn mức tháng' : 'Vùng tím = chi tiêu lũy kế qua các tháng'}
                                 </p>
-                                <div className="h-56 w-full">
+                                <div className="flex justify-center gap-2 mb-3 text-[10px] font-bold">
+                                    <span className="text-purple-600">
+                                        Tổng: {finalCumulative.toLocaleString()}đ
+                                    </span>
+                                    {isMonthView && monthlyBudget > 0 && (
+                                        <>
+                                            <span className="text-gray-300">·</span>
+                                            <span className={finalCumulative > monthlyBudget ? 'text-red-500' : 'text-gray-500'}>
+                                                {finalCumulative > monthlyBudget
+                                                    ? `Vượt ${(finalCumulative - monthlyBudget).toLocaleString()}đ`
+                                                    : `Còn ${(monthlyBudget - finalCumulative).toLocaleString()}đ`}
+                                            </span>
+                                        </>
+                                    )}
+                                </div>
+                                <div className="h-64 w-full">
                                     <ResponsiveContainer width="100%" height="100%">
-                                        <BarChart data={barChartData} margin={{ top: 18, right: 0, left: -25, bottom: 0 }}>
+                                        <AreaChart data={barChartData} margin={{ top: 24, right: 12, left: -15, bottom: 0 }}>
                                             <defs>
-                                                <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
-                                                    <stop offset="0%" stopColor="#f43f5e" stopOpacity={0.8}/>
-                                                    <stop offset="100%" stopColor="#fb7185" stopOpacity={0.4}/>
+                                                <linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1">
+                                                    <stop offset="0%" stopColor="#a855f7" stopOpacity={0.55} />
+                                                    <stop offset="50%" stopColor="#ec4899" stopOpacity={0.3} />
+                                                    <stop offset="100%" stopColor="#fb7185" stopOpacity={0.05} />
                                                 </linearGradient>
                                             </defs>
                                             <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
-                                            <XAxis dataKey="name" tick={{ fontSize: 10, fontWeight: 700, fill: '#94a3b8' }} axisLine={false} tickLine={false} tickMargin={10} interval="preserveStartEnd" />
-                                            <YAxis tick={{ fontSize: 10, fontWeight: 700, fill: '#94a3b8' }} tickFormatter={(v) => v > 0 ? `${(v / 1000).toFixed(0)}k` : '0'} axisLine={false} tickLine={false} />
+                                            <XAxis
+                                                dataKey="name"
+                                                tick={{ fontSize: 10, fontWeight: 700, fill: '#94a3b8' }}
+                                                axisLine={false}
+                                                tickLine={false}
+                                                tickMargin={10}
+                                                interval={isMonthView ? 2 : 0}
+                                            />
+                                            <YAxis
+                                                tick={{ fontSize: 10, fontWeight: 700, fill: '#94a3b8' }}
+                                                tickFormatter={(v) => v > 0 ? `${(v / 1000).toFixed(0)}k` : '0'}
+                                                axisLine={false}
+                                                tickLine={false}
+                                                domain={[0, yMax > 0 ? yMax : 'auto']}
+                                            />
                                             <Tooltip content={<CustomTooltip />} />
-                                            <Bar dataKey="total" fill="url(#barGradient)" radius={[6, 6, 6, 6]} maxBarSize={32}>
-                                                <LabelList dataKey="total" content={<CustomBarLabel />} />
-                                            </Bar>
-                                        </BarChart>
+                                            {isMonthView && monthlyBudget > 0 && (
+                                                <ReferenceLine
+                                                    y={monthlyBudget}
+                                                    stroke="#ef4444"
+                                                    strokeDasharray="6 4"
+                                                    strokeWidth={1.5}
+                                                    label={{
+                                                        value: `Hạn mức: ${(monthlyBudget / 1000000).toFixed(1)}M`,
+                                                        position: 'insideTopRight',
+                                                        fill: '#ef4444',
+                                                        fontSize: 10,
+                                                        fontWeight: 800
+                                                    }}
+                                                />
+                                            )}
+                                            <Area
+                                                type="monotone"
+                                                dataKey="cumulative"
+                                                stroke="#a855f7"
+                                                strokeWidth={2.5}
+                                                fill="url(#areaGradient)"
+                                                dot={<SpendingDot />}
+                                                activeDot={{ r: 6, fill: '#ec4899', stroke: '#fff', strokeWidth: 2 }}
+                                            />
+                                        </AreaChart>
                                     </ResponsiveContainer>
                                 </div>
                             </div>
