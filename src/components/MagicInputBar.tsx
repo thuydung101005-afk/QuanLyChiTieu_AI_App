@@ -57,7 +57,12 @@ export function MagicInputBar({ userId, jars, onSuccess, onClose }: MagicInputBa
         if (!pendingTx || isAdding || !selectedJarId) return;
         setIsAdding(true);
         try {
-            await apiConfirmTransaction(pendingTx, selectedJarId, isRecurring);
+            const res = await apiConfirmTransaction(pendingTx, selectedJarId, isRecurring);
+            // Brain 2: hiển thị spike alert nếu có
+            const spikeAlert = res?.data?.spike_alert;
+            if (spikeAlert?.message) {
+                toast.info('🔥 ' + spikeAlert.message);
+            }
             await onSuccess();
             onClose();
         } catch (err: any) {

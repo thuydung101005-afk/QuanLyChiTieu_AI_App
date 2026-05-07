@@ -119,6 +119,28 @@ export const initDb = () => {
     )
   `).run();
 
+  // ── Brain 2: KiemVuong (Insights / Cảnh báo) ─────────────────────────────
+  // Lưu các phát hiện từ Tầng Phân tích (Spike, Burn Rate...)
+  db.prepare(`
+    CREATE TABLE IF NOT EXISTS kiem_vuong (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      type TEXT NOT NULL,
+      severity TEXT NOT NULL,
+      jar_id TEXT,
+      tx_id TEXT,
+      period_key TEXT NOT NULL,
+      title TEXT NOT NULL,
+      message TEXT NOT NULL,
+      evidence_json TEXT,
+      suggestion TEXT,
+      status TEXT DEFAULT 'active',
+      created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+      UNIQUE(user_id, type, period_key),
+      FOREIGN KEY(user_id) REFERENCES users(id)
+    )
+  `).run();
+
   // Safe migrations for existing DBs
   try { db.prepare(`ALTER TABLE users ADD COLUMN email TEXT`).run(); } catch {}
   try { db.prepare(`ALTER TABLE users ADD COLUMN is_verified INTEGER DEFAULT 0`).run(); } catch {}
@@ -668,6 +690,126 @@ export const hasSentAIReportThisMonth = (userId: string, monthStr: string) => {
 
 export const markAIReportSent = (userId: string, monthStr: string) => {
   db.prepare('INSERT OR IGNORE INTO ai_reports_log (user_id, month_str) VALUES (?, ?)').run(userId, monthStr);
+};
+
+// ─── Brain 2: KiemVuong (Insights) Helpers ───────────────────────────────────
+export interface KiemVuongInput {
+  user_id: string;
+  type: 'SPIKE' | 'BURN_RATE' | 'PARETO' | 'SUBSCRIPTION' | 'CONCEPT_DRIFT' | 'HEALTH';
+  severity: 'low' | 'medium' | 'high';
+  jar_id?: string | null;
+  tx_id?: string | null;
+  period_key: string;
+  title: string;
+  message: string;
+  evidence?: any;
+  suggestion?: string;
+}
+
+export const createKiemVuong = (input: KiemVuongInput): string | null => {
+  const id = `kv_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+  try {
+    db.prepare(`
+      INSERT INTO kiem_vuong (id, user_id, type, severity, jar_id, tx_id, period_key, title, message, evidence_json, suggestion, status)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active')
+    `).run(
+      id,
+      input.user_id,
+      input.type,
+      input.severity,
+      input.jar_id || null,
+      input.tx_id || null,
+      input.period_key,
+      input.title,
+      input.message,
+      input.evidence ? JSON.stringify(input.evidence) : null,
+      input.suggestion || null
+    );
+    return id;
+  } catch (err: any) {
+    // UNIQUE constraint → đã có insight cùng (user, type, period) → bỏ qua
+    if (String(err.message).includes('UNIQUE')) return null;
+    console.error('[KiemVuong Insert Error]', err.message);
+    return null;
+  }
+};
+
+export const getActiveKiemVuong = (userId: string, limit: number = 10) => {
+  return db.prepare(`
+    SELECT id, type, severity, jar_id, tx_id, title, message, evidence_json, suggestion, status, created_at
+    FROM kiem_vuong
+    WHERE user_id = ? AND status = 'active'
+    ORDER BY 
+      CASE severity WHEN 'high' THEN 1 WHEN 'medium' THEN 2 ELSE 3 END,
+      created_at DESC
+    LIMIT ?
+  `).all(userId, limit) as any[];
+};
+
+export const getSpikeTxIds = (userId: string): string[] => {
+  const rows = db.prepare(`
+    SELECT tx_id FROM kiem_vuong
+    WHERE user_id = ? AND type = 'SPIKE' AND tx_id IS NOT NULL
+  `).all(userId) as any[];
+  return rows.map(r => r.tx_id);
+};
+
+export const dismissKiemVuong = (id: string, userId: string) => {
+  return db.prepare(`UPDATE kiem_vuong SET status = 'dismissed' WHERE id = ? AND user_id = ?`).run(id, userId);
+};
+
+// Lấy giao dịch tương tự dựa trên core_keywords (dùng cho Spike Detection)
+// LƯU Ý: KHÔNG sửa logic AI phân loại — đây là helper đọc thuần
+export const getSimilarTransactionsForSpike = (
+  userId: string,
+  description: string,
+  jarId: string,
+  daysBack: number = 90
+): { amount: number; date: string }[] => {
+  const cutoff = new Date(Date.now() - daysBack * 24 * 60 * 60 * 1000).toISOString();
+  const txs = db.prepare(`
+    SELECT t.amount, t.date, t.description
+    FROM transactions t
+    JOIN jars j ON t.jar_id = j.id
+    WHERE j.user_id = ? AND t.type = 'expense' AND t.date >= ?
+    ORDER BY t.date DESC LIMIT 200
+  `).all(userId, cutoff) as any[];
+
+  if (txs.length === 0) return [];
+
+  const targetCore = extractCoreKeywords(description.toLowerCase()) || description.toLowerCase().trim();
+  if (!targetCore) return [];
+
+  // Dùng Fuse.js để tìm các giao dịch có core_keyword tương tự (giống pattern getJarByLocalHistory)
+  const txData = txs.map(tx => ({
+    amount: tx.amount,
+    date: tx.date,
+    core: extractCoreKeywords(tx.description.toLowerCase()) || tx.description.toLowerCase()
+  }));
+
+  const fuse = new Fuse(txData, {
+    keys: ['core'],
+    includeScore: true,
+    threshold: 0.3,
+    distance: 100
+  });
+
+  const results = fuse.search(targetCore);
+  return results
+    .filter(r => r.score !== undefined && r.score <= 0.3)
+    .map(r => ({ amount: r.item.amount, date: r.item.date }));
+};
+
+// Lấy chi tiêu trong tháng cho 1 hũ (dùng cho Burn Rate)
+export const getJarSpendingThisMonth = (jarId: string, year: number, month: number): number => {
+  const start = new Date(year, month - 1, 1).toISOString();
+  const end = new Date(year, month, 0, 23, 59, 59).toISOString();
+  const row = db.prepare(`
+    SELECT COALESCE(SUM(amount), 0) as total
+    FROM transactions
+    WHERE jar_id = ? AND type = 'expense' AND date >= ? AND date <= ?
+  `).get(jarId, start, end) as any;
+  return row?.total || 0;
 };
 
 export default db;

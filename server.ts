@@ -1,7 +1,8 @@
 import express from 'express';
 import cors from 'cors';
-import { initDb, getJars, getTransactions, addTransaction, getDatabaseInfoForAI, createJar, deleteJar, updateJar, bulkUpdateJars, addIncome, getUserById, deleteTransaction, getJarByConcept, updateTransactionJar, getJarByLocalHistory, addRecurringTransaction, processRecurringTransactions, getMonthlySummaryForAI, hasSentAIReportThisMonth, markAIReportSent, createNotification, getAllUsers, getUserBudget, setUserBudget } from './database.js';
+import { initDb, getJars, getTransactions, addTransaction, getDatabaseInfoForAI, createJar, deleteJar, updateJar, bulkUpdateJars, addIncome, getUserById, deleteTransaction, getJarByConcept, updateTransactionJar, getJarByLocalHistory, addRecurringTransaction, processRecurringTransactions, getMonthlySummaryForAI, hasSentAIReportThisMonth, markAIReportSent, createNotification, getAllUsers, getUserBudget, setUserBudget, getActiveKiemVuong, getSpikeTxIds, dismissKiemVuong } from './database.js';
 import db from './database.js';
+import { runSpikeCheck, runBurnRateCheck } from './analyzeService.js';
 import { GoogleGenAI } from '@google/genai';
 import "dotenv/config";
 import axios from 'axios';
@@ -330,15 +331,87 @@ app.post('/api/transactions/confirm', authenticateToken, (req, res) => {
             }
         }
 
+        // ── BRAIN 2 — Phân tích sau khi giao dịch lưu thành công ────────
+        // Không động vào logic Brain 1 ở trên. Chỉ ĐỌC dữ liệu và sinh KiemVuong.
+        let spikeAlert: any = null;
+        try {
+            const spike = runSpikeCheck(userId, { id, amount, description, jar_id });
+            if (spike.isSpike) {
+                spikeAlert = {
+                    title: '🔥 Giao dịch đột biến',
+                    message: spike.message,
+                    ratio: spike.ratio,
+                    median: spike.median
+                };
+            }
+
+            // Burn Rate cho hũ vừa được chi
+            const allJars = getJars(userId) as any[];
+            const targetJar = allJars.find(j => j.id === jar_id);
+            if (targetJar) {
+                runBurnRateCheck(userId, {
+                    id: targetJar.id,
+                    name: targetJar.name,
+                    balance: targetJar.balance,
+                    allocation_percent: targetJar.allocation_percent
+                });
+            }
+        } catch (err: any) {
+            console.error('[Brain2] Analysis error (non-blocking):', err.message);
+        }
+
         res.status(201).json({
             success: true,
-            id
+            id,
+            spike_alert: spikeAlert
         });
     } catch (err: any) {
         console.error("Save Transaction Error:", err.message);
         res.status(500).json({ error: err.message });
     }
 });
+
+// ─── Insights API (Brain 2 output) ───────────────────────────────────────
+app.get('/api/insights', authenticateToken, (req, res) => {
+    try {
+        const userId = (req as any).user.userId;
+        const insights = getActiveKiemVuong(userId, 10);
+        // Parse evidence_json về object cho FE dễ dùng
+        const formatted = insights.map((i: any) => ({
+            ...i,
+            evidence: i.evidence_json ? safeJsonParse(i.evidence_json) : null
+        }));
+        res.json({ success: true, insights: formatted });
+    } catch (err: any) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.put('/api/insights/:id/dismiss', authenticateToken, (req, res) => {
+    try {
+        const userId = (req as any).user.userId;
+        const insightId = req.params.id;
+        const info = dismissKiemVuong(insightId, userId);
+        res.json({ success: true, updated: info.changes });
+    } catch (err: any) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Trả về danh sách tx_id đang được flag SPIKE (FE dùng để vẽ badge)
+app.get('/api/insights/spike-tx-ids', authenticateToken, (req, res) => {
+    try {
+        const userId = (req as any).user.userId;
+        const ids = getSpikeTxIds(userId);
+        res.json({ success: true, tx_ids: ids });
+    } catch (err: any) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+function safeJsonParse(s: string) {
+    try { return JSON.parse(s); } catch { return null; }
+}
 
 // Income Route
 app.post('/api/incomes', authenticateToken, (req, res) => {
@@ -431,13 +504,25 @@ app.post('/api/chat', authenticateToken, async (req, res) => {
 
         const dbInfo = getDatabaseInfoForAI(userId);
 
+        // ── Bổ sung Insights từ Brain 2 vào context để Bé Trứng trả lời sắc bén hơn ──
+        const insights = getActiveKiemVuong(userId, 5);
+        const insightsText = insights.length > 0
+            ? insights.map((i: any) => `- [${i.severity}] ${i.title}: ${i.message}${i.suggestion ? ` (Gợi ý: ${i.suggestion})` : ''}`).join('\n')
+            : 'Không có phát hiện đáng chú ý.';
+
         const prompt = `Bạn là một trợ lý ảo hình quả trứng dễ thương tên là Egg-u, giúp quản lý chi tiêu theo phương pháp 6 chiếc lọ.
 Đây là dữ liệu tài chính hiện tại của người dùng:
 Các lọ (Jars): ${JSON.stringify(dbInfo.jars, null, 2)}
 Giao dịch gần đây: ${JSON.stringify(dbInfo.recentTransactions, null, 2)}
 
-Trả lời câu hỏi sau của người dùng một cách thân thiện, xưng hô là "Bé Trứng" hoặc "Tớ" và gọi người dùng là "bạn" hoặc "cậu": 
-"${message}"
+Phòng phân tích vừa phát hiện các điều sau (Brain 2 - Tầng Phân tích):
+${insightsText}
+
+Trả lời câu hỏi sau của người dùng một cách thân thiện, xưng hô là "Bé Trứng" hoặc "Tớ" và gọi người dùng là "bạn" hoặc "cậu". 
+Nếu các phát hiện ở trên LIÊN QUAN trực tiếp đến câu hỏi, hãy LỒNG GHÉP chúng vào câu trả lời một cách tự nhiên (ví dụ: nhắc số liệu cụ thể từ phát hiện). 
+Nếu không liên quan, KHÔNG cần đề cập.
+
+Câu hỏi: "${message}"
 
 Trả lời phải ngắn gọn (dưới 4 câu) và có kèm 1-2 từ khoá gợi ý câu hỏi tiếp theo ở cuối dưới dạng [Gợi ý: "Câu hỏi 1", "Câu hỏi 2"].`;
 

@@ -128,3 +128,13 @@ export const apiGetBudget = () =>
 
 export const apiSetBudget = (monthlyBudget: number) =>
     api.put('/budget', { monthly_budget: monthlyBudget });
+
+// ─── Brain 2: Insights ───────────────────────────────────────────────────────
+export const apiGetInsights = () =>
+    api.get('/insights');
+
+export const apiDismissInsight = (id: string) =>
+    api.put(`/insights/${id}/dismiss`);
+
+export const apiGetSpikeTxIds = () =>
+    api.get('/insights/spike-tx-ids');

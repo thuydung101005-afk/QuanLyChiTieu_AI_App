@@ -4,6 +4,7 @@ import { Wallet, ChevronRight, Home, Gamepad2, TrendingUp, BookOpen, PiggyBank, 
 import { motion, AnimatePresence } from 'motion/react';
 import type { Jar, Transaction } from '../types';
 import { apiGetBudget, apiSetBudget } from '../services/api';
+import { InsightsCarousel } from './InsightsCarousel';
 
 const ICONS: Record<string, React.ComponentType<{ size?: number; strokeWidth?: number }>> = {
     'home': Home, 'gamepad': Gamepad2, 'trending-up': TrendingUp,
@@ -22,7 +23,6 @@ export function HomeTab({ userId, jars, transactions, totalBalance, onViewHistor
     const [selectedJar, setSelectedJar] = useState<Jar | null>(null);
 
     const DEFAULT_BUDGET = 5000000;
-
     const [monthlyBudget, setMonthlyBudget] = useState<number>(DEFAULT_BUDGET);
     const [isEditingBudget, setIsEditingBudget] = useState(false);
     const [budgetInput, setBudgetInput] = useState(DEFAULT_BUDGET.toString());
@@ -105,6 +105,9 @@ export function HomeTab({ userId, jars, transactions, totalBalance, onViewHistor
             exit={{ opacity: 0, y: -10 }}
             className="space-y-6 pt-2"
         >
+            {/* Brain 2 — Insights Carousel */}
+            <InsightsCarousel refreshKey={transactions.length} />
+
             {/* 6 Jars Grid */}
             <div>
                 <div className="flex justify-between items-center mb-4">

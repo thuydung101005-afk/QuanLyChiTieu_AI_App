@@ -1,9 +1,9 @@
 import React, { useMemo, useState, useEffect } from 'react';
-import { Wallet, Trash2, RefreshCw, Download, Calendar, ChevronDown } from 'lucide-react';
+import { Wallet, Trash2, RefreshCw, Download, Calendar, ChevronDown, Flame } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid, LabelList } from 'recharts';
 import { format } from 'date-fns';
-import { apiUpdateTransactionJar } from '../services/api';
+import { apiUpdateTransactionJar, apiGetSpikeTxIds } from '../services/api';
 import { useToast } from '../contexts/ToastContext';
 import { ConfirmDialog } from './ConfirmDialog';
 import type { Jar, Transaction } from '../types';
@@ -20,6 +20,24 @@ export function HistoryTab({ userId, jars, transactions, onDeleteTransaction, on
     const toast = useToast();
     const [correctingTxId, setCorrectingTxId] = useState<string | null>(null);
     const [pendingDeleteTx, setPendingDeleteTx] = useState<Transaction | null>(null);
+    const [spikeTxIds, setSpikeTxIds] = useState<Set<string>>(new Set());
+
+    // Fetch spike tx IDs từ Brain 2 (để vẽ badge 🔥)
+    useEffect(() => {
+        let cancelled = false;
+        (async () => {
+            try {
+                const res = await apiGetSpikeTxIds();
+                if (cancelled) return;
+                if (res.data?.success && Array.isArray(res.data.tx_ids)) {
+                    setSpikeTxIds(new Set(res.data.tx_ids));
+                }
+            } catch (err) {
+                // Silent fail - không bắt buộc
+            }
+        })();
+        return () => { cancelled = true; };
+    }, [transactions.length]);
     
     // Mặc định chọn Tháng hiện tại và Năm hiện tại
     const currentDate = new Date();
@@ -376,7 +394,18 @@ export function HistoryTab({ userId, jars, transactions, onDeleteTransaction, on
                                                 <Wallet size={20} className="relative z-10" />
                                             </div>
                                             <div className="min-w-0 flex-1">
-                                                <p className="text-[15px] font-extrabold text-gray-800 truncate leading-tight mb-1">{tx.description}</p>
+                                                <p className="text-[15px] font-extrabold text-gray-800 truncate leading-tight mb-1 flex items-center gap-1.5">
+                                                    {spikeTxIds.has(tx.id) && (
+                                                        <span
+                                                            title="Giao dịch đột biến"
+                                                            className="inline-flex items-center justify-center w-5 h-5 rounded-md bg-red-100 text-red-500 shrink-0"
+                                                            data-testid={`spike-badge-${tx.id}`}
+                                                        >
+                                                            <Flame size={11} />
+                                                        </span>
+                                                    )}
+                                                    <span className="truncate">{tx.description}</span>
+                                                </p>
                                                 <div className="flex gap-2 items-center flex-wrap">
                                                     <span className="text-[11px] font-bold text-gray-400 shrink-0">
                                                         {format(new Date(tx.date), 'dd/MM/yyyy')}
