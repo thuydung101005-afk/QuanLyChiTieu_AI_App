@@ -508,23 +508,42 @@ app.post('/api/chat', authenticateToken, async (req, res) => {
         const insights = getActiveKiemVuong(userId, 5);
         const insightsText = insights.length > 0
             ? insights.map((i: any) => `- [${i.severity}] ${i.title}: ${i.message}${i.suggestion ? ` (Gợi ý: ${i.suggestion})` : ''}`).join('\n')
-            : 'Không có phát hiện đáng chú ý.';
+            : '(không có)';
 
-        const prompt = `Bạn là một trợ lý ảo hình quả trứng dễ thương tên là Egg-u, giúp quản lý chi tiêu theo phương pháp 6 chiếc lọ.
-Đây là dữ liệu tài chính hiện tại của người dùng:
-Các lọ (Jars): ${JSON.stringify(dbInfo.jars, null, 2)}
-Giao dịch gần đây: ${JSON.stringify(dbInfo.recentTransactions, null, 2)}
+        // ── COMPACT FORMAT — Tiết kiệm 70% token Gemini ────────────────────────
+        // Trước: JSON.stringify full object → ~3300 token
+        // Sau:  inline format → ~700 token
+        const jarsCompact = (dbInfo.jars as any[])
+            .map(j => `${j.name}(${Math.round(j.balance).toLocaleString()}đ/${j.allocation_percent}%)`)
+            .join(' | ');
 
-Phòng phân tích vừa phát hiện các điều sau (Brain 2 - Tầng Phân tích):
+        // Chỉ gửi tối đa 8 giao dịch gần nhất, format ngắn gọn
+        const recentTxs = (dbInfo.recentTransactions as any[]).slice(0, 8);
+        const txCompact = recentTxs.length > 0
+            ? recentTxs.map(t => {
+                const d = new Date(t.date);
+                const dateStr = `${d.getDate()}/${d.getMonth() + 1}`;
+                const sign = t.type === 'income' ? '+' : '-';
+                return `${dateStr} ${t.description} ${sign}${Math.round(Math.abs(t.amount)).toLocaleString()}đ`;
+            }).join(' | ')
+            : '(chưa có)';
+
+        const prompt = `Bạn là Bé Trứng (Egg-u) — trợ lý tài chính cá nhân hình quả trứng dễ thương, theo phương pháp 6 hũ.
+
+DỮ LIỆU NGƯỜI DÙNG:
+• Hũ: ${jarsCompact}
+• Giao dịch gần (8 cái): ${txCompact}
+• Phát hiện từ phòng phân tích:
 ${insightsText}
 
-Trả lời câu hỏi sau của người dùng một cách thân thiện, xưng hô là "Bé Trứng" hoặc "Tớ" và gọi người dùng là "bạn" hoặc "cậu". 
-Nếu các phát hiện ở trên LIÊN QUAN trực tiếp đến câu hỏi, hãy LỒNG GHÉP chúng vào câu trả lời một cách tự nhiên (ví dụ: nhắc số liệu cụ thể từ phát hiện). 
-Nếu không liên quan, KHÔNG cần đề cập.
+CÁCH TRẢ LỜI:
+- Xưng "Bé Trứng" hoặc "Tớ", gọi user là "bạn" hoặc "cậu"
+- Ngắn gọn (dưới 4 câu), thân thiện
+- Nếu phát hiện liên quan đến câu hỏi → lồng số liệu cụ thể vào
+- Nếu không liên quan → KHÔNG đề cập
+- Cuối câu kèm gợi ý dưới dạng: [Gợi ý: "Câu 1", "Câu 2"]
 
-Câu hỏi: "${message}"
-
-Trả lời phải ngắn gọn (dưới 4 câu) và có kèm 1-2 từ khoá gợi ý câu hỏi tiếp theo ở cuối dưới dạng [Gợi ý: "Câu hỏi 1", "Câu hỏi 2"].`;
+Câu hỏi: "${message}"`;
 
         const response = await ai.models.generateContent({
             model: 'gemini-2.5-flash',
