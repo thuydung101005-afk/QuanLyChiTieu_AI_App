@@ -31,3 +31,12 @@ training_data.txt
 finance.db-wal
 finance.db-shm
 
+-e 
+# Environment and credential files
+.env
+.env.*
+*.env
+credentials.json
+*.pem
+*.key
+.credentials
