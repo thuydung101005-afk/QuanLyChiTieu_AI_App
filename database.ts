@@ -122,6 +122,7 @@ export const initDb = () => {
   // Safe migrations for existing DBs
   try { db.prepare(`ALTER TABLE users ADD COLUMN email TEXT`).run(); } catch {}
   try { db.prepare(`ALTER TABLE users ADD COLUMN is_verified INTEGER DEFAULT 0`).run(); } catch {}
+  try { db.prepare(`ALTER TABLE users ADD COLUMN monthly_budget REAL DEFAULT 5000000`).run(); } catch {}
 
   // Jars will be seeded per user on signup.
 };
@@ -450,6 +451,15 @@ export const addIncome = (userId: string, totalAmount: number, description: stri
 
 export const getUserById = (userId: string) => {
   return db.prepare('SELECT id, username, email, is_verified, created_at FROM users WHERE id = ?').get(userId);
+};
+
+export const getUserBudget = (userId: string): number => {
+  const row = db.prepare('SELECT monthly_budget FROM users WHERE id = ?').get(userId) as any;
+  return row?.monthly_budget ?? 5000000;
+};
+
+export const setUserBudget = (userId: string, budget: number) => {
+  return db.prepare('UPDATE users SET monthly_budget = ? WHERE id = ?').run(budget, userId);
 };
 
 export const getAllUsers = () => {

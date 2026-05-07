@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import { initDb, getJars, getTransactions, addTransaction, getDatabaseInfoForAI, createJar, deleteJar, updateJar, bulkUpdateJars, addIncome, getUserById, deleteTransaction, getJarByConcept, updateTransactionJar, getJarByLocalHistory, addRecurringTransaction, processRecurringTransactions, getMonthlySummaryForAI, hasSentAIReportThisMonth, markAIReportSent, createNotification, getAllUsers } from './database.js';
+import { initDb, getJars, getTransactions, addTransaction, getDatabaseInfoForAI, createJar, deleteJar, updateJar, bulkUpdateJars, addIncome, getUserById, deleteTransaction, getJarByConcept, updateTransactionJar, getJarByLocalHistory, addRecurringTransaction, processRecurringTransactions, getMonthlySummaryForAI, hasSentAIReportThisMonth, markAIReportSent, createNotification, getAllUsers, getUserBudget, setUserBudget } from './database.js';
 import db from './database.js';
 import { GoogleGenAI } from '@google/genai';
 import "dotenv/config";

@@ -209,6 +209,8 @@ export default function App() {
               <AnimatePresence mode="wait">
                 {activeTab === 'home' && (
                   <HomeTab
+                    key={auth.userId}
+                    userId={auth.userId!}
                     jars={finance.jars}
                     transactions={finance.transactions}
                     totalBalance={finance.totalBalance}

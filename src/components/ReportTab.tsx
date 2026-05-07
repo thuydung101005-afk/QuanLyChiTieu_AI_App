@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { motion } from 'motion/react';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend, LabelList } from 'recharts';
 import { format, startOfMonth, endOfMonth, isWithinInterval, subMonths } from 'date-fns';
 import { Sparkles, Loader2 } from 'lucide-react';
 import type { Jar, Transaction } from '../types';
@@ -129,25 +129,49 @@ export function ReportTab({ jars, transactions, onAIReportSent }: ReportTabProps
                     {totalExpense.toLocaleString()}đ
                 </p>
                 {pieData.length > 0 ? (
-                    <div className="h-48 w-full">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <PieChart>
-                                <Pie 
-                                    data={pieData} 
-                                    cx="50%" cy="50%" 
-                                    innerRadius={55} outerRadius={75} 
-                                    paddingAngle={5} 
-                                    dataKey="value" 
-                                    nameKey="name"
-                                >
-                                    {pieData.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={entry.color || '#FFD1DA'} />
-                                    ))}
-                                </Pie>
-                                <RechartsTooltip formatter={(value: number) => `${value.toLocaleString()}đ`} />
-                            </PieChart>
-                        </ResponsiveContainer>
-                    </div>
+                    <>
+                        <div className="h-52 w-full">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <PieChart>
+                                    <Pie
+                                        data={pieData}
+                                        cx="50%" cy="50%"
+                                        innerRadius={50} outerRadius={72}
+                                        paddingAngle={4}
+                                        dataKey="value"
+                                        nameKey="name"
+                                        label={({ name, value, cx, cy, midAngle, innerRadius, outerRadius }) => {
+                                            const RADIAN = Math.PI / 180;
+                                            const radius = outerRadius + 22;
+                                            const x = cx + radius * Math.cos(-midAngle * RADIAN);
+                                            const y = cy + radius * Math.sin(-midAngle * RADIAN);
+                                            const pct = totalExpense > 0 ? ((value / totalExpense) * 100).toFixed(1) : '0';
+                                            return (
+                                                <text x={x} y={y} fill="#555" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central" style={{ fontSize: 11, fontWeight: 700 }}>
+                                                    {`${pct}%`}
+                                                </text>
+                                            );
+                                        }}
+                                        labelLine={{ stroke: '#ccc', strokeWidth: 1 }}
+                                    >
+                                        {pieData.map((entry, index) => (
+                                            <Cell key={`cell-${index}`} fill={entry.color || '#FFD1DA'} />
+                                        ))}
+                                    </Pie>
+                                    <RechartsTooltip formatter={(value: number) => `${value.toLocaleString()}đ`} />
+                                </PieChart>
+                            </ResponsiveContainer>
+                        </div>
+                        {/* Legend dưới */}
+                        <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mt-1">
+                            {pieData.map((entry, i) => (
+                                <div key={i} className="flex items-center gap-1">
+                                    <span className="inline-block w-2.5 h-2.5 rounded-full" style={{ background: entry.color || '#FFD1DA' }} />
+                                    <span className="text-[11px] font-semibold text-gray-600">{entry.name}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </>
                 ) : (
                     <p className="text-xs text-center text-gray-400 font-medium py-8">Chưa có chi tiêu nào tháng này 🐣</p>
                 )}
@@ -158,14 +182,18 @@ export function ReportTab({ jars, transactions, onAIReportSent }: ReportTabProps
                 <h3 className="text-sm font-extrabold text-gray-700 mb-6 text-center">Thu - Chi 6 tháng qua</h3>
                 <div className="h-56 w-full">
                     <ResponsiveContainer width="100%" height="100%">
-                        <BarChart data={barData} margin={{ top: 0, right: 0, left: -10, bottom: 0 }}>
+                        <BarChart data={barData} margin={{ top: 20, right: 8, left: -10, bottom: 0 }}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
                             <XAxis dataKey="month" tick={{ fontSize: 10, fontWeight: 700 }} axisLine={false} tickLine={false} />
                             <YAxis tick={{ fontSize: 9 }} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} axisLine={false} tickLine={false} />
                             <RechartsTooltip cursor={{fill: 'transparent'}} formatter={(v: number) => `${v.toLocaleString()}đ`} />
                             <Legend wrapperStyle={{ fontSize: '11px', fontWeight: 'bold' }} />
-                            <Bar dataKey="income" fill="#4ade80" radius={[4, 4, 0, 0]} name="Thu nhập" barSize={12} />
-                            <Bar dataKey="expense" fill="#FFB5A7" radius={[4, 4, 0, 0]} name="Chi tiêu" barSize={12} />
+                            <Bar dataKey="income" fill="#4ade80" radius={[4, 4, 0, 0]} name="Thu nhập" barSize={12}>
+                                <LabelList dataKey="income" position="top" style={{ fontSize: 8, fontWeight: 700, fill: '#16a34a' }} formatter={(v: number) => v > 0 ? `${(v/1000).toFixed(0)}k` : ''} />
+                            </Bar>
+                            <Bar dataKey="expense" fill="#FFB5A7" radius={[4, 4, 0, 0]} name="Chi tiêu" barSize={12}>
+                                <LabelList dataKey="expense" position="top" style={{ fontSize: 8, fontWeight: 700, fill: '#f87171' }} formatter={(v: number) => v > 0 ? `${(v/1000).toFixed(0)}k` : ''} />
+                            </Bar>
                         </BarChart>
                     </ResponsiveContainer>
                 </div>

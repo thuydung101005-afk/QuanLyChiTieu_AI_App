@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Wallet, ChevronRight, Home, Gamepad2, TrendingUp, BookOpen, PiggyBank, Heart, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -10,14 +10,42 @@ const ICONS: Record<string, React.ComponentType<{ size?: number; strokeWidth?: n
 };
 
 interface HomeTabProps {
+    userId: string;
     jars: Jar[];
     transactions: Transaction[];
     totalBalance: number;
     onViewHistory: () => void;
 }
 
-export function HomeTab({ jars, transactions, totalBalance, onViewHistory }: HomeTabProps) {
+export function HomeTab({ userId, jars, transactions, totalBalance, onViewHistory }: HomeTabProps) {
     const [selectedJar, setSelectedJar] = useState<Jar | null>(null);
+
+    const getBudgetFromStorage = (uid: string) => {
+        const val = localStorage.getItem(`monthlyBudget_${uid}`);
+        if (val) return parseInt(val);
+        // fallback: nếu có key cũ không có userId
+        const legacy = localStorage.getItem('monthlyBudget');
+        if (legacy) return parseInt(legacy);
+        return 5000000;
+    };
+
+    const [monthlyBudget, setMonthlyBudget] = useState<number>(() => getBudgetFromStorage(userId));
+    const [isEditingBudget, setIsEditingBudget] = useState(false);
+    const [budgetInput, setBudgetInput] = useState(monthlyBudget.toString());
+
+    // Sync lại budget từ localStorage khi userId thay đổi (ví dụ sau khi đăng nhập lại)
+    useEffect(() => {
+        const saved = getBudgetFromStorage(userId);
+        setMonthlyBudget(saved);
+        setBudgetInput(saved.toString());
+    }, [userId]);
+
+    const handleSaveBudget = () => {
+        const val = parseInt(budgetInput.replace(/\D/g, '')) || 0;
+        setMonthlyBudget(val);
+        localStorage.setItem(`monthlyBudget_${userId}`, val.toString());
+        setIsEditingBudget(false);
+    };
 
     // 1. Calculate this month's budget pool
     const currentMonth = new Date().getMonth();
@@ -30,6 +58,10 @@ export function HomeTab({ jars, transactions, totalBalance, onViewHistory }: Hom
 
     const totalIncomeThisMonth = thisMonthTxs
         .filter(tx => tx.type === 'income')
+        .reduce((sum, tx) => sum + tx.amount, 0);
+
+    const totalExpenseThisMonth = thisMonthTxs
+        .filter(tx => tx.type === 'expense')
         .reduce((sum, tx) => sum + tx.amount, 0);
 
     // Filter transactions for the selected jar
@@ -103,6 +135,59 @@ export function HomeTab({ jars, transactions, totalBalance, onViewHistory }: Hom
                         );
                     })}
                 </div>
+            </div>
+
+            {/* Monthly Budget Section */}
+            <div className="bg-white rounded-[32px] p-5 shadow-[0_4px_20px_rgba(0,0,0,0.04)] border border-pink-50">
+                <div className="flex justify-between items-center mb-4">
+                    <h3 className="text-sm font-extrabold text-gray-700">Hạn mức chi tiêu tháng {currentMonth + 1}</h3>
+                    {!isEditingBudget && (
+                        <button onClick={() => { setBudgetInput(monthlyBudget.toString()); setIsEditingBudget(true); }} className="text-xs font-bold text-[#FF7FA3] hover:opacity-80">
+                            Sửa
+                        </button>
+                    )}
+                </div>
+
+                {isEditingBudget ? (
+                    <div className="flex gap-2">
+                        <input 
+                            type="text" 
+                            inputMode="numeric" 
+                            value={budgetInput} 
+                            onChange={(e) => setBudgetInput(e.target.value.replace(/[^0-9]/g, ''))} 
+                            className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm font-bold focus:outline-none focus:border-pink-300"
+                            placeholder="Nhập hạn mức..."
+                            autoFocus
+                        />
+                        <button onClick={handleSaveBudget} className="bg-pink-500 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-md hover:bg-pink-600">
+                            Lưu
+                        </button>
+                    </div>
+                ) : (
+                    <div>
+                        <div className="flex justify-between items-end mb-2">
+                            <p className="text-2xl font-black text-gray-800">
+                                {totalExpenseThisMonth.toLocaleString()}đ
+                            </p>
+                            <p className="text-xs font-bold text-gray-400 mb-1">
+                                / {monthlyBudget.toLocaleString()}đ
+                            </p>
+                        </div>
+                        
+                        <div className="w-full h-3 bg-gray-100 rounded-full overflow-hidden">
+                            <div 
+                                className={`h-full transition-all duration-500 ${totalExpenseThisMonth > monthlyBudget ? 'bg-red-500' : 'bg-gradient-to-r from-pink-400 to-purple-500'}`}
+                                style={{ width: `${Math.min((totalExpenseThisMonth / (monthlyBudget || 1)) * 100, 100)}%` }}
+                            />
+                        </div>
+                        
+                        <p className={`text-xs font-bold mt-2 ${totalExpenseThisMonth > monthlyBudget ? 'text-red-500' : 'text-gray-500'}`}>
+                            {totalExpenseThisMonth > monthlyBudget 
+                                ? `⚠️ Vượt hạn mức ${(totalExpenseThisMonth - monthlyBudget).toLocaleString()}đ` 
+                                : `Còn lại ${(monthlyBudget - totalExpenseThisMonth).toLocaleString()}đ`}
+                        </p>
+                    </div>
+                )}
             </div>
 
             {/* Recent Transactions */}
