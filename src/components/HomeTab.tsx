@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { Wallet, ChevronRight, Home, Gamepad2, TrendingUp, BookOpen, PiggyBank, Heart, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import type { Jar, Transaction } from '../types';
+import { apiGetBudget, apiSetBudget } from '../services/api';
 
 const ICONS: Record<string, React.ComponentType<{ size?: number; strokeWidth?: number }>> = {
     'home': Home, 'gamepad': Gamepad2, 'trending-up': TrendingUp,
@@ -20,31 +21,58 @@ interface HomeTabProps {
 export function HomeTab({ userId, jars, transactions, totalBalance, onViewHistory }: HomeTabProps) {
     const [selectedJar, setSelectedJar] = useState<Jar | null>(null);
 
-    const getBudgetFromStorage = (uid: string) => {
-        const val = localStorage.getItem(`monthlyBudget_${uid}`);
-        if (val) return parseInt(val);
-        // fallback: nếu có key cũ không có userId
-        const legacy = localStorage.getItem('monthlyBudget');
-        if (legacy) return parseInt(legacy);
-        return 5000000;
-    };
+    const DEFAULT_BUDGET = 5000000;
 
-    const [monthlyBudget, setMonthlyBudget] = useState<number>(() => getBudgetFromStorage(userId));
+    const [monthlyBudget, setMonthlyBudget] = useState<number>(DEFAULT_BUDGET);
     const [isEditingBudget, setIsEditingBudget] = useState(false);
-    const [budgetInput, setBudgetInput] = useState(monthlyBudget.toString());
+    const [budgetInput, setBudgetInput] = useState(DEFAULT_BUDGET.toString());
+    const [isSavingBudget, setIsSavingBudget] = useState(false);
 
-    // Sync lại budget từ localStorage khi userId thay đổi (ví dụ sau khi đăng nhập lại)
+    // Load budget từ DB khi mount hoặc khi userId thay đổi
     useEffect(() => {
-        const saved = getBudgetFromStorage(userId);
-        setMonthlyBudget(saved);
-        setBudgetInput(saved.toString());
+        let cancelled = false;
+        (async () => {
+            try {
+                const res = await apiGetBudget();
+                if (cancelled) return;
+                const value = Number(res.data?.monthly_budget);
+                if (Number.isFinite(value)) {
+                    setMonthlyBudget(value);
+                    setBudgetInput(value.toString());
+                }
+            } catch (err) {
+                // Fallback: nếu API lỗi, thử đọc localStorage cũ để migration mượt
+                const legacy = localStorage.getItem(`monthlyBudget_${userId}`) || localStorage.getItem('monthlyBudget');
+                if (legacy) {
+                    const val = parseInt(legacy);
+                    if (Number.isFinite(val)) {
+                        setMonthlyBudget(val);
+                        setBudgetInput(val.toString());
+                    }
+                }
+            }
+        })();
+        return () => { cancelled = true; };
     }, [userId]);
 
-    const handleSaveBudget = () => {
+    const handleSaveBudget = async () => {
         const val = parseInt(budgetInput.replace(/\D/g, '')) || 0;
-        setMonthlyBudget(val);
-        localStorage.setItem(`monthlyBudget_${userId}`, val.toString());
-        setIsEditingBudget(false);
+        setIsSavingBudget(true);
+        try {
+            await apiSetBudget(val);
+            setMonthlyBudget(val);
+            // Dọn rác localStorage cũ để tránh nhiễu
+            localStorage.removeItem(`monthlyBudget_${userId}`);
+            localStorage.removeItem('monthlyBudget');
+            setIsEditingBudget(false);
+        } catch (err) {
+            // Nếu API lỗi, vẫn cập nhật UI để không chặn user, lưu tạm vào localStorage
+            setMonthlyBudget(val);
+            localStorage.setItem(`monthlyBudget_${userId}`, val.toString());
+            setIsEditingBudget(false);
+        } finally {
+            setIsSavingBudget(false);
+        }
     };
 
     // 1. Calculate this month's budget pool
@@ -158,9 +186,16 @@ export function HomeTab({ userId, jars, transactions, totalBalance, onViewHistor
                             className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm font-bold focus:outline-none focus:border-pink-300"
                             placeholder="Nhập hạn mức..."
                             autoFocus
+                            disabled={isSavingBudget}
+                            data-testid="budget-input"
                         />
-                        <button onClick={handleSaveBudget} className="bg-pink-500 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-md hover:bg-pink-600">
-                            Lưu
+                        <button
+                            onClick={handleSaveBudget}
+                            disabled={isSavingBudget}
+                            className="bg-pink-500 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-md hover:bg-pink-600 disabled:opacity-60 disabled:cursor-not-allowed"
+                            data-testid="budget-save-btn"
+                        >
+                            {isSavingBudget ? 'Đang lưu...' : 'Lưu'}
                         </button>
                     </div>
                 ) : (

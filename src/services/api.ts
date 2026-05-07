@@ -121,3 +121,10 @@ export const apiAddIncome = (amount: number, description?: string, isRecurring?:
 // ─── AI Chat ─────────────────────────────────────────────────────────────────
 export const apiSendChat = (message: string) =>
     api.post('/chat', { message });
+
+// ─── Monthly Budget ──────────────────────────────────────────────────────────
+export const apiGetBudget = () =>
+    api.get('/budget');
+
+export const apiSetBudget = (monthlyBudget: number) =>
+    api.put('/budget', { monthly_budget: monthlyBudget });

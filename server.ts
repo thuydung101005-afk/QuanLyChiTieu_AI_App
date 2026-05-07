@@ -107,6 +107,32 @@ app.post('/api/auth/notifications/trigger-monthly-ai', authenticateToken, async 
         res.status(500).json({ error: err.message });
     }
 });
+// ─── MONTHLY BUDGET ──────────────────────────────────────────────────────────
+app.get('/api/budget', authenticateToken, (req, res) => {
+    try {
+        const userId = (req as any).user.userId;
+        const budget = getUserBudget(userId);
+        res.json({ success: true, monthly_budget: budget });
+    } catch (err: any) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.put('/api/budget', authenticateToken, (req, res) => {
+    try {
+        const userId = (req as any).user.userId;
+        const { monthly_budget } = req.body;
+        const value = Number(monthly_budget);
+        if (!Number.isFinite(value) || value < 0) {
+            return res.status(400).json({ error: 'Hạn mức không hợp lệ' });
+        }
+        setUserBudget(userId, value);
+        res.json({ success: true, monthly_budget: value });
+    } catch (err: any) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 app.get('/api/jars', authenticateToken, (req, res) => {
     try {
         const userId = (req as any).user.userId;
