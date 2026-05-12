@@ -5,9 +5,9 @@ import type { PendingTx } from '../types';
 // 🚀 DÁN LINK NGROK HOẶC IP LOCAL VÀO ĐÂY ĐỂ ĐÓNG GÓI ANDROID
 // Ví dụ IP Local: 'http://192.168.0.120:3001/api' (Dùng chung mạng WiFi)
 // =========================================================================
-const NGROK_URL = 'https://phobia-canola-womanless.ngrok-free.dev/api'; 
+const NGROK_URL = 'https://phobia-canola-womanless.ngrok-free.dev/api';
 
-export const api = axios.create({ 
+export const api = axios.create({
     baseURL: NGROK_URL || '/api',
     headers: {
         'ngrok-skip-browser-warning': 'true'
@@ -61,13 +61,13 @@ export const apiRequestEmailChange = (newEmail: string) =>
 export const apiVerifyEmailChange = (newEmail: string, otp: string) =>
     api.post('/auth/change-email/verify', { newEmail, otp });
 
-export const apiGetNotifications = () => 
+export const apiGetNotifications = () =>
     api.get('/auth/notifications');
 
-export const apiMarkNotificationRead = (id: string) => 
+export const apiMarkNotificationRead = (id: string) =>
     api.put(`/auth/notifications/${id}/read`);
 
-export const apiMarkAllNotificationsRead = () => 
+export const apiMarkAllNotificationsRead = () =>
     api.put('/auth/notifications/read-all');
 
 export const apiTriggerMonthlyAIReport = () =>
@@ -77,10 +77,10 @@ export const apiTriggerMonthlyAIReport = () =>
 export const fetchJars = () =>
     api.get(`/jars`);
 
-export const apiCreateJar = (name: string, split_amount: number, concept_type: string, sourceJarId?: string, color?: string, icon?: string) => 
+export const apiCreateJar = (name: string, split_amount: number, concept_type: string, sourceJarId?: string, color?: string, icon?: string) =>
     api.post('/jars', { name, split_amount, concept_type, sourceJarId, color, icon });
 
-export const apiBulkUpdateJars = (updates: { id: string, percent: number }[]) => 
+export const apiBulkUpdateJars = (updates: { id: string, percent: number }[]) =>
     api.put('/jars/bulk', { updates });
 
 export const apiUpdateJar = (jarId: string, name: string, allocation_percent: number) =>

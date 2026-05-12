@@ -1,17 +1,26 @@
-import { Resend } from 'resend';
+import nodemailer from 'nodemailer';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-const FROM = process.env.EMAIL_FROM || 'FinBrain App <onboarding@resend.dev>';
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST || 'smtp.gmail.com',
+  port: Number(process.env.SMTP_PORT) || 465,
+  secure: true, // true for 465, false for other ports
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
+  },
+});
+
+const FROM = process.env.EMAIL_FROM || 'FinBrain App <aiapp817@gmail.com>';
 
 function buildOtpEmail(otp: string, type: 'verify' | 'reset', username?: string): string {
-    const isVerify = type === 'verify';
-    const title = isVerify ? 'Xác minh tài khoản' : 'Đặt lại mật khẩu';
-    const subtitle = isVerify
-        ? 'Cảm ơn bạn đã đăng ký FinBrain! Nhập mã bên dưới để kích hoạt tài khoản.'
-        : 'Nhập mã bên dưới để đặt lại mật khẩu của bạn.';
-    const color = isVerify ? '#FF7FA3' : '#a78bfa';
+  const isVerify = type === 'verify';
+  const title = isVerify ? 'Xác minh tài khoản' : 'Đặt lại mật khẩu';
+  const subtitle = isVerify
+    ? 'Cảm ơn bạn đã đăng ký FinBrain! Nhập mã bên dưới để kích hoạt tài khoản.'
+    : 'Nhập mã bên dưới để đặt lại mật khẩu của bạn.';
+  const color = isVerify ? '#FF7FA3' : '#a78bfa';
 
-    return `<!DOCTYPE html>
+  return `<!DOCTYPE html>
 <html lang="vi">
 <head>
   <meta charset="UTF-8"/>
@@ -65,18 +74,20 @@ function buildOtpEmail(otp: string, type: 'verify' | 'reset', username?: string)
 }
 
 export async function sendOtpEmail(to: string, otp: string, type: 'verify' | 'reset', username?: string): Promise<void> {
-    const subject = type === 'verify'
-        ? '🐣 FinBrain - Mã xác minh tài khoản của bạn'
-        : '🔐 FinBrain - Mã đặt lại mật khẩu';
+  const subject = type === 'verify'
+    ? '🐣 FinBrain - Mã xác minh tài khoản của bạn'
+    : '🔐 FinBrain - Mã đặt lại mật khẩu';
 
-    const { error } = await resend.emails.send({
-        from: FROM,
-        to,
-        subject,
-        html: buildOtpEmail(otp, type, username),
+  try {
+    await transporter.sendMail({
+      from: FROM,
+      to,
+      subject,
+      html: buildOtpEmail(otp, type, username),
     });
-
-    if (error) {
-        throw new Error(`Resend error: ${error.message}`);
-    }
+    console.log(`[Email] OTP sent to ${to} via Gmail SMTP`);
+  } catch (error: any) {
+    console.error('[Email Error] NodeMailer:', error.message);
+    throw new Error(`Email service error: ${error.message}`);
+  }
 }

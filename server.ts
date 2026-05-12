@@ -57,7 +57,7 @@ const generateAndSendMonthlyAIReport = async (userId: string, year: number, mont
         if (hasSentAIReportThisMonth(userId, monthStr)) return false;
 
         const summary = getMonthlySummaryForAI(userId, year, month);
-        
+
         // Skip if no income and no expense
         if (summary.totalIncome === 0 && summary.totalExpense === 0) return false;
 
@@ -77,7 +77,7 @@ Hãy viết 1 nhận xét hoặc lời khuyên thật ngắn gọn, dưới 50 t
         });
 
         const textRes = response.text || "Tháng qua bạn đã quản lý tốt, hãy tiếp tục phát huy nhé!";
-        
+
         createNotification(userId, `Báo cáo tháng ${month}`, textRes, 'ai');
         markAIReportSent(userId, monthStr);
         return true;
@@ -571,7 +571,7 @@ Câu hỏi: "${message}"`;
 
 app.listen(port, () => {
     console.log(`Backend API running on http://localhost:${port}`);
-    
+
     // CRONJOB: Check recurring transactions every minute
     setInterval(() => {
         try {
@@ -596,7 +596,7 @@ app.listen(port, () => {
                     month = 12;
                     year -= 1;
                 }
-                
+
                 const users = getAllUsers();
                 let count = 0;
                 for (const user of users) {

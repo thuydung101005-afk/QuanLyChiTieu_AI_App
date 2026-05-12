@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "clean": "rm -rf dist",
     "lint": "tsc --noEmit",
-    "backend": "tsx watch --ignore finance.db* --ignore training_data.txt --ignore brain1_model.bin server.ts"
+    "backend": "tsx watch --ignore finance.db* --ignore training_data.txt --ignore brain1_model.bin server.ts",
+    "build-android": "npm run build && npx cap sync android"
   },
   "dependencies": {
     "@capacitor/android": "^8.3.1",
